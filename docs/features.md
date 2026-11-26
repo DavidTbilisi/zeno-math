@@ -1338,7 +1338,18 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     worked solution colours the net's opposite faces alike
   - Coordinates: a point drawn on a grid and its coordinates typed — in the first quadrant, then in all four, then the
     fourth corner of a rectangle whose other three are drawn. The numbers the wrong way round, (y, x), are named; the
-    worked solution draws dashed lines from the axes to the point
+    worked solution draws dashed lines from the axes to the point. Also (#712): in the first quadrant, the distance
+    between two points on a grid line, bare or on a town or park map, and the best name for the shape some points
+    make; in all four quadrants, the distance across an axis (bare, a road on a map, a diver under a boat) and a
+    rectangle's perimeter or area drawn on the grid; at the hard level, a rectangle's corner from its area and a
+    robot's walk. One point's coordinate for the distance, the numbers taken from each other across an axis, the
+    sides not compared, a slanted shape taken for a rectangle and the height taken for the coordinate are named. The
+    distance skill gained the point dividing a segment in a ratio (with the midpoint), parallel, perpendicular or
+    neither from a graph or from two equations (with the distance), and at the hard level a quadrilateral named
+    from its corners, the line through a point parallel or perpendicular to another, a triangle's perimeter, a
+    garden bed's area and a field's fence. The ratio's parts not added, the ratio from the other end, the slope's
+    sign turned but not inverted (or inverted but not turned), the old intercept kept, the right angles or the sides
+    not checked, the grid steps counted for a sloping side and the triangle not halved are named
   - Gradient of a line: a line drawn through P and Q on a grid, a few steps apart, and its gradient typed — 1 to 3,
     then −3 to 3, then a fraction in lowest terms. Along over up is named (a line going the wrong way is the sign
     slip); the worked solution draws the step from P to Q as a triangle

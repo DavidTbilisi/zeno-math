@@ -1166,35 +1166,35 @@
     {
       "skill": "distance",
       "level": 1,
-      "seed": 7,
+      "seed": 51832,
       "input": "(-2.5, -4.5)",
       "label": "correct"
     },
     {
       "skill": "distance",
       "level": 1,
-      "seed": 7,
+      "seed": 51832,
       "input": "(-5/2, -9/2)",
       "label": "correct"
     },
     {
       "skill": "distance",
       "level": 1,
-      "seed": 7,
+      "seed": 51832,
       "input": "(-2.5; -4.5)",
       "label": "correct"
     },
     {
       "skill": "distance",
       "level": 1,
-      "seed": 7,
+      "seed": 51832,
       "input": "(-4.5, -2.5)",
       "label": "wrong"
     },
     {
       "skill": "distance",
       "level": 1,
-      "seed": 7,
+      "seed": 51832,
       "input": "(-7, -9)",
       "label": "wrong",
       "note": "added without halving"
@@ -1202,21 +1202,21 @@
     {
       "skill": "distance",
       "level": 3,
-      "seed": 7,
+      "seed": 51832,
       "input": "sqrt(58)",
       "label": "correct"
     },
     {
       "skill": "distance",
       "level": 3,
-      "seed": 7,
+      "seed": 51832,
       "input": "7.62",
       "label": "correct"
     },
     {
       "skill": "distance",
       "level": 3,
-      "seed": 7,
+      "seed": 51832,
       "input": "7.6",
       "label": "close",
       "note": "rounded to 1 d.p."
@@ -1224,7 +1224,7 @@
     {
       "skill": "distance",
       "level": 3,
-      "seed": 7,
+      "seed": 51832,
       "input": "58",
       "label": "wrong"
     },
@@ -3906,28 +3906,28 @@
     {
       "skill": "coordinates",
       "level": 1,
-      "seed": 7,
+      "seed": 278,
       "input": "(0, 0)",
       "label": "correct"
     },
     {
       "skill": "coordinates",
       "level": 1,
-      "seed": 7,
+      "seed": 278,
       "input": "0, 0",
       "label": "correct"
     },
     {
       "skill": "coordinates",
       "level": 1,
-      "seed": 7,
+      "seed": 278,
       "input": "(0, 1)",
       "label": "wrong"
     },
     {
       "skill": "coordinates",
       "level": 1,
-      "seed": 7,
+      "seed": 278,
       "input": "0",
       "label": "form",
       "note": "one number for a point"
@@ -3935,21 +3935,21 @@
     {
       "skill": "coordinates",
       "level": 2,
-      "seed": 7,
+      "seed": 278,
       "input": "(-6, -6)",
       "label": "correct"
     },
     {
       "skill": "coordinates",
       "level": 2,
-      "seed": 7,
+      "seed": 278,
       "input": "(−6; −6)",
       "label": "correct"
     },
     {
       "skill": "coordinates",
       "level": 2,
-      "seed": 7,
+      "seed": 278,
       "input": "(6, 6)",
       "label": "wrong",
       "note": "the signs lost"
@@ -3957,14 +3957,14 @@
     {
       "skill": "coordinates",
       "level": 3,
-      "seed": 7,
+      "seed": 86,
       "input": "(-3, -3)",
       "label": "correct"
     },
     {
       "skill": "coordinates",
       "level": 3,
-      "seed": 7,
+      "seed": 86,
       "input": "(3, -3)",
       "label": "wrong"
     },
@@ -45140,6 +45140,1292 @@
       "seed": 187,
       "input": "487",
       "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 1,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "coordinateNotDistance"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 2,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "coordinateNotDistance"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 2,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 4,
+      "input": "rectangle",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 4,
+      "input": "square",
+      "label": "wrong",
+      "mistake": "sidesNotCompared"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 5,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 5,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "coordinateNotDistance"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 6,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 6,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "coordinateNotDistance"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 6,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 10,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 10,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "coordinateNotDistance"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 10,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 16,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 16,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "coordinateNotDistance"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 16,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 30,
+      "input": "right-angled triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 36,
+      "input": "right-angled triangle",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 41,
+      "input": "parallelogram",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 41,
+      "input": "rectangle",
+      "label": "wrong",
+      "mistake": "slantMissed"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 43,
+      "input": "rectangle",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 43,
+      "input": "square",
+      "label": "wrong",
+      "mistake": "sidesNotCompared"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 48,
+      "input": "parallelogram",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 1,
+      "seed": 48,
+      "input": "rectangle",
+      "label": "wrong",
+      "mistake": "slantMissed"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 1,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "distanceAcrossAxis"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "distanceAcrossAxis"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 3,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 3,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "distanceAcrossAxis"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 3,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 4,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 4,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "perimeterNotArea"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 4,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 5,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 5,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "distanceAcrossAxis"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 5,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 6,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 6,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "distanceAcrossAxis"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 6,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 10,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 10,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "distanceAcrossAxis"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 10,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 30,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 30,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "areaNotPerimeter"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 30,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 36,
+      "input": "42",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 36,
+      "input": "26",
+      "label": "wrong",
+      "mistake": "perimeterNotArea"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 36,
+      "input": "49",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 41,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 41,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "areaNotPerimeter"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 41,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 81,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 81,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 232,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 232,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 245,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 245,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 348,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 2,
+      "seed": 348,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 1,
+      "input": "(4, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 1,
+      "input": "(4, 5)",
+      "label": "wrong",
+      "mistake": "heightAsCoordinate"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 2,
+      "input": "(2, -6)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 2,
+      "input": "(-6, 2)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 3,
+      "input": "(-3, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 4,
+      "input": "(-3, -7)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 4,
+      "input": "(-7, -3)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 5,
+      "input": "(1, 0)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 5,
+      "input": "(1, -2)",
+      "label": "wrong",
+      "mistake": "heightAsCoordinate"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 6,
+      "input": "(1, 0)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 6,
+      "input": "(1, 4)",
+      "label": "wrong",
+      "mistake": "heightAsCoordinate"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 11,
+      "input": "(2, -2)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 11,
+      "input": "(2, -5)",
+      "label": "wrong",
+      "mistake": "heightAsCoordinate"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 20,
+      "input": "(-3, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 20,
+      "input": "(3, -3)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 30,
+      "input": "(1, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 30,
+      "input": "(2, 1)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 36,
+      "input": "(5, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 36,
+      "input": "(4, 5)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 38,
+      "input": "(8, -7)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 38,
+      "input": "(-7, 8)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 41,
+      "input": "(4, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 43,
+      "input": "(-3, -5)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 43,
+      "input": "(-5, -3)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 44,
+      "input": "(2, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 44,
+      "input": "(-1, 2)",
+      "label": "wrong",
+      "mistake": "swappedXY"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 57,
+      "input": "(-7, -7)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 113,
+      "input": "(-1, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 182,
+      "input": "(0, 0)",
+      "label": "correct"
+    },
+    {
+      "skill": "coordinates",
+      "level": 3,
+      "seed": 254,
+      "input": "(4, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 1,
+      "seed": 1,
+      "input": "(3, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 1,
+      "seed": 1,
+      "input": "(4, 1.5)",
+      "label": "wrong",
+      "mistake": "ratioPartsNotAdded"
+    },
+    {
+      "skill": "distance",
+      "level": 1,
+      "seed": 1,
+      "input": "(5, 1)",
+      "label": "wrong",
+      "mistake": "ratioFromOtherEnd"
+    },
+    {
+      "skill": "distance",
+      "level": 1,
+      "seed": 2,
+      "input": "(2, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 1,
+      "seed": 2,
+      "input": "(2.667, -0.667)",
+      "label": "wrong",
+      "mistake": "ratioPartsNotAdded"
+    },
+    {
+      "skill": "distance",
+      "level": 1,
+      "seed": 2,
+      "input": "(6, 1)",
+      "label": "wrong",
+      "mistake": "ratioFromOtherEnd"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 1,
+      "input": "parallel",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 2,
+      "input": "perpendicular",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 4,
+      "input": "perpendicular",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 5,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 5,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 10,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 10,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 11,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 11,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 26,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 26,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 30,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 30,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 36,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 36,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 41,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 41,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 43,
+      "input": "perpendicular",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 48,
+      "input": "neither",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 2,
+      "seed": 48,
+      "input": "perpendicular",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 1,
+      "input": "y = 1/2x − 3",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 1,
+      "input": "y = 1/2x + 1",
+      "label": "wrong",
+      "mistake": "interceptKept"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 2,
+      "input": "19.54",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 2,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "gridStepsCounted"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 2,
+      "input": "26.54",
+      "label": "wrong"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 3,
+      "input": "16.65",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 3,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "gridStepsCounted"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 3,
+      "input": "23.65",
+      "label": "wrong"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 4,
+      "input": "11.77",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 4,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "gridStepsCounted"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 4,
+      "input": "18.77",
+      "label": "wrong"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 5,
+      "input": "y = −2/3x − 3",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 5,
+      "input": "y = −2/3x + 3",
+      "label": "wrong",
+      "mistake": "interceptKept"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 6,
+      "input": "square",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 10,
+      "input": "parallelogram",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 10,
+      "input": "rectangle",
+      "label": "wrong",
+      "mistake": "slantMissed"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 11,
+      "input": "rhombus",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 11,
+      "input": "square",
+      "label": "wrong",
+      "mistake": "rightAnglesNotChecked"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 13,
+      "input": "rectangle",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 13,
+      "input": "square",
+      "label": "wrong",
+      "mistake": "sidesNotCompared"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 16,
+      "input": "y = −2x − 9",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 16,
+      "input": "y = −2x + 6",
+      "label": "wrong",
+      "mistake": "interceptKept"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 16,
+      "input": "y = −1/2x − 6",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 16,
+      "input": "y = 2x − 1",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 17,
+      "input": "y = −1/2x + 2",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 17,
+      "input": "y = −1/2x − 3",
+      "label": "wrong",
+      "mistake": "interceptKept"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 17,
+      "input": "y = −2x − 1",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 17,
+      "input": "y = 1/2x + 4",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 25,
+      "input": "parallelogram",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 25,
+      "input": "rectangle",
+      "label": "wrong",
+      "mistake": "slantMissed"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 26,
+      "input": "rhombus",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 26,
+      "input": "square",
+      "label": "wrong",
+      "mistake": "rightAnglesNotChecked"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 30,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 30,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "triangleNotHalved"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 30,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 31,
+      "input": "y = −2/3x − 6",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 31,
+      "input": "y = −3/2x − 11",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 31,
+      "input": "y = 2/3x + 2",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 36,
+      "input": "18.03",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 36,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "gridStepsCounted"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 36,
+      "input": "25.03",
+      "label": "wrong"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 41,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 41,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "triangleNotHalved"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 41,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 50,
+      "input": "square",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 78,
+      "input": "rectangle",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 78,
+      "input": "square",
+      "label": "wrong",
+      "mistake": "sidesNotCompared"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 237,
+      "input": "y = −2x − 2",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 275,
+      "input": "y = 1/2x + 3",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 588,
+      "input": "y = −2/3x + 1",
+      "label": "correct"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 588,
+      "input": "y = −3/2x + 6",
+      "label": "wrong",
+      "mistake": "negativeNotReciprocal"
+    },
+    {
+      "skill": "distance",
+      "level": 3,
+      "seed": 588,
+      "input": "y = 2/3x − 7",
+      "label": "wrong",
+      "mistake": "reciprocalNotNegative"
     }
   ]
 }

@@ -64,8 +64,12 @@ test("the picture: the point asked for, a tap that missed, and the point with it
 });
 
 test("in practice: the coordinates typed, the numbers swapped named, the point drawn; the server agrees", async () => {
+  // The kinds #712 added (distances, shapes, stories) are checked in tests/mistakes.test.ts; here the points to read.
+  const plotted = (level: 1 | 2 | 3, from = 1) => {
+    for (let seed = from; ; seed++) if (exercise("coordinates", level, seed, w).solution?.kind === "plot") return seed;
+  };
   for (const level of LEVELS) {
-    const ex = exercise("coordinates", level, 7, w);
+    const ex = exercise("coordinates", level, plotted(level), w);
     assert.ok(ex.pic && !ex.pic.svg(0, 0).includes("NaN"));
     assert.deepEqual(check(ex, ex.plain, w), { ok: true });
     assert.deepEqual(check(ex, ex.plain.replace(", ", "; "), w), { ok: true });
@@ -75,8 +79,10 @@ test("in practice: the coordinates typed, the numbers swapped named, the point d
   }
   for (const level of LEVELS) {
     let found = 0;
-    for (let seed = 1; seed <= 40; seed++) {
+    for (let seed = 1, seen = 0; seen < 40; seed++) {
       const ex = exercise("coordinates", level, seed, w);
+      if (ex.solution?.kind !== "plot") continue;
+      seen++;
       const trap = trapInputs(ex).find((x) => x.id === "swappedXY");
       if (!trap) continue;
       found++;
@@ -87,8 +93,8 @@ test("in practice: the coordinates typed, the numbers swapped named, the point d
     assert.ok(found > 30, `${found} questions at level ${level} name swappedXY`);
   }
   assert.deepEqual(plotSteps({ level: 3, p: [4, -1], corners: [[4, 5], [-2, 5], [-2, -1]] }), ["x_D = x_A = 4, \\; y_D = y_C = -1", "D = (4, -1)"]);
-  const q = { skill: "coordinates" as const, level: 2, seed: 7 };
-  const ex = exercise("coordinates", 2, 7, w);
+  const q = { skill: "coordinates" as const, level: 2, seed: plotted(2, 7) };
+  const ex = exercise("coordinates", 2, q.seed, w);
   if (ex.answer.k !== "tuple") throw new Error();
   const [x, y] = ex.answer.vs;
   assert.deepEqual([mark(q, `(${x}, ${y})`), mark(q, `(${x + 1}, ${y})`), mark(q, "here")], ["correct", "wrong", "form"]);
