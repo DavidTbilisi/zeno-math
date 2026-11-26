@@ -8,18 +8,26 @@
 // a table or a graph, the independent and the dependent variable, y from an equation for a given x; whether a point
 // solves a two-variable equation, the missing number of a solution, intercepts read from a table; and a linear
 // function written from a story. Two outputs for one input missed, the variables swapped, x and y swapped and the rate
-// and the start swapped are slips.
-import { fill } from "../chart";
+// and the start swapped are slips. #725 added, four times in ten: easy, k·f(a) worked out and a tank's depth h(t)
+// read either way; medium, which x is in a graph's domain and what C(a) = b means in a story; hard, the domain of
+// √(x − a) or 1/(x − a), a relative or absolute extremum or where f is positive or negative read off a graph, and,
+// in a new setting, the domain of a cost or takings function that counts trays or passengers. The input scaled for
+// the output, input and output swapped, the notation read as a product, the open end taken in, the domain's sign
+// flipped, √0 left out, the extremum's x given for its value, a relative extremum for an absolute one, climbing taken
+// for positive, the signs swapped and a count's domain taken as all numbers are slips.
+import { C, fill } from "../chart";
 import { fromPoly, tex } from "../expr";
 import { fr, num } from "../practiceKit";
 import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 import { arrowsSvg, graphSvg, sgn, tableSvg, type Pt } from "../readFunction";
+import { polyText } from "../whichTool";
 import { pickPart } from "../tTails";
 
 const place = (body: string) => (x: number, y: number) => `<g transform="translate(${x} ${y})">${body}</g>`;
 const picOf = (p: { body: string; w: number; h: number }) => ({ svg: place(p.body), h: p.h, w: p.w });
 
 const gen: Gen = (r, L, w) => {
+  if (r.int(0, 9) >= 6) return notation(r, L, r.int(0, 9), w);
   if (r.int(0, 9) >= (L === 3 ? 7 : 5)) return more(r, L, r.int(0, 9), w);
   const W = w.rfn;
   const withPic = (p: Part, pic: { body: string; w: number; h: number }): Part => ({ ...p, pic: picOf(pic) });
@@ -289,5 +297,127 @@ function more(r: Rng, L: number, kind: number, w: PracticeWords): Part {
 }
 
 const withPicOf = (p: Part, pic: { body: string; w: number; h: number }): Part => ({ ...p, pic: picOf(pic) });
+
+/** A number in a product: (−3) in brackets. */
+const par = (v: number) => (v < 0 ? `(${sgn(v)})` : sgn(v));
+
+function notation(r: Rng, L: number, kind: number, w: PracticeWords): Part {
+  const N = w.rfnN;
+  const numQ = (prompt: string, v: number, slips: [Trap["id"], number, Record<string, string | number>][], steps: string[], pic?: Part["pic"]): Part => ({
+    prompt, q: "", ...(pic ? { pic } : {}), show: sgn(v), plain: String(v), format: "number", steps,
+    answer: { ...num(v), traps: slips.filter(([, x]) => x !== v).map(([id, x, vars]) => ({ id, a: num(x), vars: { x: sgn(x), v: sgn(v), ...vars } })) },
+  });
+  if (L === 1) {
+    if (kind <= 4) {
+      // k·f(a): the output times k, not the output at k·a.
+      for (;;) {
+        const [p, q] = [r.nz(-4, 4), r.int(-6, 6)];
+        const quad = r.next() < 0.5;
+        const f = (x: number) => (quad ? p * x * x + q : p * x + q);
+        const fs = quad ? polyText(q, 0, p) : polyText(q, p);
+        const [k, a] = [r.pick([2, 3, -2]), r.nz(-3, 3)];
+        const [v, x] = [k * f(a), f(k * a)];
+        if (v === x) continue;
+        const e = `${sgn(k)}f(${sgn(a)})`;
+        const wk = `f(${sgn(a)}) = ${sgn(f(a))}, ${sgn(k)} × ${par(f(a))} = ${sgn(v)}`;
+        return numQ(fill(N.evalQ, { f: fs, e }), v, [["outsideInsideSwapped", x, { e, m: fill(N.timesOut, { k: sgn(k), a: sgn(a) }), w: wk }]],
+          [`f(${a}) = ${f(a)}`, `${k} \\times ${f(a) < 0 ? `(${f(a)})` : f(a)} = ${v}`]);
+      }
+    }
+    // A tank's depth h(t) = A − st: h at a time, or the time for a depth.
+    const s = r.pick([2, 3, 4, 5]);
+    const m = r.int(8, 12);
+    const A = s * m;
+    if (r.next() < 0.5) {
+      const k = s * r.int(1, Math.floor(m / s));
+      const v = A - s * k;
+      return numQ(fill(N.depthAt, { A, s, k }), v, [["inputOutputSwapped", (A - k) / s, { f: "h", w: `h(${k}) = ${A} − ${s} × ${k} = ${v}.` }]],
+        [`h(${k}) = ${A} - ${s} \\times ${k} = ${v}`]);
+    }
+    const t0 = r.int(1, m - 1);
+    const d = s * (m - t0);
+    return numQ(fill(N.depthWhen, { A, s, d }), t0, [["inputOutputSwapped", A - s * d, { f: "h", w: `${A} − ${s}t = ${d}, so t = ${t0}.` }]],
+      [`${A} - ${s}t = ${d}`, `t = ${t0}`]);
+  }
+  if (L === 2) {
+    if (kind <= 4) {
+      // Which x is in the domain of a graph closed at a and open at b.
+      const [a, b] = [r.int(-5, -1), r.int(2, 5)];
+      const xs = Array.from({ length: b - a + 1 }, (_, i) => a + i);
+      // A gentle walk: each step up one, down one or level.
+      const ys = [r.int(-2, 2)];
+      for (let i = 1; i < xs.length; i++) ys.push(Math.max(-4, Math.min(4, ys[i - 1] + r.int(-1, 1))));
+      const g = graphSvg(xs.map((x, i) => [x, ys[i]] as Pt), { lo: -6, hi: 6 });
+      const X = (x: number) => 20 + (x + 6) * 22;
+      const Y = (y: number) => 20 + (6 - y) * 22;
+      const body = `${g.body}<circle cx="${X(a)}" cy="${Y(ys[0])}" r="5" fill="${C.blue}"/><circle cx="${X(b)}" cy="${Y(ys[ys.length - 1])}" r="5" fill="#fff" stroke="${C.blue}" stroke-width="2.5"/>`;
+      const inside = r.int(a, b - 1);
+      const opts = [inside, b, a - 1, b + 1].map((x) => `x = ${sgn(x)}`);
+      return { ...pickPart(r, opts, 0, [{ id: "openDotIncluded", at: 1, vars: { t: sgn(b), v: opts[0] } }], N.inDomain, [`${a} \\le x < ${b}`]), pic: picOf({ body, w: g.w, h: g.h }) };
+    }
+    // What C(a) = b means in a story.
+    const ctx = r.int(0, 2);
+    const f = ["C", "h", "d"][ctx];
+    const a = r.int(2, 6);
+    const b = r.int(3, 8) * a + r.int(1, a - 1);
+    const say = (x: number, y: number) => fill([N.say0, N.say1, N.say2][ctx], { a: x, b: y });
+    const opts = [say(a, b), say(b, a), fill(N.times, { f, a, b })];
+    return pickPart(r, opts, 0, [
+      { id: "inputOutputSwapped", at: 1, vars: { f, w: fill(N.inOut, { f, a, b }), v: opts[0] } },
+      { id: "notationAsProduct", at: 2, vars: { f, a, v: opts[0] } },
+    ], fill([N.ctx0, N.ctx1, N.ctx2][ctx], { a, b }), [`${f}(${a}) = ${b}`]);
+  }
+  if (kind <= 2) {
+    // The domain of √(x − a) or 1/(x − a).
+    const a = r.nz(-6, 6);
+    const inner = polyText(-a, 1);
+    if (r.next() < 0.5) {
+      const opts = [`x ≥ ${sgn(a)}`, `x > ${sgn(a)}`, `x ≥ ${sgn(-a)}`, N.allReal];
+      return pickPart(r, opts, 0, [
+        { id: "rootZeroExcluded", at: 1, vars: { a: sgn(a), v: opts[0] } },
+        { id: "domainSignFlipped", at: 2, vars: { w: `${inner} ≥ 0 → x ≥ ${sgn(a)}`, v: opts[0] } },
+      ], fill(N.domainOf, { f: `√(${inner})` }), [`${polyStr1(-a)} \\ge 0`, `x \\ge ${a}`]);
+    }
+    const opts = [`x ≠ ${sgn(a)}`, `x ≠ ${sgn(-a)}`, "x ≠ 0", N.allReal];
+    return pickPart(r, opts, 0, [{ id: "domainSignFlipped", at: 1, vars: { w: `${inner} ≠ 0 → x ≠ ${sgn(a)}`, v: opts[0] } }],
+      fill(N.domainOf, { f: `1/(${inner})` }), [`${polyStr1(-a)} \\ne 0`, `x \\ne ${a}`]);
+  }
+  if (kind <= 5) {
+    if (r.next() < 0.6) {
+      // Extrema of a zigzag through x = −6, −2, 2, 6: a peak at −2 below the end at 6, a dip at 2 above the end at −6.
+      const y1 = r.int(1, 3);
+      const y3 = r.int(y1 + 1, 6);
+      const y0 = r.int(-6, -3);
+      const y2 = r.int(y0 + 1, 0);
+      const g = graphSvg([[-6, y0], [-2, y1], [2, y2], [6, y3]], { lo: -6, hi: 6, ends: true });
+      const pic = picOf(g);
+      if (r.next() < 0.5)
+        return numQ(N.relMax, y1, [["extremumXForY", -2, { at: "−2", y: sgn(y1) }], ["relativeForAbsolute", y3, { w: N.relWhy }]], [`f(-2) = ${y1}`], pic);
+      return numQ(N.absMin, y0, [["extremumXForY", -6, { at: "−6", y: sgn(y0) }], ["relativeForAbsolute", y2, { w: N.absWhy }]], [`f(-6) = ${y0}`], pic);
+    }
+    // Where f is positive or negative: zeros at z1 < z2, a hump between them.
+    const [z1, z2] = [r.int(-4, -1), r.int(1, 4)];
+    const top = r.int(z1 + 1, z2 - 1);
+    const g = graphSvg([[-6, -r.int(2, 5)], [z1, 0], [top, r.int(2, 5)], [z2, 0], [6, -r.int(2, 5)]], { lo: -6, hi: 6, ends: true });
+    const inner = `${sgn(z1)} < x < ${sgn(z2)}`;
+    const outer = fill(N.orText, { a: `x < ${sgn(z1)}`, b: `x > ${sgn(z2)}` });
+    const pos = r.next() < 0.5;
+    const opts = pos ? [inner, outer, `−6 < x < ${sgn(top)}`, `${sgn(top)} < x < 6`] : [outer, inner, `${sgn(top)} < x < 6`, `−6 < x < ${sgn(top)}`];
+    const traps = [{ id: "signIntervalsSwapped" as const, at: 1, vars: { v: opts[0] } }, ...(pos ? [{ id: "increasingForPositive" as const, at: 2, vars: { v: opts[0] } }] : [])];
+    return { ...pickPart(r, opts, 0, traps, pos ? N.posQ : N.negQ, [`f(${z1}) = f(${z2}) = 0`]), pic: picOf(g) };
+  }
+  // A new setting: the domain of a function that counts trays or passengers.
+  const bus = r.next() < 0.5;
+  const n = bus ? r.pick([30, 40, 50]) : r.pick([6, 8, 10, 12]);
+  const [p, s0] = bus ? [r.pick([2, 3, 5]), 0] : [r.pick([4, 5, 6]), r.pick([10, 15, 20])];
+  const opts = [fill(N.wholeTo, { n }), fill(N.allTo, { n }), fill(N.wholeFromTo, { lo: s0, hi: p * n + s0 }), N.wholeUp];
+  return pickPart(r, opts, 0, [
+    { id: "domainNotWhole", at: 1, vars: { v: opts[0] } },
+    { id: "domainRangeSwapped", at: 2 },
+  ], fill(bus ? N.busQ : N.ovenQ, { n, p, s: s0 }), [`0 \\le ${bus ? "k" : "n"} \\le ${n}`]);
+}
+
+/** x − a in TeX. */
+const polyStr1 = (c: number) => (c ? `x ${c < 0 ? "-" : "+"} ${Math.abs(c)}` : "x");
 
 export default gen;

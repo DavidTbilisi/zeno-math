@@ -268,6 +268,8 @@ test("practice: function answers follow from the question", () => {
     for (const level of LEVELS) {
       const ex = exercise("functions", level, s, pw);
       assert.equal(check(ex, ex.plain, pw).ok, true, ex.prompt);
+      // The table, graph and formula-picking kinds (#725) are checked in tests/functionsMore.test.ts.
+      if (!ex.solution) continue;
       const a = Number(/\((−?-?\d+)\)/.exec(ex.prompt)![1].replace("−", "-"));
       const [top, bottom] = ex.plain.split("/").map(Number);
       const v = top / (bottom ?? 1);
