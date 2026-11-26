@@ -1438,21 +1438,21 @@
     {
       "skill": "similarity",
       "level": 3,
-      "seed": 7,
+      "seed": 66,
       "input": "27",
       "label": "correct"
     },
     {
       "skill": "similarity",
       "level": 3,
-      "seed": 7,
+      "seed": 66,
       "input": "18",
       "label": "wrong"
     },
     {
       "skill": "similarity",
       "level": 3,
-      "seed": 7,
+      "seed": 66,
       "input": "12",
       "label": "wrong"
     },
@@ -20252,14 +20252,14 @@
     {
       "skill": "scale",
       "level": 1,
-      "seed": 1,
+      "seed": 1971,
       "input": "7",
       "label": "correct"
     },
     {
       "skill": "scale",
       "level": 1,
-      "seed": 1,
+      "seed": 1971,
       "input": "28",
       "label": "wrong",
       "mistake": "scaleInverted"
@@ -20267,21 +20267,21 @@
     {
       "skill": "scale",
       "level": 1,
-      "seed": 1,
+      "seed": 1971,
       "input": "14",
       "label": "wrong"
     },
     {
       "skill": "scale",
       "level": 1,
-      "seed": 2,
+      "seed": 219,
       "input": "20",
       "label": "correct"
     },
     {
       "skill": "scale",
       "level": 1,
-      "seed": 2,
+      "seed": 219,
       "input": "5/4",
       "label": "wrong",
       "mistake": "scaleInverted"
@@ -20289,21 +20289,21 @@
     {
       "skill": "scale",
       "level": 1,
-      "seed": 2,
+      "seed": 219,
       "input": "27",
       "label": "wrong"
     },
     {
       "skill": "scale",
       "level": 1,
-      "seed": 7,
+      "seed": 1181,
       "input": "12",
       "label": "correct"
     },
     {
       "skill": "scale",
       "level": 1,
-      "seed": 7,
+      "seed": 1181,
       "input": "48",
       "label": "wrong",
       "mistake": "scaleInverted"
@@ -20311,21 +20311,21 @@
     {
       "skill": "scale",
       "level": 1,
-      "seed": 7,
+      "seed": 1181,
       "input": "19",
       "label": "wrong"
     },
     {
       "skill": "scale",
       "level": 1,
-      "seed": 15,
+      "seed": 788,
       "input": "30",
       "label": "correct"
     },
     {
       "skill": "scale",
       "level": 1,
-      "seed": 15,
+      "seed": 788,
       "input": "6/5",
       "label": "wrong",
       "mistake": "scaleInverted"
@@ -20333,21 +20333,21 @@
     {
       "skill": "scale",
       "level": 1,
-      "seed": 15,
+      "seed": 788,
       "input": "37",
       "label": "wrong"
     },
     {
       "skill": "scale",
       "level": 2,
-      "seed": 1,
+      "seed": 338,
       "input": "20",
       "label": "correct"
     },
     {
       "skill": "scale",
       "level": 2,
-      "seed": 1,
+      "seed": 338,
       "input": "1/5",
       "label": "wrong",
       "mistake": "scaleUnitsMixed"
@@ -20355,21 +20355,21 @@
     {
       "skill": "scale",
       "level": 2,
-      "seed": 1,
+      "seed": 338,
       "input": "27",
       "label": "wrong"
     },
     {
       "skill": "scale",
       "level": 2,
-      "seed": 6,
+      "seed": 165,
       "input": "2.25",
       "label": "correct"
     },
     {
       "skill": "scale",
       "level": 2,
-      "seed": 6,
+      "seed": 165,
       "input": "2250",
       "label": "wrong",
       "mistake": "mapUnitSlip"
@@ -20377,7 +20377,7 @@
     {
       "skill": "scale",
       "level": 2,
-      "seed": 6,
+      "seed": 165,
       "input": "225",
       "label": "wrong",
       "mistake": "mapUnitSlip"
@@ -20385,7 +20385,7 @@
     {
       "skill": "scale",
       "level": 2,
-      "seed": 6,
+      "seed": 165,
       "input": "9.25",
       "label": "wrong"
     },
@@ -48208,6 +48208,1113 @@
       "level": 3,
       "seed": 4,
       "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 1,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 1,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 2,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 2,
+      "input": "yes",
+      "label": "wrong",
+      "mistake": "oneAngleEnough"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 3,
+      "input": "yes",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 3,
+      "input": "no",
+      "label": "wrong",
+      "mistake": "thirdAngleMissed"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 4,
+      "input": "yes",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 4,
+      "input": "no",
+      "label": "wrong",
+      "mistake": "thirdAngleMissed"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 5,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 5,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 6,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 6,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 10,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 10,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 11,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 13,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 13,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 16,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 16,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 22,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 22,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 25,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 25,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 26,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 26,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 31,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 31,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 33,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 33,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 34,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 37,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 38,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 38,
+      "input": "yes",
+      "label": "wrong",
+      "mistake": "oneAngleEnough"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 42,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 42,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 61,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 78,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 78,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 91,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 91,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 95,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 95,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 97,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 97,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 102,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 102,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 134,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 148,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 148,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 171,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 171,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 190,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 204,
+      "input": "PR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 204,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 237,
+      "input": "PQ",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 237,
+      "input": "QR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 249,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 249,
+      "input": "PR",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 306,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 306,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 320,
+      "input": "QR",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 1,
+      "seed": 320,
+      "input": "PQ",
+      "label": "wrong",
+      "mistake": "alphabetMatched"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 1,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 1,
+      "input": "yes",
+      "label": "wrong",
+      "mistake": "twoSidesEnough"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 2,
+      "input": "no",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 2,
+      "input": "yes",
+      "label": "wrong",
+      "mistake": "twoSidesEnough"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 3,
+      "input": "yes",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 3,
+      "input": "no",
+      "label": "wrong",
+      "mistake": "sidesUnsorted"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 4,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 4,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 4,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 6,
+      "input": "yes",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 6,
+      "input": "no",
+      "label": "wrong",
+      "mistake": "sidesUnsorted"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 30,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 30,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "similarity",
+      "level": 2,
+      "seed": 30,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 1,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "bisectorHalves"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 1,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 2,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "wholeForPart"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 2,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 3,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 3,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 3,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "wholeForPart"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 3,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 4,
+      "input": "12.8",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 4,
+      "input": "78/5",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 4,
+      "input": "19.8",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 5,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 5,
+      "input": "7/2",
+      "label": "wrong",
+      "mistake": "bisectorHalves"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 5,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 6,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 6,
+      "input": "13/2",
+      "label": "wrong",
+      "mistake": "altitudeAsMean"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 6,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 10,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 10,
+      "input": "5/2",
+      "label": "wrong",
+      "mistake": "altitudeAsMean"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 10,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 20,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 20,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 20,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "wholeForPart"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 20,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 30,
+      "input": "not enough to tell",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 30,
+      "input": "SAS",
+      "label": "wrong",
+      "mistake": "angleNotBetween"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 36,
+      "input": "12.8",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 36,
+      "input": "148/5",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 36,
+      "input": "19.8",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 38,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 38,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "wholeForPart"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 38,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 41,
+      "input": "SSS",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 44,
+      "input": "AA",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 48,
+      "input": "SSS",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 64,
+      "input": "SAS",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 64,
+      "input": "SSS",
+      "label": "wrong",
+      "mistake": "twoRatiosSSS"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 81,
+      "input": "SAS",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 81,
+      "input": "SSS",
+      "label": "wrong",
+      "mistake": "twoRatiosSSS"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 125,
+      "input": "not enough to tell",
+      "label": "correct"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 125,
+      "input": "SAS",
+      "label": "wrong",
+      "mistake": "angleNotBetween"
+    },
+    {
+      "skill": "similarity",
+      "level": 3,
+      "seed": 300,
+      "input": "AA",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 1,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 1,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 1,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "oneWayScaled"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 2,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 2,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 2,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "oneWayScaled"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 4,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 4,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "scaleFactorInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 4,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "scaleDifference"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 4,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 30,
+      "input": "3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 30,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "scaleFactorInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 30,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "scaleDifference"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 41,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 41,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "scaleFactorInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 67,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 1,
+      "seed": 67,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "scaleFactorInverted"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 1,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 1,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 2,
+      "input": "21",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 2,
+      "input": "11",
+      "label": "wrong",
+      "mistake": "addedNotScaled"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 2,
+      "input": "28",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 4,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 4,
+      "input": "75/2",
+      "label": "wrong",
+      "mistake": "scaledWrongWay"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 4,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 30,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 30,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "scaledWrongWay"
+    },
+    {
+      "skill": "scale",
+      "level": 2,
+      "seed": 30,
+      "input": "23",
       "label": "wrong"
     }
   ]

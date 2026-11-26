@@ -3,17 +3,85 @@
 // Hard: an area on a plan (each square centimetre is a k-by-k block), the plan's area from the real one, or a drawing
 // redrawn at another scale. Dividing where the scale multiplies, a wrong change of unit, mixing metres with
 // centimetres when finding n, an area scaled by k instead of k², and a redrawing turned upside down are the slips.
+// #714 added scale copies: easy, which shape on squared paper is a scale copy of another, and the scale factor read
+// off two shapes; medium, a side of a scale copy, and a side of the original from the copy and its scale factor. The
+// same amount added to each side, a shape stretched one way only, the factor upside down or taken as a difference, and
+// the copy multiplied again for the original are the slips.
 import { fill } from "../chart";
-import { num } from "../practiceKit";
-import type { Exercise, Gen, Part, Trap } from "../practiceTypes";
+import { fr, num, plainFrac } from "../practiceKit";
+import type { Exercise, Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+import { shuffled } from "../mulDivKit";
 import { mapSvg, planSvg } from "../scaleMaps";
+import type { MistakeId } from "../mistakes";
+import { pickOf, word, type Opt } from "../signedKit";
+import { gridShapes, type P2 } from "../simPics";
 
 const asPic = (d: { body: string; w: number; h: number }): Exercise["pic"] => ({ svg: (x: number, y: number) => `<g transform="translate(${x} ${y})">${d.body}</g>`, h: d.h, w: d.w });
 const r2 = (v: number) => Math.round(v * 1000) / 1000;
 const tn = (v: number) => String(r2(v));
 
+/** A rectangle w × h, or a right triangle with legs w and h, as corners on squared paper. */
+const shapeOf = (tri: boolean, w: number, h: number): P2[] => (tri ? [[0, 0], [w, 0], [0, h]] : [[0, 0], [w, 0], [w, h], [0, h]]);
+
+/** The kinds #714 added. */
+function copies(r: Rng, L: 1 | 2, kind: number, w: PracticeWords): Part {
+  const A = w.simP;
+  if (L === 1 && kind <= 7) {
+    // Which is a scale copy: one multiplied, one with the same added, one stretched one way.
+    const tri = r.next() < 0.4;
+    const [a, b] = r.pick([[2, 3], [3, 2], [1, 2], [2, 1], [3, 4], [4, 3], [2, 5], [5, 2]] as const);
+    const k = Math.max(a, b) > 3 ? 2 : r.pick([2, 3]);
+    const d = r.int(1, 2) + (k === 3 ? 1 : 0);
+    const kinds = shuffled(r, ["copy", "added", "oneWay"] as ("copy" | "added" | "oneWay")[]);
+    const names = ["A", "B", "C"];
+    const dims = (t: (typeof kinds)[number]): [number, number] => (t === "copy" ? [a * k, b * k] : t === "added" ? [a + d, b + d] : a <= b ? [a * k, b] : [a, b * k]);
+    const shapes = [{ pts: shapeOf(tri, a, b), name: A.original }, ...kinds.map((t, i) => ({ pts: shapeOf(tri, ...dims(t)), name: names[i] }))];
+    const at = (t: (typeof kinds)[number]) => word(names[kinds.indexOf(t)]);
+    const [ow, oh] = dims("oneWay");
+    const slips: { o: Opt; id: MistakeId; vars: Record<string, string | number> }[] = [
+      { o: at("added"), id: "addedNotScaled", vars: { a, b: a + d, k: plainFrac(fr(a + d, a)) } },
+      { o: at("oneWay"), id: "oneWayScaled", vars: { k, w: `${ow} ÷ ${a} = ${ow / a}, ${oh} ÷ ${b} = ${oh / b}` } },
+    ];
+    return pickOf(r, A.copyWhich, at("copy"), slips, [], { pic: gridShapes(shapes, 14), steps: [`${a * k} \\div ${a} = ${b * k} \\div ${b} = ${k}`] });
+  }
+  if (L === 1) {
+    // The scale factor read off two shapes on squared paper: bigger or smaller.
+    const tri = r.next() < 0.4;
+    const [p, q] = r.pick([[2, 1], [3, 1], [3, 2], [1, 2], [1, 3], [2, 3]] as const);
+    let [a, b] = [r.int(1, 3) * q, r.int(1, 3) * q];
+    while (a === b) [a, b] = [r.int(1, 3) * q, r.int(1, 3) * q];
+    const [c, e] = [(a * p) / q, (b * p) / q];
+    const v = p / q;
+    const kp = plainFrac(fr(p, q));
+    const traps: Trap[] = [{ id: "scaleFactorInverted", a: num(q / p), vars: { x: plainFrac(fr(q, p)), a, b: c, v: kp } }, { id: "scaleDifference", a: num(Math.abs(c - a)), vars: { x: Math.abs(c - a), a, b: c, v: kp } }];
+    const kt = q === 1 ? String(p) : `\\tfrac{${p}}{${q}}`;
+    return {
+      prompt: A.copyFactor, q: "", pic: gridShapes([{ pts: shapeOf(tri, a, b), name: A.original }, { pts: shapeOf(tri, c, e), name: A.copy }], 14),
+      answer: { ...num(v, 1e-6), traps: traps.filter((t, i) => ![v, ...traps.slice(0, i).map((u) => (u.a as { v: number }).v)].includes((t.a as { v: number }).v)) }, show: kt, plain: kp, format: "number", steps: [`k = \\tfrac{${c}}{${a}} = ${kt}`],
+    };
+  }
+  if (kind <= 7) {
+    // A side of a scale copy of a rectangle.
+    const [a, b] = r.pick([[4, 6], [3, 5], [2, 7], [6, 9], [4, 10], [5, 8], [8, 6], [6, 4]] as const);
+    const k = r.pick([2, 3, 1.5, 0.5, 2.5].filter((x) => Number.isInteger(a * x) && Number.isInteger(b * x * 2)));
+    const c = a * k;
+    const v = b * k;
+    return ask(fill(A.copySide, { a, b, c }), v, [{ id: "addedNotScaled", a: num(b + c - a), vars: { a, b: c, k: plainFrac(fr(c, a)) } }], [`k = \\tfrac{${c}}{${a}}`, `${b} \\times \\tfrac{${c}}{${a}} = ${tn(v)}`]);
+  }
+  // The original from a copy and its scale factor.
+  const [p, q] = r.pick([[2, 1], [3, 1], [5, 2], [3, 2], [1, 2], [1, 3], [3, 4], [1, 4]] as const);
+  const v = q * r.int(2, 6);
+  const c = (v * p) / q;
+  const kp = plainFrac(fr(p, q));
+  return ask(fill(A.copyBack, { k: kp, c: tn(c) }), v, [{ id: "scaledWrongWay", a: num((c * p) / q), vars: { k: kp, c: tn(c), v } }], [`${tn(c)} \\div ${kp} = ${v}`]);
+}
+
 const gen: Gen = (r, L, w) => {
   const W = w.maps;
+  if (L < 3) {
+    const extra = r.int(0, 9);
+    if (extra >= 6) return copies(r, L as 1 | 2, extra, w);
+  }
   if (L === 1) {
     const km = r.next() < 0.4;
     const u = km ? W.km : W.m;

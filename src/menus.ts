@@ -72,6 +72,7 @@ export const MENUS: MenuGroup[] = [
           { live: "geoLab", icon: "📐" },
           { live: "parallelLab", icon: "∥" },
           { live: "moveShape", icon: "⇄" },
+          { live: "simHand", icon: "◺" },
           { live: "buildTriangle", icon: "≅" },
           { live: "construct", icon: "⌒" },
           { live: "scalePlan", icon: "📐" },
