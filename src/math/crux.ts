@@ -11,7 +11,7 @@ import { barQuestion, type BarForm, type BarQuestion, type BarStep } from "./bar
 import type { EndlessGame, GameLevel, TryGame } from "./ladder";
 import { rngOf } from "./practiceKit";
 import type { PracticeWords, Rng } from "./practiceTypes";
-import linearGen from "./skills/linear";
+import { old as linearGen } from "./skills/linear";
 import { coeffsOf, num, sideOf } from "./whichTool";
 
 export const CRUX_GROUPS = ["word", "eq"] as const;

@@ -1213,6 +1213,18 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   fracExponentFlipped: ["surds", [2]],
   exponentNotSolved: ["surds", [3]],
   basesDivided: ["surds", [3]],
+  inverseNotUsed: ["linear", [1]],
+  divideSignLost: ["linear", [1]],
+  coefficientIgnored: ["linear", [1]],
+  mistakeLaterLine: ["linear", [1, 2]],
+  storyOpSwapped: ["linear", [1]],
+  tapeMisread: ["linear", [1]],
+  constantSignKept: ["linear", [2, 3]],
+  xTermsAdded: ["linear", [2]],
+  bracketFirstTermOnly: ["linear", [2, 3]],
+  termsMeaningSwapped: ["linear", [2]],
+  solutionCountSwapped: ["linear", [3]],
+  middleForSmallest: ["linear", [3]],
   wholesIgnored: ["compareFractions", [3]],
   digitNotValue: ["placeValue", [1, 2, 3]],
   zeroPlaceSkipped: ["placeValue", [1, 2, 3]],
@@ -1625,7 +1637,10 @@ test("a form message or a plain miss is not dressed up as a mistake", () => {
 });
 
 test("a number asked for, an expression given: sent back, not marked", () => {
-  const lin = exercise("linear", 1, 2, w);
+  // The first seed whose question is solved for a number (others are picked).
+  let seed = 2;
+  while (exercise("linear", 1, seed, w).answer.k !== "num") seed++;
+  const lin = exercise("linear", 1, seed, w);
   const v = check(lin, "x + 3", w);
   assert.equal(v.why, w.reasons.notNumber.replace("{s}", "x + 3"));
   assert.equal(verdictOf(v), "form");

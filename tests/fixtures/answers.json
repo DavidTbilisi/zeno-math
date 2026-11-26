@@ -350,28 +350,28 @@
     {
       "skill": "linear",
       "level": 1,
-      "seed": 7,
+      "seed": 3399,
       "input": "-8",
       "label": "correct"
     },
     {
       "skill": "linear",
       "level": 1,
-      "seed": 7,
+      "seed": 3399,
       "input": "x=-8",
       "label": "correct"
     },
     {
       "skill": "linear",
       "level": 1,
-      "seed": 7,
+      "seed": 3399,
       "input": "x = -8",
       "label": "correct"
     },
     {
       "skill": "linear",
       "level": 1,
-      "seed": 7,
+      "seed": 3399,
       "input": "−8",
       "label": "correct",
       "note": "a typographic minus"
@@ -379,7 +379,7 @@
     {
       "skill": "linear",
       "level": 1,
-      "seed": 7,
+      "seed": 3399,
       "input": "8",
       "label": "wrong",
       "mistake": "sign"
@@ -387,28 +387,28 @@
     {
       "skill": "linear",
       "level": 1,
-      "seed": 7,
+      "seed": 3399,
       "input": "-7",
       "label": "wrong"
     },
     {
       "skill": "linear",
       "level": 3,
-      "seed": 7,
+      "seed": 85514,
       "input": "-17/7",
       "label": "correct"
     },
     {
       "skill": "linear",
       "level": 3,
-      "seed": 7,
+      "seed": 85514,
       "input": "x = -17/7",
       "label": "correct"
     },
     {
       "skill": "linear",
       "level": 3,
-      "seed": 7,
+      "seed": 85514,
       "input": "-2 3/7",
       "label": "correct",
       "note": "mixed number"
@@ -416,7 +416,7 @@
     {
       "skill": "linear",
       "level": 3,
-      "seed": 7,
+      "seed": 85514,
       "input": "-2.43",
       "label": "form",
       "note": "a rounded decimal for an exact answer"
@@ -424,7 +424,7 @@
     {
       "skill": "linear",
       "level": 3,
-      "seed": 7,
+      "seed": 85514,
       "input": "17/7",
       "label": "wrong",
       "mistake": "sign"
@@ -432,7 +432,7 @@
     {
       "skill": "linear",
       "level": 3,
-      "seed": 7,
+      "seed": 85514,
       "input": "-7/17",
       "label": "wrong"
     },
@@ -2350,7 +2350,7 @@
     {
       "skill": "linear",
       "level": 2,
-      "seed": 7,
+      "seed": 135929,
       "input": "-4",
       "label": "wrong",
       "mistake": "sign"
@@ -57299,6 +57299,1036 @@
       "input": "4",
       "label": "wrong",
       "mistake": "basesDivided"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 1,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 1,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "coefficientIgnored"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 2,
+      "input": "Line 3",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 3,
+      "input": "Line 3",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 4,
+      "input": "2x + 3 = 13",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 4,
+      "input": "2(x + 3) = 13",
+      "label": "wrong",
+      "mistake": "tapeMisread"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 5,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 5,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "coefficientIgnored"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 6,
+      "input": "-3.6",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 6,
+      "input": "18/5",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 6,
+      "input": "3.4",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 10,
+      "input": "13",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 10,
+      "input": "13/4",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 10,
+      "input": "20",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 11,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 11,
+      "input": "64/5",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 13,
+      "input": "3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 13,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 20,
+      "input": "Line 2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 20,
+      "input": "Line 3",
+      "label": "wrong",
+      "mistake": "mistakeLaterLine"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 30,
+      "input": "x - 4 = 8",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 30,
+      "input": "x + 4 = 8",
+      "label": "wrong",
+      "mistake": "storyOpSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 36,
+      "input": "4x + 4 = 24",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 36,
+      "input": "4(x + 4) = 24",
+      "label": "wrong",
+      "mistake": "tapeMisread"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 41,
+      "input": "8x = 64",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 41,
+      "input": "x + 8 = 64",
+      "label": "wrong",
+      "mistake": "storyOpSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 44,
+      "input": "19",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 44,
+      "input": "41",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 48,
+      "input": "x - 3 = 16",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 48,
+      "input": "x + 3 = 16",
+      "label": "wrong",
+      "mistake": "storyOpSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 55,
+      "input": "-10",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 55,
+      "input": "-5/2",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 55,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "divideSignLost"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 57,
+      "input": "Line 2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 57,
+      "input": "Line 3",
+      "label": "wrong",
+      "mistake": "mistakeLaterLine"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 58,
+      "input": "-9",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 58,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "divideSignLost"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 58,
+      "input": "-225",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 64,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 64,
+      "input": "324",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 76,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 76,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "divideSignLost"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 76,
+      "input": "-216",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 81,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 81,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 125,
+      "input": "4x = 32",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 125,
+      "input": "x + 4 = 32",
+      "label": "wrong",
+      "mistake": "storyOpSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 143,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 143,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 187,
+      "input": "28",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 187,
+      "input": "7/4",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 194,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 194,
+      "input": "288",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 244,
+      "input": "54",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 244,
+      "input": "3/2",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 245,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 245,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 296,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 296,
+      "input": "-3/2",
+      "label": "wrong",
+      "mistake": "inverseNotUsed"
+    },
+    {
+      "skill": "linear",
+      "level": 1,
+      "seed": 296,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "divideSignLost"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 1,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 1,
+      "input": "40/3",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 2,
+      "input": "Line 4",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 3,
+      "input": "Line 2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 3,
+      "input": "Line 4",
+      "label": "wrong",
+      "mistake": "mistakeLaterLine"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 4,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 4,
+      "input": "25/3",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 5,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 5,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 5,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 6,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 6,
+      "input": "20/3",
+      "label": "wrong",
+      "mistake": "xTermsAdded"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 6,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 10,
+      "input": "72",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 10,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "xTermsAdded"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 11,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 11,
+      "input": "90/7",
+      "label": "wrong",
+      "mistake": "xTermsAdded"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 13,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 13,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "xTermsAdded"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 13,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 14,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 14,
+      "input": "-24",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 16,
+      "input": "17",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 16,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 20,
+      "input": "Line 2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 20,
+      "input": "Line 4",
+      "label": "wrong",
+      "mistake": "mistakeLaterLine"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 21,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 21,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 28,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 28,
+      "input": "47/6",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 28,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 30,
+      "input": "the cost of one kilometre",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 30,
+      "input": "the cost of starting",
+      "label": "wrong",
+      "mistake": "termsMeaningSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 31,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 31,
+      "input": "31/3",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 31,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 36,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 36,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 38,
+      "input": "Line 4",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 41,
+      "input": "the cost of one kilometre",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 41,
+      "input": "the cost of starting",
+      "label": "wrong",
+      "mistake": "termsMeaningSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 43,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 43,
+      "input": "17/3",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 55,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 55,
+      "input": "55/6",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 55,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 104,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 2,
+      "seed": 104,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 1,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 1,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 2,
+      "input": "(c - b)/a",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 2,
+      "input": "((c + b) * (a)^((-1)))",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 3,
+      "input": "(c - b)/a",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 3,
+      "input": "((c + b) * (a)^((-1)))",
+      "label": "wrong",
+      "mistake": "constantSignKept"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 4,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 4,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "middleForSmallest"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 5,
+      "input": "-30",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 5,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 6,
+      "input": "no solution",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 6,
+      "input": "infinitely many",
+      "label": "wrong",
+      "mistake": "solutionCountSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 10,
+      "input": "no solution",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 10,
+      "input": "infinitely many",
+      "label": "wrong",
+      "mistake": "solutionCountSwapped"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 13,
+      "input": "exactly one",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 25,
+      "input": "exactly one",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 30,
+      "input": "51",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 30,
+      "input": "52",
+      "label": "wrong",
+      "mistake": "middleForSmallest"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 36,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 36,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "middleForSmallest"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 38,
+      "input": "c/a - b",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 38,
+      "input": "((c + ((-1) * b)) * (a)^((-1)))",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 41,
+      "input": "23",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 41,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "middleForSmallest"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 43,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 43,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "middleForSmallest"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 73,
+      "input": "c/a - b",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 73,
+      "input": "((c + ((-1) * b)) * (a)^((-1)))",
+      "label": "wrong",
+      "mistake": "bracketFirstTermOnly"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 104,
+      "input": "42",
+      "label": "correct"
+    },
+    {
+      "skill": "linear",
+      "level": 3,
+      "seed": 104,
+      "input": "41",
+      "label": "wrong",
+      "mistake": "middleForSmallest"
     }
   ]
 }
