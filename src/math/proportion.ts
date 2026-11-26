@@ -55,7 +55,9 @@ export type ProportionQuestion = {
   steps: string[];
 };
 
-const keep = (v: number, traps: Trap[]) => traps.filter((t) => Number.isFinite(t.v) && t.v > 0 && Math.abs(t.v - v) > 0.02);
+/** The traps that differ from the answer and from each other (the first of two equal ones kept). */
+const keep = (v: number, traps: Trap[]) =>
+  traps.filter((t, i) => Number.isFinite(t.v) && t.v > 0 && Math.abs(t.v - v) > 0.02 && traps.findIndex((o) => Math.abs(o.v - t.v) <= 0.02) === i);
 const divisorsIn = (n: number, lo: number, hi: number) => Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).filter((d) => n % d === 0);
 
 /** Inverse worked as direct: y scaled by c/b as if it grew with x. */

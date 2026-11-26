@@ -863,14 +863,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       bigger, dividing makes smaller" are named
     - *Ratio*: simplest form and the missing term of two equal ratios, then sharing a total and one part known, then
       three-term ratios and a part as a fraction of the whole; the Percentages & ratios tool's bar models are the
-      worked solutions (a term added to instead of multiplied, and m : n taken for m/n, named)
+      worked solutions (a term added to instead of multiplied, and m : n taken for m/n, named). Also (#708) a ratio
+      table with a gap, a tape diagram (one part taken for B named), and which necklace keeps the ratio (the same
+      number added to both named); then a recipe or a paint mix scaled up; then, new at the hard level, a ratio of
+      two amounts in different units (30 cm to 2 m; the units left mixed named) and a ratio on the coordinate plane
+      (A and B the wrong way round named)
     - *Rate*: rice by the kilogram and a tap by the minute — the rate, the total or the number of units from the
       other two, then two steps through the rate for one (dividing the wrong way round, and adding the difference in
       units instead of scaling, named). Speed (P6) from medium on: distance, speed or time from the other two on the
       double number line, a car's distance in so many minutes (the minutes taken for hours named), a runner in metres
       a second; then, with a picture of the road, the average speed over two legs (the mean of the two speeds named),
       two vehicles meeting head on and one catching another up (the difference and the sum of the speeds swapped,
-      named). The answer may carry its unit: 48 km, 60 km/h, 3 h
+      named). The answer may carry its unit: 48 km, 60 km/h, 3 h. Also at the hard level (#708): a rate in other units
+      (litres a minute into an hour, km/h into m/s; converting the wrong way named), the unit a formula gives (km/h,
+      GEL/kg, l/min; the units the other way round named), and a rate with fractions, 3/4 km in 1/2 of an hour
+      (multiplying by the time named)
     - *Scale drawings and maps* (grades 7 and 8; #645): a real distance from a map at 1 cm : 5 m or 1 cm : 3 km, and
       back; then a map at 1 : 50 000 with the change to kilometres, and the scale 1 : n found from a drawing; then a
       room's real floor area from a plan, the plan's area from the real one, and a drawing redrawn at another scale.
@@ -1327,6 +1334,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     (books and the stack's height, workers and days, speed and time) through the amount for one or the product that
     stays the same; y = kx and y = k/x from a pair of values, from a table that shows which it is, or from a graph
     through the origin or a curve; y in proportion to x², x³, √x or 1/x², x back from y, and y's factor when x is scaled
+    Also (#708): whether a table is proportional (each y the same amount more than x named) and which proportion gives
+    a cost (the second ratio upside down named); whether a graph is (a straight line that misses (0, 0) named), k from
+    an equation such as 3y = 12x (the number with x named) or from a table (x ÷ y named), what a point on a cost graph
+    means and which point lies on y = kx (the point read backwards named); then, a new setting, two phone plans, one
+    as an equation and one as a table, compared by their k, and what k means in y = 3.5x (how many kg one lari buys
+    named)
   - Algebraic fractions (Think Mathematics workbook 2A ch. 6): simplify by factorising; add, subtract, multiply and
     divide over linear bottoms, then over quadratic ones factorised first. The answer is typed as one fraction and
     checked by value; one not cut down, or still two fractions, is sent back

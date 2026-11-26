@@ -31,7 +31,12 @@ test("every ratio question draws its bar model, and the picture's answer is the 
     for (let seed = 1; seed <= 150; seed++) {
       const ex = exercise("ratio", level, seed, w);
       const where = `level ${level} seed ${seed}`;
-      assert.equal(ex.solution?.kind, "ratio", where);
+      // The kinds #708 added (tables, tapes, mixes, units, the plane) are worked in lines, not on the bar model.
+      if (!ex.solution) {
+        assert.ok(ex.steps?.length, where);
+        continue;
+      }
+      assert.equal(ex.solution.kind, "ratio", where);
       const s = ex.solution!.spec as RatioSolution;
       seen.add(s.pic);
       assert.equal(pictured(s), ex.plain, where);

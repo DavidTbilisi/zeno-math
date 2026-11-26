@@ -3,7 +3,8 @@ import { fill, r2 } from "../chart";
 import type { RateSolution } from "../ratePics";
 import { type RoadSpec, roadSvg } from "../speedPics";
 import { fr, money, noZeroEnd, num, plainFrac, tidy } from "../practiceKit";
-import type { Answer, Exercise, Gen, PracticeWords, Rng, Trap } from "../practiceTypes";
+import type { Answer, Exercise, Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+import { pickOf, q, qDiv, qMul, qPlain, qTex, qText, qv, word } from "../signedKit";
 
 /** A speed answer, which may be typed with its unit (48 km, 60 km/h, 3 h, 5 m/s). */
 const speedNum = (v: number, w: PracticeWords, traps: Trap[] = []): Answer => ({ k: "num", v, tol: 1e-9, units: [w.speed.kmh, w.speed.ms, w.units.km, w.units.m, w.time.h, w.speed.s], traps });
@@ -95,6 +96,47 @@ function speedTwo(r: Rng, w: PracticeWords): Omit<Exercise, "skill" | "level" | 
   };
 }
 
+/**
+ * The hard kinds #708 added: a rate converted to other units (litres a minute to an hour, km/h to m/s; converting the
+ * wrong way is the slip), the unit a formula gives (the units the other way round is the slip), and a rate with
+ * fractions, so much in a fraction of an hour (multiplying by the time is the slip).
+ */
+function rateMore(r: Rng, kind: number, w: PracticeWords): Part {
+  const W = w.prop;
+  if (kind === 1) {
+    if (r.next() < 0.5) {
+      const a = r.int(2, 30);
+      const v = 60 * a;
+      const x = Number((a / 60).toFixed(2));
+      const traps: Trap[] = [{ id: "convertWrongWay", a: num(x, 0.0051), vars: { x, work: `${a} × 60 = ${v}` } }];
+      return { prompt: fill(W.perHour, { a }), q: "", answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number", steps: [`1\\text{ ${w.time.h}} = 60\\text{ ${w.time.min}}`, `${a} \\times 60 = ${v}`] };
+    }
+    const v = 18 * r.int(1, 7);
+    const ms = v / 3.6;
+    const x = Number((v * 3.6).toFixed(1));
+    const traps: Trap[] = [{ id: "convertWrongWay", a: num(x, 0.051), vars: { x, work: `${v} × 1000 ÷ 3600 = ${ms}` } }];
+    return { prompt: fill(W.toMs, { v }), q: "", answer: speedNum(ms, w, traps), show: String(ms), plain: String(ms), format: "number", steps: [`${v}\\text{ km} = ${v * 1000}\\text{ m}, \\; 1\\text{ ${w.time.h}} = 3600\\text{ ${w.speed.s}}`, `${v * 1000} \\div 3600 = ${ms}`] };
+  }
+  if (kind === 2) {
+    // The unit of a formula: the units divided the way the quantities are.
+    const [prompt, top, bottom] = r.pick([[W.unitSpeed, w.units.km, w.time.h], [W.unitPrice, W.gel, w.units.kg], [W.unitFlow, W.l, w.time.min]] as [string, string, string][]);
+    const right = word(`${top}/${bottom}`);
+    const inverted = word(`${bottom}/${top}`);
+    return pickOf(r, prompt, right, [{ o: inverted, id: "unitInverted", vars: { top, bottom, right: right.text } }], [word(`${top}·${bottom}`), word(top)], { steps: [`\\text{${top}} \\div \\text{${bottom}} = \\text{${top}/${bottom}}`] });
+  }
+  // So much done in a fraction of an hour: divided by the fraction, that is how much in a whole hour.
+  let a, b, v;
+  do {
+    a = r.pick([q(1, 2), q(3, 4), q(2, 3), q(1, 3), q(3, 2), q(5, 4), q(5, 6)]);
+    b = r.pick([q(1, 2), q(1, 3), q(1, 4), q(2, 3), q(3, 4), q(1, 6)]);
+    v = qDiv(a, b);
+  } while (v.d > 6 || (a.n === b.n && a.d === b.d));
+  const m = qMul(a, b);
+  const traps: Trap[] = [{ id: "fracRateMultiplied", a: num(qv(m), 1e-9), vars: { x: qText(m), a: qText(a), b: qText(b), v: qText(v) } }];
+  const steps = [`${qTex(a)} \\div ${qTex(b)} = ${qTex(a)} \\times ${qTex(q(b.d, b.n))} = ${qTex(v)}`];
+  return { prompt: fill(r.next() < 0.5 ? W.walk : W.wall, { a: qText(a), b: qText(b) }), q: "", answer: { ...num(qv(v), 1e-9, v.d > 1 ? { lowest: true } : {}), traps }, show: qTex(v), plain: qPlain(v), format: v.d > 1 ? "fraction" : "number", steps };
+}
+
 const gen: Gen = (r, L, w) => {
   // A rate as the amount for one unit (P5): rice at so much a kilogram, or a tap letting out so many litres a
   // minute. Given two of the rate, the total and the number of units, the third.
@@ -135,6 +177,8 @@ const gen: Gen = (r, L, w) => {
     if (kind === 1) return { prompt: fill(cost ? P.rateCostTotal : P.rateTapTotal, { n, r: said(u) }), ...one(t, [`${shown(u)} \\times ${n} = ${shown(t)}`], line("total", u, n, t)) };
     return { prompt: fill(cost ? P.rateCost : P.rateTap, { n, t: said(t) }), ...one(u, [`${shown(t)} \\div ${n} = ${shown(u)}`], line("rate", u, n, t), inverted(t, n)) };
   }
+  const extra = r.int(0, 3);
+  if (extra > 0) return rateMore(r, extra, w);
   if (r.next() < 0.5) return speedTwo(r, w);
   // Two steps, the rate first (the unitary method): n units for t, so m units for? Adding the difference in units to
   // the total, as if each unit added one, is the trap.
