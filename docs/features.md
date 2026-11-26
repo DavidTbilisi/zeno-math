@@ -1434,6 +1434,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     keep adding to 1; then P′, its mirror, stays just as high, the three ratios a ÷ sin A, b ÷ sin B, c ÷ sin C stay
     equal as C moves round the circle, and c² meets a² + b² only when the angle at C is 90°, missing by exactly
     2ab cos C otherwise. Each rule is said only after the point has been moved and the right tile tapped
+  - Vectors, lines and planes (#717, alongside a written-out pa + qb, the length of AB and the perpendicular k
+    already there): the components of AB from its ends, the components from a length and a direction, the
+    direction from the components (0° to 360°), the length of a 2D vector, the unit vector, |a + b| and a + b from
+    two lengths and directions, and a plane's speed over the ground in a wind (grades 10 and 12); the point at t on
+    the line r = A + t(B − A) and the t of a point on it (grade 12). A new skill, *Cross product, lines and planes*
+    (geometry area, after the angle between vectors, grade 12): a × b, a triangle's area from its corners, d in
+    n · r = d through a point, a normal read off a plane's equation, a point's distance from a plane and the
+    distance between parallel planes. A − B for AB, sin and cos swapped, tan⁻¹(y ÷ x) left in the wrong quadrant,
+    the components added for the length, a unit vector divided by the sum, the lengths added, B for the direction,
+    t found without taking A away, the cross product's middle sign, b × a, the parallelogram for the triangle, d's
+    sign, a normal's lost minus signs, a distance not divided by |n|, d left out and a plane's equation not
+    rescaled are named. The piece *Vectors: find the rules by moving the tip* (Insert → Geometry → coordinates,
+    grades 10–12): the tip is dragged about a grid (or pressed into place, or moved by the arrow keys) while |v|
+    meets √(x² + y²), tan θ meets y ÷ x, a + b is added part by part with |a + b| beside |a| + |b|, and v ÷ |v|
+    stays 1 long; each rule is said only after the tip has been moved and the right tile tapped
   - Triangle inequality (AoPS Introduction to Geometry ch. 10): which of four sets of lengths makes a triangle (one
     lies flat, a + b = c, named); the third side's range as an inequality (the ends included, or the short end left
     out, named) or how many whole lengths it can be; an isosceles triangle's perimeter when only one way closes, and
