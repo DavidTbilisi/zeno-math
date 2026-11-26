@@ -1,7 +1,8 @@
-// Practice: Series and sums.
+// Practice: Series and sums. Since #729, four medium questions in ten are a finite geometric series in a story:
+// shares of a post over n days, where the last day's shares alone and a day too many are slips.
 import { fill } from "../chart";
 import { fr, num, plainFrac, polyStr, T } from "../practiceKit";
-import type { Gen } from "../practiceTypes";
+import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
 
 const gen: Gen = (r, L, w) => {
   const sol = (topic: string, src: string) => ({ kind: "sequences" as const, spec: { topic, src } });
@@ -14,6 +15,7 @@ const gen: Gen = (r, L, w) => {
     return { prompt: fill(w.prompts.serSum, { n, list: list(terms) }), q: "", answer: num(v), show: String(v), plain: String(v), format: "number", solution: sol("arith", `${terms.join(", ")}, …; S${n}`) };
   }
   if (L === 2) {
+    if (r.int(0, 9) >= 6) return story(r, w);
     if (r.next() < 0.5) {
       const [a, ratio, n] = [r.int(1, 5), r.pick([2, 3] as const), r.int(5, 8)];
       const terms = [0, 1, 2, 3].map((i) => String(a * ratio ** i));
@@ -65,5 +67,25 @@ const gen: Gen = (r, L, w) => {
     solution: sol("sigma", `sum k=1..${N} (${body})`),
   };
 };
+
+/** Shares of a post: a on day 1, q times as many each day after; all of them over n days. */
+function story(r: Rng, w: PracticeWords): Part {
+  const W = w.serP;
+  const [a, q, n] = [r.pick([2, 3, 5, 10]), r.pick([2, 3]), r.int(5, 8)];
+  const sum = (k: number) => (a * (q ** k - 1)) / (q - 1);
+  const v = sum(n);
+  return {
+    prompt: fill(W.storyQ, { a, q: q === 2 ? W.double : W.triple, n }),
+    q: "",
+    answer: { ...num(v), traps: [
+      { id: "lastTermForSum", a: num(a * q ** (n - 1)), vars: { n, v } },
+      { id: "seriesOneTooMany", a: num(sum(n + 1)), vars: { k: n + 1, n, v } },
+    ] },
+    show: String(v),
+    plain: String(v),
+    format: "number",
+    steps: [`a = ${a}, \\quad r = ${q}, \\quad n = ${n}`, `S_{${n}} = \\frac{${a}(${q}^{${n}} - 1)}{${q} - 1} = ${v}`],
+  };
+}
 
 export default gen;

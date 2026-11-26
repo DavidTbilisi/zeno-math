@@ -2017,6 +2017,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Sequences: recursive and explicit rules (#729): a recursive rule worked forward to a(k), including
+    a(n) = 2a(n − 1) + c; the explicit and recursive rules of an arithmetic or geometric sequence picked from its
+    terms; a recursive rule written out explicitly as a formula in n; the next term of a geometric sequence whose
+    ratio is ±1/2 or ±1/3; the seats in a theatre's row n, a video's views on day n, and the domain of a row count
+    picked; and, in series, a post's shares added over n days. A step too many, the start and the difference (or
+    ratio) swapped, adding taken for multiplying, a geometric sequence read as arithmetic, the ratio's sign dropped,
+    a domain of all numbers or from 0, one day's shares for the total and a day too many are named
   - Polynomials: division, the remainder theorem, factoring by structure (#728): a polynomial divided by x or 2x, a
     quadratic divided by x with its remainder over x and by x + p, a cubic divided by a factor x − a, and k found so
     that x − a is a factor; a sum or difference of cubes and (x + k)³ picked, x⁴ − (p² + q²)x² + p²q² and x⁴ − p⁴
