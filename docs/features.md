@@ -2585,6 +2585,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     grid are worth is found by trying; each rule (a square is 0.01, a column 0.1, a grid 1) is said only once its
     amount is made, and stays listed. After the eighth the grids are free to shade. Arrow keys add or take away a
     square, with Shift a column
+  - *Ruler and scale: measure by hand* (#705, Geometry → Measuring, grades 1–4). Ruler: a pencil lies still and the
+    ruler is dragged under it (or moved by the arrow keys in half centimetres), dashed lines dropping from the pencil's
+    ends to the marks. The length is tapped from three tiles, one of them the mark at the pencil's point; that one is
+    met with "Where does the pencil start?", and the right one with its rule (from 3 to 11: 11 − 3 = 8 cm), which
+    follows the ruler as it is moved on, so the marks change and the difference does not. The last two rounds are
+    broken rulers with no 0. Scale: in the first round a 25 g weight dragged (or tapped) onto the pan moves the needle
+    one small mark, which says what a small mark is worth; then a pear, an apple and a slice of melon are read off
+    dials marked every 25, 50 and 20 g, each small mark taken for 1 g being one tile
   - *Multiplying with blocks*: a × b (up to 39 × 39) as a rectangle of base-ten blocks beside the box and the written
     sum. Each side is split into tens and ones; a part tapped is filled with flats, rods or cubes and its product is
     written into the box and a line of the sum. With "Your turn" each product is given first on digit tiles, a wrong
