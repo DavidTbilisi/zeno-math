@@ -3846,14 +3846,14 @@
     {
       "skill": "sameExpression",
       "level": 1,
-      "seed": 7,
+      "seed": 821,
       "input": "2x + 1",
       "label": "correct"
     },
     {
       "skill": "sameExpression",
       "level": 1,
-      "seed": 7,
+      "seed": 821,
       "input": "3x",
       "label": "wrong",
       "mistake": "joinedUnlike"
@@ -3861,7 +3861,7 @@
     {
       "skill": "sameExpression",
       "level": 1,
-      "seed": 7,
+      "seed": 821,
       "input": "1 + 2x",
       "label": "correct",
       "note": "equal, but not one of the expressions offered: sent back to pick one"
@@ -3869,21 +3869,21 @@
     {
       "skill": "sameExpression",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "5x - 5",
       "label": "correct"
     },
     {
       "skill": "sameExpression",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "5x−5",
       "label": "correct"
     },
     {
       "skill": "sameExpression",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "5x - 1",
       "label": "wrong",
       "mistake": "firstTermOnly"
@@ -3891,14 +3891,14 @@
     {
       "skill": "sameExpression",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "2x²",
       "label": "correct"
     },
     {
       "skill": "sameExpression",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "4x",
       "label": "wrong",
       "mistake": "squareAsDouble"
@@ -55291,6 +55291,760 @@
       "input": "2",
       "label": "wrong",
       "mistake": "planesNotRescaled"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 1,
+      "input": "32",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 1,
+      "input": "46",
+      "label": "wrong",
+      "mistake": "letterAsDigit"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 1,
+      "input": "39",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 2,
+      "input": "n - 5",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 2,
+      "input": "(5 + ((-1) * n))",
+      "label": "wrong",
+      "mistake": "lessThanReversed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 3,
+      "input": "2 - n",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 3,
+      "input": "(n + ((-1) * 2))",
+      "label": "wrong",
+      "mistake": "lessThanReversed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 5,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 5,
+      "input": "70",
+      "label": "wrong",
+      "mistake": "letterAsDigit"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 5,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 6,
+      "input": "-7",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 6,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "termSignLost"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 6,
+      "input": "0",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 10,
+      "input": "-10",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 10,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "termSignLost"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 10,
+      "input": "-3",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 11,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 11,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "termSignLost"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 11,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 13,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 13,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "termSignLost"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 13,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 30,
+      "input": "8n + 8",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 30,
+      "input": "(8 * (n + 8))",
+      "label": "wrong",
+      "mistake": "allMultiplied"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 33,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 33,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 38,
+      "input": "n + 11",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 41,
+      "input": "6n + 10",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 41,
+      "input": "(6 * (n + 10))",
+      "label": "wrong",
+      "mistake": "allMultiplied"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 44,
+      "input": "3n + 3",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 44,
+      "input": "(3 * (n + 3))",
+      "label": "wrong",
+      "mistake": "allMultiplied"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 48,
+      "input": "6n + 5",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 48,
+      "input": "(6 * (n + 5))",
+      "label": "wrong",
+      "mistake": "allMultiplied"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 50,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 50,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 57,
+      "input": "n + 4",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 73,
+      "input": "n / 11",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 73,
+      "input": "(11 * (n)^((-1)))",
+      "label": "wrong",
+      "mistake": "quotientReversed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 78,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 78,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 89,
+      "input": "n / 4",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 89,
+      "input": "(4 * (n)^((-1)))",
+      "label": "wrong",
+      "mistake": "quotientReversed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 165,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 1,
+      "seed": 165,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 1,
+      "input": "57",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 1,
+      "input": "107",
+      "label": "wrong",
+      "mistake": "coefficientSquared"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 1,
+      "input": "64",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 2,
+      "input": "2/15",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 2,
+      "input": "16/15",
+      "label": "wrong",
+      "mistake": "xyAsSum"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 3,
+      "input": "-7/20",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 3,
+      "input": "1/20",
+      "label": "wrong",
+      "mistake": "xyAsSum"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 4,
+      "input": "3(n + 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 4,
+      "input": "((3 * n) + 1)",
+      "label": "wrong",
+      "mistake": "bracketsLeftOut"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 5,
+      "input": "23",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 5,
+      "input": "103",
+      "label": "wrong",
+      "mistake": "coefficientSquared"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 5,
+      "input": "30",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 6,
+      "input": "25",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 6,
+      "input": "-15",
+      "label": "wrong",
+      "mistake": "negSubSignLost"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 6,
+      "input": "32",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 10,
+      "input": "62",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 10,
+      "input": "32",
+      "label": "wrong",
+      "mistake": "negSubSignLost"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 10,
+      "input": "69",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 30,
+      "input": "the cost of each month",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 30,
+      "input": "the cost of joining",
+      "label": "wrong",
+      "mistake": "rateForFixed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 36,
+      "input": "20 - 3t",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 36,
+      "input": "((3 * t) + ((-1) * 20))",
+      "label": "wrong",
+      "mistake": "lessThanReversed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 41,
+      "input": "the cost of each km",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 41,
+      "input": "the cost before the ride starts",
+      "label": "wrong",
+      "mistake": "rateForFixed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 43,
+      "input": "6(n + 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 43,
+      "input": "((6 * n) + 1)",
+      "label": "wrong",
+      "mistake": "bracketsLeftOut"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 44,
+      "input": "1 / n",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 44,
+      "input": "n^2",
+      "label": "wrong",
+      "mistake": "squareBigger"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 48,
+      "input": "the cost of joining",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 48,
+      "input": "the cost of each month",
+      "label": "wrong",
+      "mistake": "rateForFixed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 64,
+      "input": "n^2",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 64,
+      "input": "n",
+      "label": "wrong",
+      "mistake": "squareBigger"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 81,
+      "input": "1 / n",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 81,
+      "input": "n^2",
+      "label": "wrong",
+      "mistake": "squareBigger"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 104,
+      "input": "20 - 5t",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 104,
+      "input": "((5 * t) + ((-1) * 20))",
+      "label": "wrong",
+      "mistake": "lessThanReversed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 125,
+      "input": "the cost of each km",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 125,
+      "input": "the cost before the ride starts",
+      "label": "wrong",
+      "mistake": "rateForFixed"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 187,
+      "input": "n^2",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 2,
+      "seed": 187,
+      "input": "n",
+      "label": "wrong",
+      "mistake": "squareBigger"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 1,
+      "input": "7y + 9",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 1,
+      "input": "((7 * y) + 18)",
+      "label": "wrong",
+      "mistake": "factorNotDividedAll"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 2,
+      "input": "0.93n - 0.6",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 2,
+      "input": "0.33n",
+      "label": "wrong",
+      "mistake": "unlikeCombined"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 3,
+      "input": "0.61n - 0.4",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 3,
+      "input": "0.21n",
+      "label": "wrong",
+      "mistake": "unlikeCombined"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 4,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 4,
+      "input": "-50",
+      "label": "wrong",
+      "mistake": "coefficientSquared"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 4,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 5,
+      "input": "5y + 1",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 5,
+      "input": "(5 * y)",
+      "label": "wrong",
+      "mistake": "factorLeftOne"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 6,
+      "input": "4x + 3",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 6,
+      "input": "((4 * x) + 6)",
+      "label": "wrong",
+      "mistake": "factorNotDividedAll"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 13,
+      "input": "x + 1",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 13,
+      "input": "x",
+      "label": "wrong",
+      "mistake": "factorLeftOne"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 36,
+      "input": "75",
+      "label": "correct"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 36,
+      "input": "-105",
+      "label": "wrong",
+      "mistake": "coefficientSquared"
+    },
+    {
+      "skill": "sameExpression",
+      "level": 3,
+      "seed": 36,
+      "input": "82",
+      "label": "wrong"
     }
   ]
 }

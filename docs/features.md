@@ -2007,7 +2007,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     different shapes counted for the unit's length and the remainder counted one along are named
   - Equal expressions: which of four is equal to x + 1 + x, 3(x − 2) or x · 2x for every x, typed or picked. The
     wrong options are the slips people make, each named when picked: unlike terms joined (3x for 2x + 1), only the
-    first term in the bracket multiplied, x · x taken for 2x
+    first term in the bracket multiplied, x · x taken for 2x. #718 added writing, reading and evaluating expressions
+    beside it: the coefficient or constant term of an expression, an + b for a number, "k less than n" and its kin,
+    and a word problem's total (grade 6); several letters with one negative, a squared letter, fractions in xy − z,
+    which of n², n, 2n and 1 ÷ n is largest or smallest for a small n, what the numbers in a taxi fare or a gym's
+    price stand for, brackets from words, and a ticket's change (grade 7); and filling the brackets of a factored
+    expression, like terms with fraction or decimal coefficients, and a thrown ball's height from vt − 5t². A lost
+    minus sign, 3n read as the digits 3 and n, subtraction or division the wrong way round, the loose ones multiplied
+    too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
+    mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
+    the factor, and unlike terms combined are named
   - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
     and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
   - Negative numbers also (#706) ask the sign of a sum without working it out, the missing number in −1 + □ = 8, the
