@@ -882,14 +882,14 @@
     {
       "skill": "logs",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "-4",
       "label": "correct"
     },
     {
       "skill": "logs",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "4",
       "label": "wrong",
       "mistake": "sign"
@@ -897,7 +897,7 @@
     {
       "skill": "logs",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "1/16",
       "label": "wrong"
     },
@@ -23103,14 +23103,14 @@
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 1,
+      "seed": 8,
       "input": "Exponential",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 1,
+      "seed": 8,
       "input": "Linear",
       "label": "wrong",
       "mistake": "growthKindSwapped"
@@ -23118,14 +23118,14 @@
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 2,
+      "seed": 319,
       "input": "320",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 2,
+      "seed": 319,
       "input": "100",
       "label": "wrong",
       "mistake": "factorTimesSteps"
@@ -23133,21 +23133,21 @@
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 2,
+      "seed": 319,
       "input": "327",
       "label": "wrong"
     },
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 5,
+      "seed": 117,
       "input": "1215",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 5,
+      "seed": 117,
       "input": "75",
       "label": "wrong",
       "mistake": "factorTimesSteps"
@@ -23155,21 +23155,21 @@
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 5,
+      "seed": 117,
       "input": "1222",
       "label": "wrong"
     },
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "3",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "10",
       "label": "wrong",
       "mistake": "factorAsDifference"
@@ -23177,14 +23177,14 @@
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 1,
+      "seed": 327,
       "input": "54743",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 1,
+      "seed": 327,
       "input": "52800",
       "label": "wrong",
       "mistake": "simpleNotCompound"
@@ -23192,14 +23192,14 @@
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 2,
+      "seed": 24,
       "input": "40",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 2,
+      "seed": 24,
       "input": "5/2",
       "label": "wrong",
       "mistake": "halfLifeHours"
@@ -23207,7 +23207,7 @@
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 2,
+      "seed": 24,
       "input": "80",
       "label": "wrong",
       "mistake": "halvesDivided"
@@ -23215,21 +23215,21 @@
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 2,
+      "seed": 24,
       "input": "47",
       "label": "wrong"
     },
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 7,
+      "seed": 146,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 7,
+      "seed": 146,
       "input": "4",
       "label": "wrong",
       "mistake": "ratioNotRooted"
@@ -23237,21 +23237,21 @@
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 7,
+      "seed": 146,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 10,
+      "seed": 1354,
       "input": "2517",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 10,
+      "seed": 1354,
       "input": "-4800",
       "label": "wrong",
       "mistake": "simpleNotCompound"
@@ -23259,7 +23259,7 @@
     {
       "skill": "exponential",
       "level": 2,
-      "seed": 10,
+      "seed": 1354,
       "input": "42998",
       "label": "wrong",
       "mistake": "decayAsGrowth"
@@ -23267,14 +23267,14 @@
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 1,
+      "seed": 13,
       "input": "1.81",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 1,
+      "seed": 13,
       "input": "2",
       "label": "wrong",
       "mistake": "monthlyByDivide"
@@ -23282,21 +23282,21 @@
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 1,
+      "seed": 13,
       "input": "8.81",
       "label": "wrong"
     },
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 2,
+      "seed": 325,
       "input": "1491.82",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 2,
+      "seed": 325,
       "input": "37006/25",
       "label": "wrong",
       "mistake": "yearlyForContinuous"
@@ -23304,21 +23304,21 @@
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 2,
+      "seed": 325,
       "input": "1498.82",
       "label": "wrong"
     },
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "11.91",
       "label": "correct"
     },
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "75/4",
       "label": "wrong",
       "mistake": "simpleNotCompound"
@@ -23326,7 +23326,7 @@
     {
       "skill": "exponential",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "18.91",
       "label": "wrong"
     },
@@ -65186,6 +65186,728 @@
       "level": 2,
       "seed": 2,
       "input": "388",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 1,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 1,
+      "input": "104",
+      "label": "wrong",
+      "mistake": "factorAsPercent"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 1,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 2,
+      "input": "103",
+      "label": "wrong",
+      "mistake": "factorAsPercent"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 4,
+      "input": "2400",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 4,
+      "input": "103/100",
+      "label": "wrong",
+      "mistake": "factorForStart"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 4,
+      "input": "2407",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 5,
+      "input": "18000",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 5,
+      "input": "22/25",
+      "label": "wrong",
+      "mistake": "factorForStart"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 5,
+      "input": "18007",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 16,
+      "input": "3000",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 16,
+      "input": "21/20",
+      "label": "wrong",
+      "mistake": "factorForStart"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 16,
+      "input": "3007",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 30,
+      "input": "9000",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 30,
+      "input": "17/20",
+      "label": "wrong",
+      "mistake": "factorForStart"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 30,
+      "input": "9007",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 36,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 36,
+      "input": "88",
+      "label": "wrong",
+      "mistake": "factorAsPercent"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 36,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 38,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 38,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "factorAsPercent"
+    },
+    {
+      "skill": "exponential",
+      "level": 1,
+      "seed": 38,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 1,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 1,
+      "input": "13/100",
+      "label": "wrong",
+      "mistake": "timeScaleInverted"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 1,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 2,
+      "input": "81",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "exponentScaleIgnored"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 2,
+      "input": "88",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 3,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 3,
+      "input": "33/100",
+      "label": "wrong",
+      "mistake": "timeScaleInverted"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 3,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 4,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 4,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "exponentScaleIgnored"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 4,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 5,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 5,
+      "input": "29",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 30,
+      "input": "27",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 30,
+      "input": "34",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 41,
+      "input": "V(t) = 20000 · 0.85ᵗ",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 41,
+      "input": "V(t) = 20000 · 1.15ᵗ",
+      "label": "wrong",
+      "mistake": "decayAsGrowth"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 48,
+      "input": "V(t) = 18000 · 0.9ᵗ",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 2,
+      "seed": 48,
+      "input": "V(t) = 18000 · 1.1ᵗ",
+      "label": "wrong",
+      "mistake": "decayAsGrowth"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 1,
+      "input": "2.71",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 1,
+      "input": "51/50",
+      "label": "wrong",
+      "mistake": "logBeforeDivide"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 1,
+      "input": "9.71",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 2,
+      "input": "2.2",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 2,
+      "input": "11/10",
+      "label": "wrong",
+      "mistake": "logBeforeDivide"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 2,
+      "input": "9.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 5,
+      "input": "5.64",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 5,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "exponentAsDivide"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 5,
+      "input": "12.64",
+      "label": "wrong"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 30,
+      "input": "1.57",
+      "label": "correct"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 30,
+      "input": "37/10",
+      "label": "wrong",
+      "mistake": "exponentAsDivide"
+    },
+    {
+      "skill": "exponential",
+      "level": 3,
+      "seed": 30,
+      "input": "8.57",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 1,
+      "seed": 1,
+      "input": "2⁵ = 32",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 1,
+      "seed": 1,
+      "input": "5² = 32",
+      "label": "wrong",
+      "mistake": "logFormSwapped"
+    },
+    {
+      "skill": "logs",
+      "level": 1,
+      "seed": 1,
+      "input": "2³² = 5",
+      "label": "wrong",
+      "mistake": "logResultSwapped"
+    },
+    {
+      "skill": "logs",
+      "level": 1,
+      "seed": 2,
+      "input": "log₂ 64 = 6",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 1,
+      "seed": 2,
+      "input": "log₆ 64 = 2",
+      "label": "wrong",
+      "mistake": "logFormSwapped"
+    },
+    {
+      "skill": "logs",
+      "level": 1,
+      "seed": 2,
+      "input": "log₂ 6 = 64",
+      "label": "wrong",
+      "mistake": "logResultSwapped"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 1,
+      "input": "2.73",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 1,
+      "input": "37/100",
+      "label": "wrong",
+      "mistake": "changeBaseFlipped"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 1,
+      "input": "41/50",
+      "label": "wrong",
+      "mistake": "changeBaseAsQuotient"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 1,
+      "input": "9.73",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 2,
+      "input": "1.54",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 2,
+      "input": "13/20",
+      "label": "wrong",
+      "mistake": "changeBaseFlipped"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 2,
+      "input": "19/50",
+      "label": "wrong",
+      "mistake": "changeBaseAsQuotient"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 2,
+      "input": "8.54",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 3,
+      "input": "log 20 / log 3",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 3,
+      "input": "log 3 / log 20",
+      "label": "wrong",
+      "mistake": "changeBaseFlipped"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 3,
+      "input": "log(20 / 3)",
+      "label": "wrong",
+      "mistake": "changeBaseAsQuotient"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 4,
+      "input": "log 12 / log 5",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 4,
+      "input": "log 5 / log 12",
+      "label": "wrong",
+      "mistake": "changeBaseFlipped"
+    },
+    {
+      "skill": "logs",
+      "level": 2,
+      "seed": 4,
+      "input": "log(12 / 5)",
+      "label": "wrong",
+      "mistake": "changeBaseAsQuotient"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 1,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 1,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "decibelTenDropped"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 1,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 2,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "decibelTenDropped"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 2,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 5,
+      "input": "1.5",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 5,
+      "input": "23/10",
+      "label": "wrong",
+      "mistake": "exponentDividedFirst"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 5,
+      "input": "8.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 10,
+      "input": "0.98",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 10,
+      "input": "253/100",
+      "label": "wrong",
+      "mistake": "exponentDividedFirst"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 10,
+      "input": "7.98",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 11,
+      "input": "1000",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 11,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "magnitudeDiffAsTimes"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 11,
+      "input": "1007",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 13,
+      "input": "100",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 13,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "magnitudeDiffAsTimes"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 13,
+      "input": "107",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 26,
+      "input": "0.54",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 26,
+      "input": "7.54",
+      "label": "wrong"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 30,
+      "input": "0.54",
+      "label": "correct"
+    },
+    {
+      "skill": "logs",
+      "level": 3,
+      "seed": 30,
+      "input": "7.54",
       "label": "wrong"
     }
   ]
