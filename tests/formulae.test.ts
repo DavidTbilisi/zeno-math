@@ -43,6 +43,8 @@ test("algebraic fractions: the question typed back, or not cut down, is sent bac
   for (const level of LEVELS)
     for (const seed of SEEDS.slice(0, 80)) {
       const ex = exercise("algFractions", level, seed, w);
+      // The working checked, the pipes and the juices (#731) have no expression to type back; tests/modelsWords.test.ts checks them.
+      if (!ex.q) continue;
       const v = check(ex, plainOf(ex.q), w);
       assert.equal(v.ok, false, ex.q);
       // Two fractions joined by + or −, or one not cut down, is the right value in the wrong form.

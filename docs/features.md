@@ -2017,6 +2017,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Models in words: several variables, combined rates (#731): in formulae, what a number in a taxi's or a gym's
+    formula stands for, which letter goes on which axis of a tank's, a ball's or a ticket's graph, a year at a gym
+    written in three letters, and a bakery's profit written as R(x) − C(x); in algebraic fractions, someone's working
+    checked, terms cancelled in (x + a)/(x + b) or a division not turned over, two pipes filling a tank together, in
+    hours and as one fraction in x, and the litres of a strong juice that make a mix. Periodic models are asked in
+    trigonometric graphs (the tide), end behaviour in rational functions (the average cost) and inequality word
+    problems in inequalities (the budget). The two numbers' meanings swapped, the axes swapped, the sessions not
+    scaled to a year, the cost's sign kept, terms cancelled, the division not turned over, the times added or
+    averaged and the juices mixed half and half are named
   - Exponential and logarithmic models (#730): the start and the yearly rate read from a town's P(t) = a · bᵗ or a
     car's V(t) = a · bᵗ; the hours for a medicine's (1/2)^(t/h) to halve, the yearly factor of a · b^(kt), a car's
     decay function picked, and the first year exponential savings pass linear ones; c·eˣ = d and bˣ = d solved with

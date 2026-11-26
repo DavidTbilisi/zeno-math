@@ -491,6 +491,8 @@ export type PracticeWords = {
   serP: Record<"storyQ" | "double" | "triple", string>;
   exgM: Record<"townStartQ" | "carStartQ" | "townRateQ" | "carRateQ" | "halveQ" | "powerQ" | "writeQ" | "versusQ" | "solveQ", string>;
   logM: Record<"toLogQ" | "fromLogQ" | "ruleQ" | "useQ" | "decibelQ" | "richterQ" | "solveQ", string>;
+  frmM: Record<"taxiQ" | "gymQ" | "taxiRate" | "taxiFee" | "taxiTotal" | "taxiKm" | "gymRate" | "gymFee" | "gymTotal" | "gymMonths" | "axesOpt" | "axesTank" | "axesBall" | "axesTickets" | "unitMin" | "unitLitres" | "unitSec" | "unitM" | "unitTickets" | "unitLari" | "yearQ" | "profitQ", string>;
+  afrM: Record<"checkQ" | "yes" | "noTerms" | "noIs" | "noFactor" | "pipesQ" | "pipesXQ" | "mixQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
