@@ -60,6 +60,6 @@ test("every measuring question accepts its answer in each language", () => {
         const ex = exercise("measure", level, seed, words.pracWords);
         assert.equal(check(ex, ex.plain, words.pracWords).ok, true, `${level} #${seed} ${ex.plain}`);
         assert.ok(ex.steps?.length);
-        assert.ok(!/NaN|undefined|\{\w+\}/.test(ex.prompt + ex.show + ex.steps!.join(" ")), `${level} #${seed}: ${ex.prompt}`);
+        assert.ok(!/NaN|undefined|(?<!\\text)\{\w+\}/.test(ex.prompt + ex.show + ex.steps!.join(" ")), `${level} #${seed}: ${ex.prompt}`);
       }
 });

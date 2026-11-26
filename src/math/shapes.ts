@@ -2258,6 +2258,14 @@ function decGridPreview(): Piece[] {
   return [...cells, rect(0, 0, 10 * c, 10 * c, { color: "#1e1e1e", width: 1.5 }), text(5 * c, 10 * c + 14, "0.47", 13)];
 }
 
+function measureHandPreview(): Piece[] {
+  // A pencil from 3 to 10 on a ruler that starts at 2: its ends read 3 and 10.
+  const k = 12;
+  const out: Piece[] = [rect(3 * k, 0, 7 * k, 12, { fill: "#fcc419", color: "#1e1e1e", width: 1 }), rect(0, 22, 16 * k, 22, { fill: "#fff9db", color: "#1e1e1e", width: 1.2 })];
+  for (let i = 0; i <= 15; i++) out.push(seg([i * k + k, 22], [i * k + k, i % 5 === 0 ? 34 : 29], { color: "#1e1e1e", width: 1 }));
+  return out;
+}
+
 function areaBlocksPreview(): Piece[] {
   // 12 × 13 as a rectangle of base-ten blocks: a hundred flat, three rods beside it, two rods under it and six cubes.
   const u = 6;
@@ -2646,6 +2654,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveRekenrek", build: rekenrekPreview, live: "rekenrek" },
   { id: "liveRods", build: rodsPreview, live: "rods" },
   { id: "liveDecGrid", build: decGridPreview, live: "decGrid" },
+  { id: "liveMeasureHand", build: measureHandPreview, live: "measureHand" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

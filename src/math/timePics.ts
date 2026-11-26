@@ -207,3 +207,28 @@ export function renderTime(spec: TimeSolution, steps: { svg: string; width: numb
     height: h,
   };
 }
+
+/**
+ * A time line over whole hours from `from` (an o'clock, in minutes), a mark every `step` minutes and the o'clocks
+ * labelled (#705: tell the time on a number line). `dot` is a point to read; `start` a time marked and labelled.
+ */
+export function hourLinePic(from: number, hours: number, step: number, o: { dot?: number; start?: number; h24?: boolean } = {}): { body: string; w: number; h: number } {
+  const unit = Math.min(480, 560 / hours);
+  const x0 = 30;
+  const X = (t: number) => x0 + ((t - from) / 60) * unit;
+  const y = 48;
+  const show = (t: number) => (o.h24 ? clock24(t) : clock12(t));
+  const out: string[] = [`<g ${FONT}>`, `<line x1="${x0 - 12}" y1="${y}" x2="${r2(x0 + hours * unit + 12)}" y2="${y}" stroke="${C.ink}" stroke-width="2"/>`];
+  for (let t = from; t <= from + 60 * hours; t += step) {
+    const whole = (t - from) % 60 === 0;
+    out.push(`<line x1="${r2(X(t))}" y1="${y - (whole ? 10 : 6)}" x2="${r2(X(t))}" y2="${y + (whole ? 10 : 6)}" stroke="${C.ink}" stroke-width="${whole ? 2.2 : 1.2}"/>`);
+    if (whole) out.push(text(X(t), y + 32, show(t), 15, C.ink, true));
+  }
+  if (o.start !== undefined) {
+    out.push(`<circle cx="${r2(X(o.start))}" cy="${y}" r="6" fill="${C.blue}"/>`);
+    if ((o.start - from) % 60) out.push(text(X(o.start), y - 16, show(o.start), 14, C.blue, true));
+  }
+  if (o.dot !== undefined) out.push(`<circle cx="${r2(X(o.dot))}" cy="${y}" r="7" fill="${C.orange}" stroke="#ffffff" stroke-width="1.5"/>`);
+  out.push("</g>");
+  return { body: out.join(""), w: r2(x0 + hours * unit + 30), h: y + 44 };
+}

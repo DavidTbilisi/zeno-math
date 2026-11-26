@@ -83,7 +83,7 @@ export function jugPic(v: number, max: number, major: number, minor: number, uni
 /** The unit each typed word stands for: the language's own (w.units) and the Latin ones everywhere. */
 export function unitWords(own: Record<MeasureUnit, string>): Map<string, MeasureUnit> {
   const m = new Map<string, MeasureUnit>();
-  const latin: Record<MeasureUnit, string[]> = { km: ["km"], m: ["m"], cm: ["cm"], kg: ["kg"], g: ["g"], l: ["l", "L", "ℓ"], ml: ["ml", "mL"] };
+  const latin: Record<MeasureUnit, string[]> = { km: ["km"], m: ["m"], cm: ["cm"], mm: ["mm"], kg: ["kg"], g: ["g"], l: ["l", "L", "ℓ"], ml: ["ml", "mL"] };
   for (const u of Object.keys(latin) as MeasureUnit[]) for (const s of [own[u], ...latin[u]]) m.set(s, u);
   return m;
 }
@@ -103,4 +103,30 @@ export function readMeasure(s: string, words: Map<string, MeasureUnit>): [number
     out.push([Number(n.replace(",", ".")), u]);
   }
   return out;
+}
+
+/** A strip of a stripsPic: where it starts and how long it is (in squares), its letter and fill; `label` written on it. */
+export type Strip = { a: number; n: number; letter: string; fill: string; label?: string };
+
+/**
+ * Ribbons one under another, each lettered on its left (#705: compare and order lengths). With `grid` they lie on
+ * squared paper, so each length is counted in squares from the ribbon's own start; without, only their look is given.
+ */
+export function stripsPic(strips: Strip[], grid: boolean): Pic {
+  const [k, x0, row, h] = [26, 40, 42, 22];
+  const cols = Math.max(...strips.map((s) => s.a + s.n)) + 1;
+  const out: string[] = [`<g ${FONT}>`];
+  const H = strips.length * row + 6;
+  if (grid) {
+    for (let i = 0; i <= cols; i++) out.push(`<line x1="${x0 + i * k}" y1="0" x2="${x0 + i * k}" y2="${H}" stroke="#dee2e6" stroke-width="1"/>`);
+    for (let j = 0; j <= 2 * strips.length; j++) out.push(`<line x1="${x0}" y1="${r2(3 + (j * row) / 2 - 2)}" x2="${x0 + cols * k}" y2="${r2(3 + (j * row) / 2 - 2)}" stroke="#dee2e6" stroke-width="1"/>`);
+  }
+  strips.forEach((s, i) => {
+    const y = 10 + i * row;
+    out.push(text(16, y + h / 2 + 6, s.letter, 17, C.orange, true));
+    out.push(`<rect x="${x0 + s.a * k}" y="${y}" width="${s.n * k}" height="${h}" rx="4" fill="${s.fill}" stroke="${C.ink}" stroke-width="1.4"/>`);
+    if (s.label) out.push(text(x0 + (s.a + s.n / 2) * k, y + h / 2 + 5, s.label, 14, C.ink, true));
+  });
+  out.push("</g>");
+  return { body: out.join(""), w: x0 + cols * k + 8, h: H + 4 };
 }

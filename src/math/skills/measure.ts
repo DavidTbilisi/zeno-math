@@ -1,7 +1,14 @@
 // Practice: Measuring.
+// #705 adds, at P2: ribbons compared and put in order on squared paper (the one reaching farthest is not always the
+// longest), a length compared through a third, the unit chosen for a length, the same length counted in a longer and
+// a shorter unit, and a length estimated from one given beside it; at P3: masses, volumes and lengths estimated (mm
+// to km), a measure written in a smaller unit (cm to mm too), and stories with × and ÷ (apples, glasses, a jug poured
+// out, a ribbon cut, rice put in bags).
 import { fill, r2 } from "../chart";
-import { dialPic, jugPic, rulerPic } from "../measurePics";
-import type { Answer, Gen, MeasurePair, MeasureUnit, Trap } from "../practiceTypes";
+import { dialPic, jugPic, rulerPic, stripsPic, type Strip } from "../measurePics";
+import { pickText, shuffled } from "../mulDivKit";
+import { num } from "../practiceKit";
+import type { Answer, Gen, MeasurePair, MeasureUnit, Part, Trap } from "../practiceTypes";
 
 const gen: Gen = (r, L, w) => {
   // Measuring (P2–P3): reading a ruler, a scale's dial and a jug; a measure in two units and in one; adding and
@@ -21,9 +28,74 @@ const gen: Gen = (r, L, w) => {
     { big: "l", small: "ml", f: 1000 },
     { big: "km", small: "m", f: 1000 },
   ];
+  const M = w.measTime;
+  /** "15 cm" as an option. */
+  const amount = (n: number, u: MeasureUnit) => `${n} ${U[u]}`;
+  /**
+   * About how much is a thing: the right amount, the same number in a unit far too big or small (the slip), and ten
+   * times the right one.
+   */
+  const estimate = (prompt: string, thing: string, n: number, u: MeasureUnit, wrong: MeasureUnit): Part =>
+    pickText(r, fill(prompt, { thing }), amount(n, u), [{ text: amount(n, wrong), id: "unitOutOfScale", vars: { thing, v: amount(n, u) } }], [amount(10 * n, u)], {
+      steps: [`\\text{${thing}} \\approx ${n}\\text{ ${U[u]}}`],
+    });
+  const RIBBONS = ["#ffc9c9", "#a5d8ff", "#b2f2bb", "#ffec99"];
+
+  /** Three ribbons on squared paper, the longest not the one reaching farthest: which is longest or shortest, or their order. */
+  const ribbons = (): Part => {
+    let strips: Strip[];
+    let lens: number[];
+    const ask = r.int(0, 2);
+    const ends = (ss: Strip[]) => ss.map((x) => x.a + x.n);
+    for (;;) {
+      lens = shuffled(r, [r.int(3, 4), r.int(5, 6), r.int(7, 8)]);
+      strips = lens.map((n, i) => ({ a: r.int(0, 4), n, letter: "ABC"[i], fill: RIBBONS[i] }));
+      const e = ends(strips);
+      if (new Set(e).size < 3) continue;
+      const far = e.indexOf(Math.max(...e)), near = e.indexOf(Math.min(...e));
+      const [long, short] = [lens.indexOf(Math.max(...lens)), lens.indexOf(Math.min(...lens))];
+      if (ask === 0 ? far !== long : ask === 1 ? near !== short : far !== long || near !== short) break;
+    }
+    const pic = stripsPic(strips, true);
+    const counts = strips.map((x) => `${x.letter} ${x.n}`).join(", ");
+    const steps = [`\\text{${strips.map((x) => `${x.letter}: ${x.n}`).join(", ")}}`];
+    const byEnd = [0, 1, 2].sort((i, j) => ends(strips)[i] - ends(strips)[j]);
+    const byLen = [0, 1, 2].sort((i, j) => lens[i] - lens[j]);
+    if (ask === 2) {
+      const order = (o: number[]) => o.map((i) => "ABC"[i]).join(", ");
+      const others = [[0, 1, 2], [2, 1, 0], [1, 0, 2], [0, 2, 1]].map(order).filter((o) => o !== order(byLen) && o !== order(byEnd));
+      return pickText(r, M.ribbonsOrder, order(byLen), [{ text: order(byEnd), id: "endFarthest", vars: { x: "ABC"[byEnd[2]], v: counts } }], others.slice(0, 2), { pic: picOf(pic), steps });
+    }
+    const [right, slip] = ask === 0 ? [byLen[2], byEnd[2]] : [byLen[0], byEnd[0]];
+    const third = [0, 1, 2].find((i) => i !== right && i !== slip)!;
+    return pickText(r, ask === 0 ? M.ribbonsLong : M.ribbonsShort, "ABC"[right], [{ text: "ABC"[slip], id: "endFarthest", vars: { x: "ABC"[slip], v: counts } }], ["ABC"[third]], { pic: picOf(pic), steps });
+  };
   if (L === 1) {
     // The instrument's reading. On a scale or a jug the small marks are worth more than 1: counting each as 1 is the trap.
-    const kind = r.int(0, 2);
+    const kind = r.int(0, 6);
+    if (kind === 3) return ribbons();
+    if (kind === 4) {
+      // Taller than through a third: a > b and b > c, so a > c.
+      const [a, b, c] = shuffled(r, M.names).slice(0, 3);
+      return pickText(r, fill(M.taller, { a, b, c }), a, [], [c, M.same], { steps: [`\\text{${a}} > \\text{${b}} > \\text{${c}}`] });
+    }
+    if (kind === 5) {
+      // The unit for a length: the same number in the other unit is the slip (a pencil 15 m long).
+      const [thing, n, u] = r.pick([["pencil", 15, "cm"], ["book", 25, "cm"], ["shoe", 20, "cm"], ["crayon", 8, "cm"], ["door", 2, "m"], ["bus", 12, "m"], ["classroom", 8, "m"]] as const);
+      return estimate(M.aboutLong, M.things[thing], n, u, u === "cm" ? "m" : "cm");
+    }
+    if (kind === 6 && r.next() < 0.5) {
+      // The same length in a longer and a shorter unit: more of the shorter fit. Counting more of the longer is the slip.
+      const [story, short, long] = r.pick([[M.handFoot, M.hands, M.feet], [M.clipPencil, M.clips, M.pencils]] as const);
+      return pickText(r, story, short, [{ text: long, id: "biggerUnitMore", vars: { v: short } }], [M.sameCount], { steps: [`\\text{${M.fewerFit}}`] });
+    }
+    if (kind === 6) {
+      // A length estimated from one given beside it: B is about k times A.
+      const [g, k] = [r.pick([2, 3, 4, 5]), r.int(2, 4)];
+      const pic = stripsPic([{ a: 0, n: g, letter: "A", fill: RIBBONS[1], label: amount(g, "cm") }, { a: 0, n: g * k, letter: "B", fill: RIBBONS[0], label: "?" }], false);
+      const others = [...new Set([g + k, g * k + 10 * g, g])].filter((x) => x !== g * k).slice(0, 2);
+      return pickText(r, M.aboutB, amount(g * k, "cm"), [], others.map((x) => amount(x, "cm")), { pic: picOf(pic), steps: [`${g} \\times ${k} = ${g * k}`] });
+    }
     if (kind === 0) {
       const b = r.int(3, 14);
       return { prompt: w.prompts.measRuler, q: "", pic: picOf(rulerPic(0, b, 15, U.cm)), answer: meas(b, LENGTH, false), show: one(b, "cm").tex, plain: String(b), format: "measure", steps: [`${b} - 0 = ${b}`] };
@@ -51,7 +123,29 @@ const gen: Gen = (r, L, w) => {
     };
   }
   if (L === 2) {
-    const kind = r.int(0, 3);
+    const kind = r.int(0, 5);
+    if (kind === 4) {
+      // About how heavy, how much it holds, how long: the same number in a unit far off is the slip.
+      const t = r.int(0, 2);
+      if (t === 0) {
+        const [thing, n, u, x] = r.pick([["apple", 150, "g", "kg"], ["clip", 1, "g", "kg"], ["flour", 1, "kg", "g"], ["dog", 20, "kg", "g"], ["melon", 5, "kg", "g"], ["egg", 60, "g", "kg"]] as const);
+        return estimate(M.aboutHeavy, M.things[thing], n, u, x);
+      }
+      if (t === 1) {
+        const [thing, n, u, x] = r.pick([["spoon", 5, "ml", "l"], ["cup", 250, "ml", "l"], ["bath", 200, "l", "ml"], ["bucket", 10, "l", "ml"], ["bottle", 1, "l", "ml"]] as const);
+        return estimate(M.aboutHolds, M.things[thing], n, u, x);
+      }
+      const [thing, n, u, x] = r.pick([["ant", 5, "mm", "cm"], ["rice", 6, "mm", "cm"], ["towns", 30, "km", "m"], ["marathon", 42, "km", "m"], ["pitch", 100, "m", "km"], ["finger", 6, "cm", "m"]] as const);
+      return estimate(M.aboutLong, M.things[thing], n, u, x);
+    }
+    if (kind === 5) {
+      // A whole number of the larger unit in the smaller: the factor of another pair of units is the slip (6 m = 60 cm).
+      const q = r.pick([{ big: "cm", small: "mm", f: 10 }, LENGTH, KM, { big: "m", small: "mm", f: 1000 }, MASS, VOLUME] as MeasurePair[]);
+      const n = r.int(2, 9);
+      const g = q.f === 100 ? 10 : q.f === 10 ? 100 : 100;
+      const traps: Trap[] = [{ id: "unitFactor", a: meas(n * g, q, false), vars: { big: U[q.big], small: U[q.small], f: q.f, g, work: `${n} × ${q.f} = ${n * q.f}` } }];
+      return { prompt: fill(w.prompts.measToSmall, { a: one(n, q.big).text, u: U[q.small] }), q: "", answer: meas(n * q.f, q, false, traps), show: one(n * q.f, q.small).tex, plain: String(n * q.f), format: "measure", steps: [`1\\text{ ${U[q.big]}} = ${q.f}\\text{ ${U[q.small]}}`, `${n} \\times ${q.f} = ${n * q.f}`] };
+    }
     if (kind === 0) {
       // A pencil that doesn't start at 0: reading the end mark is the trap.
       const [a, len] = [r.int(1, 5), r.int(3, 9)];
@@ -84,6 +178,27 @@ const gen: Gen = (r, L, w) => {
     const wrongSign = (left ? lost > c : c > lost) ? ">" : "<";
     const traps: Trap[] = [{ id: "lostZero", a: { k: "sign", v: wrongSign }, vars: lostVars }];
     return { prompt: w.prompts.compare, q: `${xt} \\;\\square\\; ${yt}`, answer: { k: "sign", v: sign, traps }, show: `${xt} ${sign} ${yt}`, plain: sign, format: "sign", steps: [`${both(v, q).tex} = ${one(v, q.small).tex}`, `${x} ${sign} ${y}`] };
+  }
+  if (r.int(0, 2) === 0) {
+    // × and ÷ stories: so many of an amount (adding the two numbers is the slip), or how many parts fit once both are
+    // in the same unit.
+    const t = r.int(0, 4);
+    if (t <= 1) {
+      const [a, n] = t === 0 ? [r.pick([120, 150, 180, 200, 250]), r.int(3, 8)] : [r.pick([150, 200, 250, 300]), r.int(3, 6)];
+      const q = t === 0 ? MASS : VOLUME;
+      return {
+        prompt: fill(t === 0 ? M.apples : M.glasses, { a, n }), q: "", answer: meas(a * n, q, false, [{ id: "addedNotTimes", a: meas(a + n, q, false), vars: { a: n, b: a, x: a + n, v: a * n } }]),
+        show: one(a * n, q.small).tex, plain: String(a * n), format: "measure", steps: [`${n} \\times ${a} = ${a * n}`],
+      };
+    }
+    const [story, big, small, f, parts] = ([
+      [M.jug, "l", "ml", 1000, [200, 250, 500]],
+      [M.ribbonCut, "m", "cm", 100, [20, 25, 50]],
+      [M.rice, "kg", "g", 1000, [100, 200, 250, 500]],
+    ] as const)[t - 2];
+    const [L0, a] = [r.int(1, 3), r.pick(parts)];
+    const v = (L0 * f) / a;
+    return { prompt: fill(story, { L: L0, a }), q: "", answer: num(v), show: String(v), plain: String(v), format: "number", steps: [`${L0}\\text{ ${U[big]}} = ${L0 * f}\\text{ ${U[small]}}`, `${L0 * f} \\div ${a} = ${v}`] };
   }
   // Adding with a new unit made, or taking away with one changed into the smaller unit.
   const kind = r.int(0, 2);

@@ -888,19 +888,32 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       total, too few units, a gift counted once, the shortage taken from the leftover
   - Measuring, from the primary syllabus (P2 and P3), answered with a measure in one unit or two:
     - *Easy*: a pencil along a ruler, a kitchen scale's dial and a measuring jug, whose small marks are worth 10, 20,
-      25, 40 or 50 (counting each small mark as 1 named)
+      25, 40 or 50 (counting each small mark as 1 named). Also (#705) three ribbons on squared paper that start in
+      different places: the longest, the shortest, or all three in order (the one reaching farthest named); taller
+      than through a third person; cm or m for a pencil or a bus (the same number in the other unit named); the same
+      table counted in hands and in feet (more of the longer unit named); and a ribbon's length estimated from one
+      beside it
     - *Medium*: a pencil that doesn't start at 0 (the end mark read named), 2 m 35 cm in centimetres and 1450 g in
-      kilograms and grams (3 ℓ 40 ml as 340 ml named), and which is more, a measure in two units or one in the smaller
+      kilograms and grams (3 ℓ 40 ml as 340 ml named), and which is more, a measure in two units or one in the smaller.
+      Also (#705) about how heavy an apple is, how much a bath holds, how long an ant or a marathon is, from mm to km
+      (the same number in a unit far off named), and 6 cm in mm, 3 m in cm, 5 kg in g (another pair's factor named)
     - *Hard*: adding lengths, masses and volumes in two units with a new unit made (5 m 125 cm named), and taking away
-      with one changed into the smaller unit (the smaller number taken from the larger named)
+      with one changed into the smaller unit (the smaller number taken from the larger named). Also (#705) stories
+      with × and ÷: apples weighed, glasses of milk (the two numbers added named), a jug poured into glasses, a
+      ribbon cut into pieces and rice put into bags, each worked by first writing both amounts in the smaller unit
   - Time, from the primary syllabus (P2 to P4), answered with a clock time or a length of time:
     - *Easy*: what a clock with hands shows, to the hour, the half hour or five minutes (the hour the short hand is
       nearing, and the hands read the wrong way round, named; 15:40 is sent back, a clock with hands goes up to 12)
     - *Medium*: when a film ends, when a bus ride started, how long a lesson is, always across an o'clock on the
       12-hour clock (the hour left as it was, 2:75 for an hour of 100 minutes, and 3:15 − 2:50 worked as 315 − 250,
-      named); the worked solution is a time line hopping to the next o'clock, on by whole hours, then the minutes left
+      named); the worked solution is a time line hopping to the next o'clock, on by whole hours, then the minutes left.
+      Also (#705) a clock read to the minute, a time read off a line marked every 5, 10 or 15 minutes (each mark taken
+      for one minute named), and homework stories drawn on a line with the start marked
     - *Hard*: the 24-hour clock: a time said with its part of the day, back to a clock with hands, and train journeys
-      across noon (12 not added to the afternoon's hours, and 10 taken from them instead of 12, named)
+      across noon (12 not added to the afternoon's hours, and 10 taken from them instead of 12, named). Also (#705)
+      hours, minutes, seconds and days written in the smaller unit, bare (4 h 55 min = 295 min) and as a film, a song
+      or a school trip (an hour of 100 minutes named), and about how long it takes to blink, brush your teeth or sleep
+      at night (the same number in another unit named)
   - Number bases (AoPS Introduction to Number Theory ch. 8–9): a base-b numeral in base 10 (place values started at b
     named), a number written in base b by dividing again and again (the remainders read downwards named), and adding,
     subtracting or multiplying in base b (carrying at ten named). The answer is typed as its digits, with or without
@@ -2572,6 +2585,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     grid are worth is found by trying; each rule (a square is 0.01, a column 0.1, a grid 1) is said only once its
     amount is made, and stays listed. After the eighth the grids are free to shade. Arrow keys add or take away a
     square, with Shift a column
+  - *Ruler and scale: measure by hand* (#705, Geometry → Measuring, grades 1–4). Ruler: a pencil lies still and the
+    ruler is dragged under it (or moved by the arrow keys in half centimetres), dashed lines dropping from the pencil's
+    ends to the marks. The length is tapped from three tiles, one of them the mark at the pencil's point; that one is
+    met with "Where does the pencil start?", and the right one with its rule (from 3 to 11: 11 − 3 = 8 cm), which
+    follows the ruler as it is moved on, so the marks change and the difference does not. The last two rounds are
+    broken rulers with no 0. Scale: in the first round a 25 g weight dragged (or tapped) onto the pan moves the needle
+    one small mark, which says what a small mark is worth; then a pear, an apple and a slice of melon are read off
+    dials marked every 25, 50 and 20 g, each small mark taken for 1 g being one tile
   - *Multiplying with blocks*: a × b (up to 39 × 39) as a rectangle of base-ten blocks beside the box and the written
     sum. Each side is split into tens and ones; a part tapped is filled with flats, rods or cubes and its product is
     written into the box and a line of the sum. With "Your turn" each product is given first on digit tiles, a wrong

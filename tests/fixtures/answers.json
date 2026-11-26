@@ -5557,21 +5557,21 @@
     {
       "skill": "time",
       "level": 2,
-      "seed": 7,
+      "seed": 952,
       "input": "1:35",
       "label": "correct"
     },
     {
       "skill": "time",
       "level": 2,
-      "seed": 7,
+      "seed": 952,
       "input": "1.35",
       "label": "correct"
     },
     {
       "skill": "time",
       "level": 2,
-      "seed": 7,
+      "seed": 952,
       "input": "2:35",
       "label": "wrong",
       "mistake": "hourNotCarried"
@@ -5579,7 +5579,7 @@
     {
       "skill": "time",
       "level": 2,
-      "seed": 7,
+      "seed": 952,
       "input": "1:75",
       "label": "wrong",
       "mistake": "minutes100"
@@ -5587,14 +5587,14 @@
     {
       "skill": "time",
       "level": 2,
-      "seed": 7,
+      "seed": 952,
       "input": "1:45",
       "label": "wrong"
     },
     {
       "skill": "time",
       "level": 2,
-      "seed": 7,
+      "seed": 952,
       "input": "half past one",
       "label": "form"
     },
@@ -5698,31 +5698,31 @@
     {
       "skill": "measure",
       "level": 3,
-      "seed": 7,
-      "input": "6 m 25 cm",
+      "seed": 2,
+      "input": "11 m 10 cm",
       "label": "correct"
     },
     {
       "skill": "measure",
       "level": 3,
-      "seed": 7,
-      "input": "6m 25cm",
+      "seed": 2,
+      "input": "11m 10cm",
       "label": "correct",
       "note": "no spaces"
     },
     {
       "skill": "measure",
       "level": 3,
-      "seed": 7,
-      "input": "625 cm",
+      "seed": 2,
+      "input": "1110 cm",
       "label": "form",
       "note": "in centimetres only"
     },
     {
       "skill": "measure",
       "level": 3,
-      "seed": 7,
-      "input": "5 m 125 cm",
+      "seed": 2,
+      "input": "10 m 110 cm",
       "label": "wrong",
       "note": "the 100 cm not carried",
       "mistake": "notRegrouped"
@@ -5730,8 +5730,8 @@
     {
       "skill": "measure",
       "level": 3,
-      "seed": 7,
-      "input": "5 m 25 cm",
+      "seed": 2,
+      "input": "10 m 10 cm",
       "label": "wrong"
     },
     {
@@ -32648,6 +32648,2646 @@
       "seed": 18,
       "input": "21.052",
       "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 1,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 2,
+      "input": "20 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 2,
+      "input": "20 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 3,
+      "input": "15 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 3,
+      "input": "15 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 4,
+      "input": "More hands",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 4,
+      "input": "More feet",
+      "label": "wrong",
+      "mistake": "biggerUnitMore"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 5,
+      "input": "Luka",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 6,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 6,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "endFarthest"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 10,
+      "input": "B, C, A",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 10,
+      "input": "B, A, C",
+      "label": "wrong",
+      "mistake": "endFarthest"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 11,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 11,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "endFarthest"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 13,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 13,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "endFarthest"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 16,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 17,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 20,
+      "input": "20 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 20,
+      "input": "20 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 22,
+      "input": "Luka",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 25,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 26,
+      "input": "B, C, A",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 26,
+      "input": "B, A, C",
+      "label": "wrong",
+      "mistake": "endFarthest"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 30,
+      "input": "6 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 31,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 34,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 36,
+      "input": "6 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 38,
+      "input": "12 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 38,
+      "input": "12 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 40,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 41,
+      "input": "8 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 41,
+      "input": "8 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 42,
+      "input": "Luka",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 43,
+      "input": "More clips",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 43,
+      "input": "More pencils",
+      "label": "wrong",
+      "mistake": "biggerUnitMore"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 44,
+      "input": "25 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 44,
+      "input": "25 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 47,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 48,
+      "input": "8 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 48,
+      "input": "8 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 50,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 50,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "endFarthest"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 57,
+      "input": "25 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 57,
+      "input": "25 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 67,
+      "input": "More clips",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 67,
+      "input": "More pencils",
+      "label": "wrong",
+      "mistake": "biggerUnitMore"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 73,
+      "input": "8 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 73,
+      "input": "8 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 80,
+      "input": "2 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 80,
+      "input": "2 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 82,
+      "input": "12 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 82,
+      "input": "12 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 83,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 88,
+      "input": "2 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 88,
+      "input": "2 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 91,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 95,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 102,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 112,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 120,
+      "input": "More hands",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 120,
+      "input": "More feet",
+      "label": "wrong",
+      "mistake": "biggerUnitMore"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 122,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 125,
+      "input": "8 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 125,
+      "input": "8 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 133,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 134,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 142,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 145,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 150,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 166,
+      "input": "15 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 166,
+      "input": "15 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 171,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 174,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 175,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 177,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 179,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 186,
+      "input": "Luka",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 188,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 196,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 204,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 206,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 221,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 223,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 226,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 227,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 237,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 259,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 264,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 273,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 275,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 276,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 277,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 287,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 288,
+      "input": "Luka",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 291,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 292,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 305,
+      "input": "Luka",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 306,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 311,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 331,
+      "input": "Saba",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 335,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 342,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 355,
+      "input": "Luka",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 357,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 374,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 376,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 383,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 391,
+      "input": "Nino",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 395,
+      "input": "Gio",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 1,
+      "seed": 400,
+      "input": "Mariam",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 2,
+      "input": "1 g",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 2,
+      "input": "1 kg",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 3,
+      "input": "1 kg",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 3,
+      "input": "1 g",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 4,
+      "input": "300",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 4,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 4,
+      "input": "307",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 5,
+      "input": "6 mm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 5,
+      "input": "6 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 17,
+      "input": "20 kg",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 17,
+      "input": "20 g",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 20,
+      "input": "200 ℓ",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 20,
+      "input": "200 ml",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 30,
+      "input": "5000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 30,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 30,
+      "input": "5007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 31,
+      "input": "100 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 31,
+      "input": "100 km",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 36,
+      "input": "4000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 36,
+      "input": "400",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 36,
+      "input": "4007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 38,
+      "input": "5 mm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 38,
+      "input": "5 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 41,
+      "input": "7000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 41,
+      "input": "700",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 41,
+      "input": "7007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 43,
+      "input": "600",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 43,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 43,
+      "input": "607",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 44,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 44,
+      "input": "200",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 44,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 48,
+      "input": "4000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 48,
+      "input": "400",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 48,
+      "input": "4007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 57,
+      "input": "150 g",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 57,
+      "input": "150 kg",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 62,
+      "input": "1 g",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 62,
+      "input": "1 kg",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 64,
+      "input": "7000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 64,
+      "input": "700",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 64,
+      "input": "7007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 67,
+      "input": "6000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 67,
+      "input": "600",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 67,
+      "input": "6007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 69,
+      "input": "5 kg",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 69,
+      "input": "5 g",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 71,
+      "input": "20 kg",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 71,
+      "input": "20 g",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 73,
+      "input": "6 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 73,
+      "input": "6 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 80,
+      "input": "100 m",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 80,
+      "input": "100 km",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 82,
+      "input": "42 km",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 82,
+      "input": "42 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 88,
+      "input": "5000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 88,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 88,
+      "input": "5007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 102,
+      "input": "10 ℓ",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 102,
+      "input": "10 ml",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 109,
+      "input": "6000",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 109,
+      "input": "600",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 109,
+      "input": "6007",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 113,
+      "input": "30 km",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 113,
+      "input": "30 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 120,
+      "input": "50",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 120,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 120,
+      "input": "57",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 122,
+      "input": "10 ℓ",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 122,
+      "input": "10 ml",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 123,
+      "input": "1 kg",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 123,
+      "input": "1 g",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 137,
+      "input": "5 ml",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 137,
+      "input": "5 ℓ",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 150,
+      "input": "1 ℓ",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 150,
+      "input": "1 ml",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 162,
+      "input": "6 mm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 162,
+      "input": "6 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 185,
+      "input": "5 kg",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 185,
+      "input": "5 g",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 242,
+      "input": "200 ℓ",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 242,
+      "input": "200 ml",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 244,
+      "input": "1 ℓ",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 244,
+      "input": "1 ml",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 246,
+      "input": "6 cm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 246,
+      "input": "6 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 250,
+      "input": "60 g",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 250,
+      "input": "60 kg",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 291,
+      "input": "250 ml",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 291,
+      "input": "250 ℓ",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 294,
+      "input": "60 g",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 294,
+      "input": "60 kg",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 299,
+      "input": "5 mm",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 299,
+      "input": "5 cm",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 332,
+      "input": "250 ml",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 332,
+      "input": "250 ℓ",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 369,
+      "input": "30 km",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 2,
+      "seed": 369,
+      "input": "30 m",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "1750",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "257",
+      "label": "wrong",
+      "mistake": "addedNotTimes"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 7,
+      "input": "1757",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 8,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 8,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 9,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 9,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 12,
+      "input": "1440",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 12,
+      "input": "188",
+      "label": "wrong",
+      "mistake": "addedNotTimes"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 12,
+      "input": "1447",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 15,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 15,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 19,
+      "input": "1200",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 19,
+      "input": "206",
+      "label": "wrong",
+      "mistake": "addedNotTimes"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 19,
+      "input": "1207",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 24,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 24,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 35,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 35,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 39,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 39,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 65,
+      "input": "1250",
+      "label": "correct"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 65,
+      "input": "255",
+      "label": "wrong",
+      "mistake": "addedNotTimes"
+    },
+    {
+      "skill": "measure",
+      "level": 3,
+      "seed": 65,
+      "input": "1257",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 1,
+      "input": "1:32",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 2,
+      "input": "4:30",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 2,
+      "input": "4:06",
+      "label": "wrong",
+      "mistake": "markAsOne"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 3,
+      "input": "1:10",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 3,
+      "input": "1:01",
+      "label": "wrong",
+      "mistake": "markAsOne"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 4,
+      "input": "5:05",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 4,
+      "input": "4:05",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 4,
+      "input": "4:65",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 6,
+      "input": "1:12",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 30,
+      "input": "10:00",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 30,
+      "input": "9:00",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 30,
+      "input": "9:60",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 36,
+      "input": "11:20",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 36,
+      "input": "10:20",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 36,
+      "input": "10:80",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 41,
+      "input": "7:20",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 41,
+      "input": "6:20",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 41,
+      "input": "6:80",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 44,
+      "input": "3:15",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 44,
+      "input": "2:15",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 44,
+      "input": "2:75",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 48,
+      "input": "7:05",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 48,
+      "input": "6:05",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 48,
+      "input": "6:65",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 67,
+      "input": "6:15",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 67,
+      "input": "5:15",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 67,
+      "input": "5:75",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 88,
+      "input": "8:05",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 88,
+      "input": "7:05",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 88,
+      "input": "7:65",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 89,
+      "input": "3:40",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 89,
+      "input": "2:40",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 89,
+      "input": "2:100",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 104,
+      "input": "11:15",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 104,
+      "input": "10:15",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 104,
+      "input": "10:75",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 125,
+      "input": "10:00",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 125,
+      "input": "9:00",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 125,
+      "input": "9:60",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 178,
+      "input": "5:50",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 178,
+      "input": "4:50",
+      "label": "wrong",
+      "mistake": "hourNotCarried"
+    },
+    {
+      "skill": "time",
+      "level": 2,
+      "seed": 178,
+      "input": "4:110",
+      "label": "wrong",
+      "mistake": "minutes100"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 1,
+      "input": "295",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 1,
+      "input": "455",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 1,
+      "input": "302",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 2,
+      "input": "230",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 2,
+      "input": "350",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 2,
+      "input": "237",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 3,
+      "input": "180",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 3,
+      "input": "300",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 3,
+      "input": "187",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 4,
+      "input": "2 min",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 4,
+      "input": "2 h",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 5,
+      "input": "72",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 5,
+      "input": "79",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 16,
+      "input": "300",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 16,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 16,
+      "input": "307",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 17,
+      "input": "240",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 17,
+      "input": "400",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 17,
+      "input": "247",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 20,
+      "input": "240",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 20,
+      "input": "400",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 20,
+      "input": "247",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 25,
+      "input": "120",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 25,
+      "input": "127",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 30,
+      "input": "1 h",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 30,
+      "input": "1 s",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 36,
+      "input": "1 h",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 36,
+      "input": "1 s",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 38,
+      "input": "48",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 38,
+      "input": "55",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 41,
+      "input": "290",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 41,
+      "input": "450",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 41,
+      "input": "297",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 42,
+      "input": "310",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 42,
+      "input": "510",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 42,
+      "input": "317",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 43,
+      "input": "20 s",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 43,
+      "input": "20 min",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 44,
+      "input": "155",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 44,
+      "input": "235",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 44,
+      "input": "162",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 47,
+      "input": "210",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 47,
+      "input": "330",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 47,
+      "input": "217",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 48,
+      "input": "180",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 48,
+      "input": "300",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 48,
+      "input": "187",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 67,
+      "input": "20 min",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 67,
+      "input": "20 h",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 73,
+      "input": "168",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 73,
+      "input": "175",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 89,
+      "input": "20 s",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 89,
+      "input": "20 min",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 102,
+      "input": "355",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 102,
+      "input": "555",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 102,
+      "input": "362",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 107,
+      "input": "2 min",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 107,
+      "input": "2 h",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 109,
+      "input": "9 h",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 109,
+      "input": "9 min",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 111,
+      "input": "9 h",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 111,
+      "input": "9 min",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 120,
+      "input": "1 s",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 120,
+      "input": "1 min",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 123,
+      "input": "180",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 123,
+      "input": "300",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 123,
+      "input": "187",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 143,
+      "input": "20 min",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 143,
+      "input": "20 h",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 182,
+      "input": "1 s",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 182,
+      "input": "1 min",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 186,
+      "input": "300",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 186,
+      "input": "500",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 186,
+      "input": "307",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 194,
+      "input": "245",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 194,
+      "input": "405",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 194,
+      "input": "252",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 198,
+      "input": "90 min",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 198,
+      "input": "90 s",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 204,
+      "input": "180",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 204,
+      "input": "300",
+      "label": "wrong",
+      "mistake": "unitFactor"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 204,
+      "input": "187",
+      "label": "wrong"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 248,
+      "input": "90 min",
+      "label": "correct"
+    },
+    {
+      "skill": "time",
+      "level": 3,
+      "seed": 248,
+      "input": "90 s",
+      "label": "wrong",
+      "mistake": "unitOutOfScale"
     }
   ]
 }

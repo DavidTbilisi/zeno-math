@@ -65,7 +65,7 @@ export const MENUS: MenuGroup[] = [
   },
   {
     icon: "geometry", label: "groupGeometryShort", title: "groupGeometry", sections: [
-      { title: "secMeasuring", items: [], shapes: ["ruler", "protractor", "protractor360", "setSquare45", "setSquare30"] },
+      { title: "secMeasuring", items: [{ live: "measureHand", icon: "📏" }], shapes: ["ruler", "protractor", "protractor360", "setSquare45", "setSquare30"] },
       {
         title: "secPlane", items: [
           { live: "geoLab", icon: "📐" },
