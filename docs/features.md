@@ -835,7 +835,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       answer is in lowest terms. Tops and bottoms added or taken away, the division read the wrong way round (4/3 for
       3 ÷ 4), the wholes left out, one part of the number given for all of them, and dividing done as multiplying are
       named. At P4 a fraction is broken into parts as well (#702): 5/8 = 2/8 + ☐/8 on a bar, and which sum makes a
-      fraction; the parts added, and the bottom split along with the top, are named
+      fraction; the parts added, and the bottom split along with the top, are named. Stories that add or take away
+      fractions with the same bottom come at P4 and with mixed numbers at P5 (#703). At P5 a fraction is multiplied by
+      a whole number: 3 × 2/5 over three bars of 2/5 or as three jumps of 2/5 on a number line, a unit fraction, a
+      mixed number (3 × 2 1/4), which expression is the same (2/5 + 2/5 + 2/5), stories (laps of a track, sugar for
+      cakes), and whether 2/3 × 18 is more or less than 18 without working it out. The hard level turns a division
+      into a multiplication (1/2 ÷ 5 = 1/2 × ☐), asks what 4 ÷ 1/2 means, gives the area of a rectangle with fraction
+      sides on a square metre cut into its parts, and a fraction of a fraction in a story. The bottom multiplied too,
+      only the wholes multiplied, the two numbers added, "multiplying makes bigger", the divisor kept, the division
+      read as "of", the sides added and the second fraction left out are named
     - *Decimals*: adding and subtracting with one or two places (the last digits lined up instead of the points
       named), then × and ÷ by 10, 100 or 1000 and by a one-digit number, then measurements from one unit to the other
       (km and m, m and cm, kg and g, ℓ and ml) and a whole number divided by a whole number as a decimal, exact or to 2
