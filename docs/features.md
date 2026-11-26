@@ -834,7 +834,8 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       how many fit), bare and as stories: a piece of cake shared among friends, servings of rice, pizzas shared. The
       answer is in lowest terms. Tops and bottoms added or taken away, the division read the wrong way round (4/3 for
       3 ÷ 4), the wholes left out, one part of the number given for all of them, and dividing done as multiplying are
-      named
+      named. At P4 a fraction is broken into parts as well (#702): 5/8 = 2/8 + ☐/8 on a bar, and which sum makes a
+      fraction; the parts added, and the bottom split along with the top, are named
     - *Decimals*: adding and subtracting with one or two places (the last digits lined up instead of the points
       named), then × and ÷ by 10, 100 or 1000 and by a one-digit number, then measurements from one unit to the other
       (km and m, m and cm, kg and g, ℓ and ml) and a whole number divided by a whole number as a decimal, exact or to 2
@@ -1789,20 +1790,30 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     the class plan; what was lit stays lit in that browser, kept under the student's code
   - Shade the fraction, answered by tapping the pieces of a bar, a grid, a circle or a set of counters: as many
     pieces as the bottom, then two to four times as many (¾ of 12 is 9), then counters too, up to 30. Any pieces will
-    do; shading the top number of pieces (3 for ¾ of 12) is named
+    do; shading the top number of pieces (3 for ¾ of 12) is named. First, too, which of three circles or rectangles
+    is cut into 2, 3 or 4 equal parts (#702); the one cut into as many parts of different sizes is named
   - Fractions in order: four or five fractions written smallest first, typed (commas or <, mixed numbers and decimals
     read too) or tapped in turn — unit fractions or the same bottom, then any bottoms, then five on 0 to 2 with some
     past 1 and some nearly 1. Biggest first is sent back; unit fractions put in the order of their bottoms is named
   - Equal fractions: which of four is equal — the fraction of a bar that is shaded, a fraction with bigger numbers, or
     a fraction's decimal or percentage — typed or picked. The wrong options are the slips people make, each named when
     picked: the unshaded part, shaded against unshaded, the same number added to top and bottom, the fraction's digits
-    read as a decimal (3/4 as 0.34)
+    read as a decimal (3/4 as 0.34). At the middle level (P3) fractions are numbers on a line as well (#702): the
+    fraction a point shows, between 0 and 1 or past 1; which lettered point is at 1 from 0 and the first mark; which
+    point a shaded bar the length of one whole matches; a whole number as a fraction (3 = ☐/4); a fraction against
+    1; the same point on a line cut finer (1/3 = ☐/6); and the pieces shaded over two bars of one whole each. The
+    marks counted for the parts, the parts after a whole counted alone, the last mark before 1 taken for 1, the parts
+    not shaded, the whole number left as it is, a fraction past 1 taken for less, the top kept and every piece of both
+    bars taken as the bottom are named
   - Make a whole: a bar with unit-fraction tiles in it (½ + ⅓ + ? = 1), the missing fraction typed in lowest terms —
     halves, quarters and eighths, then thirds, sixths and twelfths or fifths and tenths, then targets of ¾, ⅚ or 1½.
     Tops and bottoms added (½ + ⅓ as 2/5) is named; the worked solution fills the gap with the fewest tiles
   - Comparing fractions: the same bottom or one piece each with the bars drawn, then the same top, either side of a
     half and one piece short of a whole, then a common bottom; the worked solution shows the bars, the pencils across
-    their shaded parts and, over a common bottom, the bars cut into the same pieces
+    their shaded parts and, over a common bottom, the bars cut into the same pieces. The hardest level adds stories
+    (#702): two teams paint parts of one fence, and the same fraction of a small and of a large pizza. The bigger
+    bottom or the bigger top taken for more, and the same fraction of different wholes taken for the same amount, are
+    named
   - Balance puzzles: scales that balance with squares and weights on them, drawn, and what one square weighs typed —
     one shape on one pan (■ ■ ■ + 2 = 14), then the same shape on both (■ ■ ■ + 2 = ■ + 10), then two shapes on two
     scales. Leaving the squares on the other pan out (■ ■ ■ + 2 = 10 for the second) is named, and the worked solution

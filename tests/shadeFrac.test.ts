@@ -60,7 +60,10 @@ test("a shading is written in order and read back; judged by the number of piece
 
 test("in practice: the top number of pieces named, how many shaded said, the solution drawn; the server agrees", async () => {
   for (const level of LEVELS) {
-    const ex = exercise("shadeFraction", level, 7, w);
+    // The first shading question from seed 7 on: the easy level also asks which shape is cut into equal parts (#702).
+    let seed = 7;
+    while (exercise("shadeFraction", level, seed, w).answer.k !== "shade") seed++;
+    const ex = exercise("shadeFraction", level, seed, w);
     assert.ok(ex.play?.kind === "shade" && ex.pic);
     assert.deepEqual(check(ex, ex.plain, w), { ok: true });
     const r = await renderSolution(ex.solution!, en);
@@ -73,7 +76,9 @@ test("in practice: the top number of pieces named, how many shaded said, the sol
   assert.ok(v.hint && !/\{\w+\}/.test(v.hint), v.hint);
   assert.equal(check(ex, "shade:0,1,2", w).hint, "You shaded 3.");
   assert.equal(check(ex, "shade:", w).why, w.reasons.shading.none);
-  assert.equal(trapInputs(exercise("shadeFraction", 1, 7, w)).length, 0, "no trap when the pieces are the bottom");
+  let easy = 7;
+  while (exercise("shadeFraction", 1, easy, w).answer.k !== "shade") easy++;
+  assert.equal(trapInputs(exercise("shadeFraction", 1, easy, w)).length, 0, "no trap when the pieces are the bottom");
   const q = { skill: "shadeFraction" as const, level: 3, seed: 7 };
   assert.deepEqual([mark(q, "shade:5,6,7,8,9"), mark(q, "shade:3"), mark(q, "shade:1,1,2,3,4")], ["correct", "wrong", "form"]);
 });

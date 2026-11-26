@@ -71,6 +71,8 @@ test("the easy level: the same bottoms, and a division written as a fraction wit
   let [same, division] = [0, 0];
   for (const seed of SEEDS) {
     const ex = exercise("fractionSums", 1, seed, w);
+    // A fraction broken into parts is worked in lines (#702; tests/fractionLine.test.ts).
+    if (!ex.solution) continue;
     const spec = (ex.solution as { spec: { op: string; a: string; b: string; pic?: string } }).spec;
     if (ex.prompt === w.fracSums.asFraction) {
       division++;
@@ -120,6 +122,7 @@ test("every worked solution is drawn, with its picture", async () => {
   for (const level of LEVELS)
     for (const seed of SEEDS.slice(0, 40)) {
       const ex = exercise("fractionSums", level, seed, w);
+      if (!ex.solution) continue; // the parts of a fraction, worked in lines (#702)
       const r = await renderSolution(ex.solution!, en);
       assert.ok(r?.svg.includes("<rect") || r?.svg.includes("<circle"), `${level} #${seed}: ${ex.q}`);
     }

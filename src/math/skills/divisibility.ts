@@ -7,10 +7,8 @@
 // number taken for prime, and 1 or 2 taken for composite are named.
 import { fill } from "../chart";
 import { divSlips, divTask } from "../divisible";
-import { shuffled } from "../mulDivKit";
-import type { MistakeId } from "../mistakes";
-import type { ExprOption } from "../exprMatch";
-import type { Gen, Part, Trap } from "../practiceTypes";
+import { pickText } from "../mulDivKit";
+import type { Gen, Trap } from "../practiceTypes";
 
 /** Odd numbers under 100 that are not prime and not multiples of 5: the ones taken for prime. */
 const ODD_COMPOSITES = [21, 27, 33, 39, 49, 51, 57, 63, 69, 77, 81, 87, 91, 93];
@@ -23,14 +21,8 @@ const least = (n: number) => {
 
 const gen: Gen = (r, L, w) => {
   const W = w.factors;
-  /** A pick among options (numbers or words), each slip with its mistake and hint vars ({x} is the option's text). */
-  const pick = (prompt: string, right: string, slips: { text: string; id: MistakeId; vars: Record<string, string | number> }[], others: string[], steps: string[]): Part => {
-    const texts = [right, ...slips.map((s) => s.text), ...others];
-    const options: ExprOption[] = shuffled(r, texts).map((t) => ({ text: t, plain: t, tex: /^[\d, ×]+$/.test(t) ? t.replace(/×/g, "\\times") : `\\text{${t}}` }));
-    const at = (t: string) => options.findIndex((o) => o.text === t);
-    const traps: Trap[] = slips.map((s) => ({ id: s.id, a: { k: "pick", options, right: at(s.text) }, vars: { x: s.text, ...s.vars } }));
-    return { prompt, q: "", answer: { k: "pick", options, right: at(right), traps }, show: options[at(right)].tex, plain: right, format: "pick", steps };
-  };
+  /** A pick among numbers or words, worked in lines. */
+  const pick = (prompt: string, right: string, slips: Parameters<typeof pickText>[3], others: string[], steps: string[]) => pickText(r, prompt, right, slips, others, { steps });
   /** Numbers from lo to hi for which ok holds, none of them among taken. */
   const others = (k: number, lo: number, hi: number, ok: (n: number) => boolean, taken: number[]) => {
     const out: number[] = [];

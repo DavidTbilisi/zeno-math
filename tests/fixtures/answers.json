@@ -2481,14 +2481,14 @@
     {
       "skill": "compareFractions",
       "level": 3,
-      "seed": 7,
+      "seed": 35,
       "input": "=",
       "label": "correct"
     },
     {
       "skill": "compareFractions",
       "level": 3,
-      "seed": 7,
+      "seed": 35,
       "input": "<",
       "label": "wrong",
       "mistake": "biggerTop"
@@ -2496,7 +2496,7 @@
     {
       "skill": "compareFractions",
       "level": 3,
-      "seed": 7,
+      "seed": 35,
       "input": ">",
       "label": "wrong"
     },
@@ -3489,14 +3489,14 @@
     {
       "skill": "equivalent",
       "level": 2,
-      "seed": 7,
+      "seed": 5767,
       "input": "2/4",
       "label": "correct"
     },
     {
       "skill": "equivalent",
       "level": 2,
-      "seed": 7,
+      "seed": 5767,
       "input": "3/4",
       "label": "wrong",
       "mistake": "addedToBoth"
@@ -3504,7 +3504,7 @@
     {
       "skill": "equivalent",
       "level": 2,
-      "seed": 7,
+      "seed": 5767,
       "input": "2/2",
       "label": "wrong",
       "note": "only the top multiplied"
@@ -3624,14 +3624,14 @@
     {
       "skill": "shadeFraction",
       "level": 1,
-      "seed": 7,
+      "seed": 1,
       "input": "shade:0",
       "label": "correct"
     },
     {
       "skill": "shadeFraction",
       "level": 1,
-      "seed": 7,
+      "seed": 1,
       "input": "shade:1",
       "label": "correct",
       "note": "the other half"
@@ -3639,7 +3639,7 @@
     {
       "skill": "shadeFraction",
       "level": 1,
-      "seed": 7,
+      "seed": 1,
       "input": "shade:0,1",
       "label": "wrong",
       "note": "all of it"
@@ -3647,7 +3647,7 @@
     {
       "skill": "shadeFraction",
       "level": 1,
-      "seed": 7,
+      "seed": 1,
       "input": "shade:",
       "label": "form",
       "note": "nothing shaded"
@@ -18928,21 +18928,21 @@
     {
       "skill": "fractionSums",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "1/3",
       "label": "correct"
     },
     {
       "skill": "fractionSums",
       "level": 1,
-      "seed": 2,
+      "seed": 13,
       "input": "3/4",
       "label": "correct"
     },
     {
       "skill": "fractionSums",
       "level": 1,
-      "seed": 2,
+      "seed": 13,
       "input": "4/3",
       "label": "wrong",
       "mistake": "quotientFlipped"
@@ -30909,6 +30909,412 @@
       "input": "5, 43",
       "label": "form",
       "note": "a divisor not asked about"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 1,
+      "input": "32",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 1,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "wholeNotScaled"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 1,
+      "input": "39",
+      "label": "wrong"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 2,
+      "input": "\\frac{3}{3} = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 3,
+      "input": "\\frac{4}{5} < 1",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 4,
+      "input": "4/3",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 4,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "allPiecesAsBottom"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 4,
+      "input": "5/3",
+      "label": "wrong"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 6,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 6,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "unshadedRead"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 8,
+      "input": "2/6",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 8,
+      "input": "2/7",
+      "label": "wrong",
+      "mistake": "marksForParts"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 8,
+      "input": "3/6",
+      "label": "wrong"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 9,
+      "input": "1/8",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 9,
+      "input": "1/9",
+      "label": "wrong",
+      "mistake": "marksForParts"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 9,
+      "input": "2/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 10,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 10,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "unshadedRead"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 12,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 12,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "oneTooSoon"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 13,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 13,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "wholeNotScaled"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 13,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 15,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 15,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "oneTooSoon"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 30,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 30,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "sameTopKept"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 30,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 36,
+      "input": "5/4",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 36,
+      "input": "5/8",
+      "label": "wrong",
+      "mistake": "allPiecesAsBottom"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 36,
+      "input": "6/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 41,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 41,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "sameTopKept"
+    },
+    {
+      "skill": "equivalent",
+      "level": 2,
+      "seed": 41,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "shadeFraction",
+      "level": 1,
+      "seed": 7,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "shadeFraction",
+      "level": 1,
+      "seed": 7,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "unequalParts"
+    },
+    {
+      "skill": "shadeFraction",
+      "level": 1,
+      "seed": 8,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "shadeFraction",
+      "level": 1,
+      "seed": 8,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "unequalParts"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 1,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "partsAdded"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 2,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "partsAdded"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 4,
+      "input": "\\frac{1}{5} + \\frac{2}{5}",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 30,
+      "input": "\\frac{1}{10} + \\frac{5}{10}",
+      "label": "correct"
+    },
+    {
+      "skill": "fractionSums",
+      "level": 1,
+      "seed": 30,
+      "input": "\\frac{1}{5} + \\frac{5}{5}",
+      "label": "wrong",
+      "mistake": "bottomSplit"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 5,
+      "input": "the red team",
+      "label": "correct"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 5,
+      "input": "the blue team",
+      "label": "wrong",
+      "mistake": "biggerBottom"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 8,
+      "input": "the blue team",
+      "label": "correct"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 8,
+      "input": "the red team",
+      "label": "wrong",
+      "mistake": "biggerBottom"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 9,
+      "input": "1/2 of the large pizza",
+      "label": "correct"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 9,
+      "input": "they are the same amount",
+      "label": "wrong",
+      "mistake": "wholesIgnored"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 10,
+      "input": "1/4 of the large pizza",
+      "label": "correct"
+    },
+    {
+      "skill": "compareFractions",
+      "level": 3,
+      "seed": 10,
+      "input": "they are the same amount",
+      "label": "wrong",
+      "mistake": "wholesIgnored"
     }
   ]
 }
