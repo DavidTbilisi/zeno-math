@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { en } from "../src/locales/en.ts";
-import { again, balanced, MEAN_BALANCE_START, MEAN_LADDER, meanOf, medianOf, missOf, next, pulls, sumSay, tap, torque } from "../src/math/meanBalance.ts";
+import { again, balanced, type LiveMeanBalance, MEAN_BALANCE_START, MEAN_LADDER, meanOf, medianOf, missOf, next, pulls, sumSay, tap, torque } from "../src/math/meanBalance.ts";
 
 test("each round balances at its whole mean only, away from the median and the middle of the ends after the first", () => {
   assert.deepEqual(MEAN_LADDER.map(meanOf), [5, 4, 4, 5, 5]);
@@ -31,7 +31,7 @@ test("a tap sets the balance point on the line; a level beam stands until Next",
   assert.equal(tap(s, 2), s);
   s = next(s);
   assert.deepEqual(s, { round: 1, at: null });
-  let end = s;
+  let end: LiveMeanBalance = s;
   for (let i = 0; i < 5; i++) end = next(end);
   assert.equal(end.round, MEAN_LADDER.length);
   assert.equal(tap(end, 3), end);
