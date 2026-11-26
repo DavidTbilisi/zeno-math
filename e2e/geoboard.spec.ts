@@ -10,10 +10,19 @@ const SHOTS = process.env.SHOTS_DIR;
 test("geoboard by hand: tap corners, pills, bin, close the band to check", async ({ page }) => {
   const piece = await boardWith(page, "Geoboard: shapes and area", ".live-geoboard");
   const grid = piece.locator("svg.geo-grid");
-  const tap = async (p: Page, pts: GeoPt[]) => {
+  const click = async (p: Page, [x, y]: GeoPt) => {
     const box = (await grid.boundingBox())!;
     const k = box.width / (2 * 28 + 10 * 44);
-    for (const [x, y] of pts) await p.mouse.click(box.x + (28 + x * 44) * k, box.y + (28 + y * 44) * k);
+    await p.mouse.click(box.x + (28 + x * 44) * k, box.y + (28 + y * 44) * k);
+  };
+  // A corner's dot (r 7) at its peg; a tap puts one there or takes it off, and is waited for before the next.
+  const corner = ([x, y]: GeoPt) => grid.locator(`circle[r="7"][cx="${28 + x * 44}"][cy="${28 + y * 44}"]`);
+  const tap = async (p: Page, pts: GeoPt[]) => {
+    for (const pt of pts) {
+      const was = await corner(pt).count();
+      await click(p, pt);
+      await expect(corner(pt)).toHaveCount(1 - was);
+    }
   };
 
   // Free play: a 3 × 2 rectangle, with a stray corner tapped on and off again.
@@ -32,7 +41,8 @@ test("geoboard by hand: tap corners, pills, bin, close the band to check", async
   // Puzzle 1: a wrong rectangle closed is a miss; the right one closed from the keyboard is done.
   await piece.getByRole("button", { name: /^Puzzle 1/ }).click();
   await tap(page, [[0, 0], [1, 0], [1, 1], [0, 1]]);
-  await tap(page, [[0, 0]]);
+  // The first corner tapped again closes the band: it stays on.
+  await click(page, [0, 0]);
   await expect(piece).toContainText("Not yet");
   await piece.getByRole("button", { name: "Take the whole shape off" }).click();
   await tap(page, ladderTask(0).sample);

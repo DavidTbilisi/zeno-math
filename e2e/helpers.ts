@@ -14,6 +14,9 @@ export async function boardWith(page: Page, name: string, piece: string): Promis
   await game.waitFor();
   const box = (await game.boundingBox())!;
   await page.mouse.click(box.x + 6, box.y + 6); // a corner: one click there only puts the piece in use
+  // In use a moment later (BoardPage makes it Excalidraw's active embeddable, which lets pointer events through to it).
+  // A click before then goes to the board, which hands it to the piece two frames on: after clicks made since.
+  await expect(page.locator(".excalidraw__embeddable-container__inner").filter({ has: game })).toHaveCSS("pointer-events", "all");
   return game;
 }
 
