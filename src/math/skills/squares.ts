@@ -2,7 +2,40 @@
 // and the first cubes, then cube roots, multiples of ten, tenths and fractions. Doubling for squaring, halving for a
 // root and a tenth squared left in tenths are the slips.
 import { fracTex, gcd, num, tidy } from "../practiceKit";
-import type { Gen, Part, Trap } from "../practiceTypes";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+
+/** The kinds #720 added at the hard level. */
+function more(r: Rng, kind: number, w: PracticeWords): Part {
+  const W = w.sqrP;
+  if (kind <= 6) {
+    // x² = k: two square roots, the positive and the negative; k a whole square, a decimal or a fraction.
+    const form = r.int(0, 2);
+    const [n, d] = form === 0 ? [r.int(2, 15), 1] : form === 1 ? [r.int(2, 9), 10] : r.pick([[2, 3], [3, 4], [2, 5], [4, 5], [5, 6], [3, 7], [5, 9]] as const);
+    const v = n / d;
+    const k = form === 0 ? String(n * n) : form === 1 ? tidy(v * v) : `\\frac{${n * n}}{${d * d}}`;
+    const shown = form === 2 ? fracTex(n, d) : tidy(v);
+    return {
+      prompt: W.solveSquare, q: `x^2 = ${k}`,
+      answer: { k: "set", vs: [-v, v], tol: 1e-9, listed: true, traps: [{ id: "rootOnlyPositive", a: { k: "set", vs: [v], tol: 1e-9, listed: true }, vars: { v: form === 2 ? `${n}/${d}` : tidy(v), k: form === 2 ? `${n * n}/${d * d}` : k } }] },
+      show: `x = -${shown},\\; x = ${shown}`, plain: form === 2 ? `-${n}/${d}; ${n}/${d}` : `-${tidy(v)}; ${tidy(v)}`, format: "roots",
+      steps: [`x = \\pm\\sqrt{${k}} = \\pm ${shown}`],
+    };
+  }
+  if (kind <= 8) {
+    // x³ = k: one cube root, with the sign of k.
+    const n = r.int(2, 6) * r.pick([1, 1, -1]);
+    const k = n ** 3;
+    const traps: Trap[] = k % 3 === 0 && k / 3 !== n ? [{ id: "cubeRootAsThird", a: num(k / 3), vars: { x: k / 3, k, v: n } }] : [];
+    return { prompt: W.solveCube, q: `x^3 = ${k}`, answer: { ...num(n), traps }, show: `x = ${n}`, plain: String(n), format: "number", steps: [`${n} \\times ${n} \\times ${n} = ${k}`, `x = \\sqrt[3]{${k}} = ${n}`] };
+  }
+  // The root of a decimal: the root has half as many decimal places.
+  const n = r.int(2, 9);
+  const [d, v] = [tidy((n * n) / 100), n / 10];
+  return {
+    prompt: w.prompts.times, q: `\\sqrt{${d}}`, answer: { ...num(v), traps: [{ id: "rootDecimalPlaces", a: num(n / 100), vars: { x: tidy(n / 100), d, v: tidy(v) } }] },
+    show: tidy(v), plain: tidy(v), format: "number", steps: [`${tidy(v)} \\times ${tidy(v)} = ${d}`, `\\sqrt{${d}} = ${tidy(v)}`],
+  };
+}
 
 const gen: Gen = (r, L, w) => {
   const out = (q: string, v: number, more: Pick<Part, "steps" | "solution"> & { traps?: Trap[] }): ReturnType<Gen> => ({
@@ -28,6 +61,9 @@ const gen: Gen = (r, L, w) => {
     const kind = r.int(0, 2);
     return kind === 0 ? power(r.int(11, 20), 2) : kind === 1 ? root(r.int(11, 20)) : power(r.pick([2, 3, 4, 5, 10]), 3);
   }
+  // #720: equations x² = k and x³ = k, and roots of decimals and fractions, for 5 to 9 of a draw.
+  const extra = r.int(0, 9);
+  if (extra >= 5) return more(r, extra, w);
   const kind = r.int(0, 3);
   if (kind === 0) {
     const n = r.int(2, 10);

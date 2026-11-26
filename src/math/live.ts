@@ -46,6 +46,7 @@ import { PERCENT_HAND_START, type LivePercentHand } from "./percentHand";
 import { CIRCLE_HAND_START, type LiveCircleHand } from "./circleHand";
 import { TRIG_FIND_START, type LiveTrigFind } from "./trigFind";
 import { VEC_FIND_START, type LiveVecFind } from "./vecFind";
+import { POWER_FIND_START, type LivePowerFind } from "./powerFind";
 import { SIM_HAND_START, type LiveSimHand } from "./simHand";
 import { AREA_START, type LiveAreaBlocks } from "./areaBlocks";
 import { COUNTERS_START, type LiveCounters } from "./counters";
@@ -637,6 +638,7 @@ export type LiveStates = {
   circleHand: LiveCircleHand;
   trigFind: LiveTrigFind;
   vecFind: LiveVecFind;
+  powerFind: LivePowerFind;
   areaBlocks: LiveAreaBlocks;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
@@ -813,6 +815,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   circleHand: [740, 680],
   trigFind: [740, 680],
   vecFind: [740, 660],
+  powerFind: [740, 680],
   areaBlocks: [780, 730],
   counters: [680, 600],
   signArrow: [680, 720],
@@ -991,6 +994,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     circleHand: CIRCLE_HAND_START,
     trigFind: TRIG_FIND_START,
     vecFind: VEC_FIND_START,
+    powerFind: POWER_FIND_START,
     areaBlocks: AREA_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,

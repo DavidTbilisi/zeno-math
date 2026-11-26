@@ -448,7 +448,7 @@ export type PracticeWords = {
   reals: {
     rational: string; irrational: string; classify: string; rootWhy: string; recurringWhy: string; piWhy: string; fractionWhy: string;
     between: string; recurring: string; largest: string; alwaysRational: string; alwaysIrrational: string; either: string;
-    stdDivide: string; stdAdd: string;
+    stdDivide: string; stdAdd: string; asRepeating: string;
     closed: Record<"ratIrr" | "irrIrr" | "ratRat" | "irrTimes" | "ratTimesIrr", string>;
     closedWhy: Record<"ratIrr" | "irrIrr" | "ratRat" | "irrTimes" | "ratTimesIrr", string>;
   };
@@ -471,6 +471,9 @@ export type PracticeWords = {
   conP: Record<"circleFrom" | "circleGraph" | "centreOf" | "pointQ" | "inside" | "on" | "outside" | "ellipseCentre" | "radiusAcross" | "radiusUp" | "ellipseFrom" | "ellipseGraph" | "opens" | "leftRight" | "upDown" | "vertex" | "hyperFrom", string>;
   plyP: Record<"collect" | "area" | "degree" | "leading", string>;
   fctP: Record<"gcf" | "mono" | "numbers" | "negative", string>;
+  pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
+  sqrP: Record<"solveSquare" | "solveCube", string>;
+  srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
   sxpP: Record<"constant" | "coefficient" | "evalOne" | "wordPens" | "wordBoxes" | "write" | "more" | "less" | "from" | "times" | "over" | "evalMulti" | "evalSquare" | "evalFrac" | "largest" | "smallest" | "taxi" | "gym" | "perKm" | "flagFall" | "taxiTotal" | "kms" | "perMonth" | "joining" | "gymTotal" | "months" | "timesSum" | "sumTimes" | "timesDiff" | "sumOver" | "change" | "factor" | "simplify" | "ball", string>;
   vecP: Record<"fromEnds" | "fromPolar" | "direction" | "length2" | "unit" | "addLen" | "addComp" | "plane" | "lineAt" | "lineT", string>;
   xplP: Record<"cross" | "triArea" | "planeD" | "normal" | "pointDist" | "planesDist", string>;

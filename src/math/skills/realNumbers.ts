@@ -6,7 +6,7 @@
 // added in a division, front numbers added across different powers, and two irrationals always irrational are slips.
 import { fill } from "../chart";
 import { gcd, num } from "../practiceKit";
-import type { Gen, Part, Trap } from "../practiceTypes";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 
 const tidy = (v: number) => String(Number(v.toFixed(6)));
 const frac = (n: number, d: number) => {
@@ -75,6 +75,8 @@ const gen: Gen = (r, L, w) => {
   }
 
   if (L === 2) {
+    // #720: a fraction written as a repeating decimal, for 6 to 9 of a draw.
+    if (r.int(0, 9) >= 6) return repeating(r, w);
     if (r.next() < 0.55) {
       // A recurring decimal as a fraction.
       const t = r.pick(["one", "two", "mixed"] as const);
@@ -169,6 +171,52 @@ const gen: Gen = (r, L, w) => {
     steps: [`${tidy(b)} \\times 10^{${n}} = ${tidy(b / 10 ** gap)} \\times 10^{${n + gap}}`, `(${tidy(a)} + ${tidy(b / 10 ** gap)}) \\times 10^{${n + gap}} = ${stdTex(v)}`],
   };
 };
+
+/** n/d by long division: the digits before the repeating block and the block. */
+function decimal(n: number, d: number): { pre: string; per: string } {
+  const seen = new Map<number, number>();
+  let [rem, digits] = [n % d, ""];
+  while (rem && !seen.has(rem)) {
+    seen.set(rem, digits.length);
+    rem *= 10;
+    digits += String(Math.floor(rem / d));
+    rem %= d;
+  }
+  const at = rem ? seen.get(rem)! : digits.length;
+  return { pre: digits.slice(0, at), per: digits.slice(at) };
+}
+
+/** Which of four decimals a fraction is: the repeating block marked with a bar. */
+function repeating(r: Rng, w: PracticeWords): Part {
+  let n: number, d: number;
+  do [d, n] = [r.pick([3, 6, 9, 11, 12, 15, 22, 27, 33]), r.int(1, 32)];
+  while (n >= d || gcd(n, d) !== 1);
+  const { pre, per } = decimal(n, d);
+  const bar = (a: string, b: string) => `0.${a}\\overline{${b}}`;
+  const right = bar(pre, per);
+  const cut = `0.${pre}${per}`;
+  const rounded = `0.${String(Math.round((n / d) * 100)).padStart(2, "0")}`;
+  const read = `0.${n}${d}`;
+  const texts: string[] = [];
+  for (const t of shuffled(r, [right, cut, rounded === cut ? bar("", pre + per + per[0]) : rounded, read])) if (!texts.includes(t)) texts.push(t);
+  const options = texts.map((t) => ({ text: t.replace(/\\overline\{(\d+)\}/, "($1)"), plain: t, tex: t }));
+  const at = (t: string) => texts.indexOf(t);
+  return {
+    prompt: fill(w.reals.asRepeating, { f: `${n}/${d}` }), q: "",
+    answer: { k: "pick", options, right: at(right), traps: [{ id: "repeatingCutOff", a: { k: "pick", options, right: at(cut) }, vars: { f: `${n}/${d}`, r: per, x: cut } }] },
+    show: right, plain: right, format: "pick",
+    steps: [`${n} \\div ${d} = 0.${pre}${per}${per}${per}\\ldots`, `= ${right}`],
+  };
+}
+
+function shuffled<T>(r: Rng, xs: T[]): T[] {
+  const out = [...xs];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = r.int(0, i);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
 
 function ask(prompt: string, v: number, traps: Trap[], steps: string[]): Part {
   return { prompt, q: "", answer: { ...num(v), traps }, show: String(v), plain: String(v), format: "number", steps };

@@ -118,6 +118,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "formula", icon: "∑", label: "formula" },
           { kind: "algebra", icon: "⚖", label: "algebra" },
           { kind: "powers", icon: "xⁿ", label: "powers" },
+          { live: "powerFind", icon: "2ⁿ" },
           { kind: "polynomials", icon: "x³", label: "polynomialsTool" },
           { kind: "sequences", icon: "aₙ", label: "sequences" },
         ], shapes: ["tile1", "tileX", "tileX2", "tileY", "tileXY", "tileNeg1", "tileNegX", "tileNegX2", "balance"],
