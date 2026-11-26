@@ -468,6 +468,8 @@ export type PracticeWords = {
   /** Parametric and polar curves (parametric): prompts and options. */
   qpm: { pointQ: string; removeQ: string; polarQ: string; slopeQ: string; speedQ: string; nameQ: string; circle: string; line: string; spiral: string; arcQ: string; areaQ: string; accelQ: string; ballQ: string; };
   /** Conic sections (conics): prompts and options. */
+  conP: Record<"circleFrom" | "circleGraph" | "centreOf" | "pointQ" | "inside" | "on" | "outside" | "ellipseCentre" | "radiusAcross" | "radiusUp" | "ellipseFrom" | "ellipseGraph" | "opens" | "leftRight" | "upDown" | "vertex" | "hyperFrom", string>;
+  crcP: Record<"arcThird" | "arcAlg" | "major" | "inscFromArc" | "arcFromInsc" | "tangentLen" | "tangentRad" | "tangentsEq" | "tangentsAngle" | "quad" | "rightIn" | "horizon" | "plane" | "towerNote" | "planeNote", string>;
   qcn: { radiusQ: string; centreQ: string; focusQ: string; fromFocusQ: string; fociQ: string; axisQ: string; slopeQ: string; whichQ: string; circle: string; ellipse: string; parabola: string; hyperbola: string; galleryQ: string; };
   /** Trigonometric graphs (trigGraphs): prompts. */
   qtg: { ampQ: string; periodQ: string; midQ: string; ampPicQ: string; periodPicQ: string; midPicQ: string; bPicQ: string; tideHighQ: string; tideGapQ: string; };

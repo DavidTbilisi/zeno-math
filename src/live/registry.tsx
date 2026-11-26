@@ -83,6 +83,7 @@ import { Rods } from "./Rods";
 import { DecGrid } from "./DecGrid";
 import { MeasureHand } from "./MeasureHand";
 import { PercentHand } from "./PercentHand";
+import { CircleHand } from "./CircleHand";
 import { SimHand } from "./SimHand";
 import { AreaBlocks } from "./AreaBlocks";
 import { Counters } from "./Counters";
@@ -230,6 +231,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   measureHand: MeasureHand,
   percentHand: PercentHand,
   simHand: SimHand,
+  circleHand: CircleHand,
   areaBlocks: AreaBlocks,
   counters: Counters,
   signArrow: SignArrow,

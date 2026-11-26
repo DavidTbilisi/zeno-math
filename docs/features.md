@@ -1324,7 +1324,27 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     gallery are. Twelve slips are named, among them the radius not square-rooted, the squares not added when
     completing them and the foci found by adding for an ellipse. The piece *Pins and a string* (Insert → Geometry →
     Coordinates, grades 10–12): drag a pencil round two pins on a string 10 long, the two lengths always adding to
-    10, and push the pins together for a circle; or keep a pencil as far from a focus as from a line
+    10, and push the pins together for a circle; or keep a pencil as far from a focus as from a line. Also (#715),
+    equations from features and graphs: a circle's equation from its centre and radius or from its graph, the centre
+    from the expanded equation, and whether a point is inside, on or outside a circle (grade 10); an ellipse's radii
+    and centre from its equation, and its equation from its features or its graph (grade 12); which way a hyperbola
+    opens, a vertex, and its equation from its vertices and foci (grade 12). The radius not squared, the centre not
+    halved, the squared distance compared with the radius, the radii swapped, the bigger number taken for the
+    direction, b taken for the vertex and c² written for b² are named
+  - Circle theorems (grade 10; #715, alongside the angle at the centre, the semicircle, the same segment, cyclic
+    quadrilaterals, tangents and chords worked by the geometry builder): the third arc round a circle, arcs given as
+    expressions in x, the major arc from the angle at the centre, an angle at the circle from its arc and the arc
+    from the angle (easy); a tangent's length or the radius from the right angle at T, two tangents from a point
+    given as expressions in x, and the angle between two tangents (medium); an inscribed quadrilateral's angles as
+    expressions in x, the circle round a right triangle and, in a new setting, how far the horizon is from a
+    lighthouse or a plane (hard). Arcs taken to make 180°, the minor arc for the major, the arc for the angle at the
+    circle and the angle for the arc, one length taken from the other, the squares added, x given for the length,
+    the outside angle halved, opposite angles taken to make 360° and the diameter for the radius are named. The piece
+    *Circle theorems: move the point by hand* (Insert → Geometry → plane geometry, grades 8–10): C is dragged round a
+    circle (or pressed into place, or moved by the arrow keys) while ∠ACB stays half of ∠AOB; then ∠AOB is found from
+    ∠ACB, the angle in a semicircle stays 90°, a quadrilateral's opposite angles keep making 180°, and two tangents
+    from P stay equal however far P goes. A tile counts only once the point has been moved a few times, and each rule
+    is said after the right tap
   - Parametric and polar curves (grades 12 and 13; #665): the point at t, the parameter removed and a polar point
     in x; then dy/dx from the two rates, speed and naming a polar curve; then arc length, a cardioid's area, an
     acceleration component and, in a new setting, where a thrown ball lands. Twelve slips are named, among them

@@ -54,7 +54,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   // algebra sense
   balance: [6, 8], exprMatch: [6, 8],
   // shape sense
-  geoboard: [3, 7], mirror: [3, 6], shapeSort: [2, 6], angleGuess: [3, 6], angleHunt: [5, 8], trigBuild: [10, 12], unitCircleGame: [10, 12], slopeWalk: [8, 12], wheelWave: [10, 12], pinString: [10, 12], parallelLab: [5, 8], moveShape: [7, 10], simHand: [7, 10], buildTriangle: [8, 10], construct: [7, 10], scalePlan: [6, 8], coinStack: [8, 10], rootZoom: [7, 10], absLine: [6, 10], twoChanges: [6, 8], solid: [4, 12], turned: [12, 13], cubeMatrix: [10, 13],
+  geoboard: [3, 7], mirror: [3, 6], shapeSort: [2, 6], angleGuess: [3, 6], angleHunt: [5, 8], trigBuild: [10, 12], unitCircleGame: [10, 12], slopeWalk: [8, 12], wheelWave: [10, 12], pinString: [10, 12], parallelLab: [5, 8], moveShape: [7, 10], simHand: [7, 10], circleHand: [8, 10], buildTriangle: [8, 10], construct: [7, 10], scalePlan: [6, 8], coinStack: [8, 10], rootZoom: [7, 10], absLine: [6, 10], twoChanges: [6, 8], solid: [4, 12], turned: [12, 13], cubeMatrix: [10, 13],
   sohcahtoa: [10, 12], trigDiscover: [10, 12], pythDiscover: [8, 10], circleDiscover: [10, 12], tessellate: [3, 7],
   views3d: [4, 8], cubeNet: [4, 7],
   // chart sense

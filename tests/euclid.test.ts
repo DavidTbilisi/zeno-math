@@ -332,9 +332,9 @@ test("practice: geometry answers follow from the question", () => {
       for (const skill of ["circles", "similarity", "volume"] as const) {
         const ex = exercise(skill, level, s, pw);
         assert.equal(check(ex, ex.plain, pw).ok, true, `${skill} ${ex.q}: ${ex.plain}`);
-        // Volume's kinds from #711 (unit cubes, nets, stories) and similarity's from #714 (tests, shadows, proofs) are
-        // worked in steps, not by the geometry builder.
-        if (skill !== "circles" && ex.solution?.kind !== "euclid") continue;
+        // Volume's kinds from #711 (unit cubes, nets, stories), similarity's from #714 (tests, shadows, proofs) and the
+        // circles' from #715 (arcs, tangents, the horizon) are worked in steps, not by the geometry builder.
+        if (ex.solution?.kind !== "euclid") continue;
         const spec = ex.solution!.spec as { topic: EuclidTopic; src: string };
         const d = build(spec.topic, spec.src).data;
         const v = (ex.answer as { v: number }).v;

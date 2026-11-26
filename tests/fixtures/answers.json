@@ -1410,28 +1410,28 @@
     {
       "skill": "circles",
       "level": 1,
-      "seed": 7,
+      "seed": 387,
       "input": "54",
       "label": "correct"
     },
     {
       "skill": "circles",
       "level": 1,
-      "seed": 7,
+      "seed": 387,
       "input": "54°",
       "label": "correct"
     },
     {
       "skill": "circles",
       "level": 1,
-      "seed": 7,
+      "seed": 387,
       "input": "27",
       "label": "wrong"
     },
     {
       "skill": "circles",
       "level": 1,
-      "seed": 7,
+      "seed": 387,
       "input": "108",
       "label": "wrong"
     },
@@ -25559,14 +25559,14 @@
     {
       "skill": "conics",
       "level": 1,
-      "seed": 1,
+      "seed": 9384,
       "input": "6",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 1,
+      "seed": 9384,
       "input": "36",
       "label": "wrong",
       "mistake": "radiusNotRooted"
@@ -25574,21 +25574,21 @@
     {
       "skill": "conics",
       "level": 1,
-      "seed": 1,
+      "seed": 9384,
       "input": "13",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 2,
+      "seed": 1586,
       "input": "3",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 2,
+      "seed": 1586,
       "input": "-3",
       "label": "wrong",
       "mistake": "centreSignKept"
@@ -25596,21 +25596,21 @@
     {
       "skill": "conics",
       "level": 1,
-      "seed": 2,
+      "seed": 1586,
       "input": "10",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 3,
+      "seed": 4507,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 3,
+      "seed": 4507,
       "input": "25",
       "label": "wrong",
       "mistake": "radiusNotRooted"
@@ -25618,21 +25618,21 @@
     {
       "skill": "conics",
       "level": 1,
-      "seed": 3,
+      "seed": 4507,
       "input": "12",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 5,
+      "seed": 7145,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 5,
+      "seed": 7145,
       "input": "-2",
       "label": "wrong",
       "mistake": "centreSignKept"
@@ -25640,21 +25640,21 @@
     {
       "skill": "conics",
       "level": 1,
-      "seed": 5,
+      "seed": 7145,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 6,
+      "seed": 9115,
       "input": "7",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 1,
-      "seed": 6,
+      "seed": 9115,
       "input": "49",
       "label": "wrong",
       "mistake": "radiusNotRooted"
@@ -25662,21 +25662,21 @@
     {
       "skill": "conics",
       "level": 1,
-      "seed": 6,
+      "seed": 9115,
       "input": "14",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 1,
+      "seed": 74,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 1,
+      "seed": 74,
       "input": "1769/100",
       "label": "wrong",
       "mistake": "fociAdded"
@@ -25684,21 +25684,21 @@
     {
       "skill": "conics",
       "level": 2,
-      "seed": 1,
+      "seed": 74,
       "input": "12",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 3,
+      "seed": 54,
       "input": "8",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 3,
+      "seed": 54,
       "input": "583/50",
       "label": "wrong",
       "mistake": "fociAdded"
@@ -25706,21 +25706,21 @@
     {
       "skill": "conics",
       "level": 2,
-      "seed": 3,
+      "seed": 54,
       "input": "15",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 4,
+      "seed": 255,
       "input": "10",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 4,
+      "seed": 255,
       "input": "5",
       "label": "wrong",
       "mistake": "semiAxisForAxis"
@@ -25728,21 +25728,21 @@
     {
       "skill": "conics",
       "level": 2,
-      "seed": 4,
+      "seed": 255,
       "input": "17",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "4",
       "label": "wrong",
       "mistake": "focusNotQuartered"
@@ -25750,21 +25750,21 @@
     {
       "skill": "conics",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "8",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 12,
+      "seed": 68,
       "input": "4",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 2,
-      "seed": 12,
+      "seed": 68,
       "input": "1",
       "label": "wrong",
       "mistake": "fourPForgotten"
@@ -25772,28 +25772,28 @@
     {
       "skill": "conics",
       "level": 2,
-      "seed": 12,
+      "seed": 68,
       "input": "11",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 1,
+      "seed": 327,
       "input": "A parabola",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 2,
+      "seed": 790,
       "input": "An ellipse",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 2,
+      "seed": 790,
       "input": "A circle",
       "label": "wrong",
       "mistake": "ellipseAsCircle"
@@ -25801,14 +25801,14 @@
     {
       "skill": "conics",
       "level": 3,
-      "seed": 4,
+      "seed": 255,
       "input": "8",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 4,
+      "seed": 255,
       "input": "4",
       "label": "wrong",
       "mistake": "fociHalfOnly"
@@ -25816,7 +25816,7 @@
     {
       "skill": "conics",
       "level": 3,
-      "seed": 4,
+      "seed": 255,
       "input": "583/50",
       "label": "wrong",
       "mistake": "fociAdded"
@@ -25824,21 +25824,21 @@
     {
       "skill": "conics",
       "level": 3,
-      "seed": 4,
+      "seed": 255,
       "input": "15",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "1.33",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "3/4",
       "label": "wrong",
       "mistake": "asymptoteSlopeInverted"
@@ -25846,21 +25846,21 @@
     {
       "skill": "conics",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "8.33",
       "label": "wrong"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 12,
+      "seed": 118,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "conics",
       "level": 3,
-      "seed": 12,
+      "seed": 118,
       "input": "53/20",
       "label": "wrong",
       "mistake": "fociSubtracted"
@@ -25868,7 +25868,7 @@
     {
       "skill": "conics",
       "level": 3,
-      "seed": 12,
+      "seed": 118,
       "input": "12",
       "label": "wrong"
     },
@@ -49315,6 +49315,2994 @@
       "level": 2,
       "seed": 30,
       "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 1,
+      "input": "(x + 4)² + (y − 1)² = 25",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 1,
+      "input": "(x − 4)² + (y + 1)² = 25",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 1,
+      "input": "(x + 4)² + (y − 1)² = 5",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 2,
+      "input": "(-2, -2)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 2,
+      "input": "(-4, -4)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 2,
+      "input": "(2, 2)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 3,
+      "input": "(-4, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 3,
+      "input": "(-8, -2)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 3,
+      "input": "(4, 1)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 4,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 4,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 5,
+      "input": "(x − 3)² + (y + 3)² = 16",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 5,
+      "input": "(x + 3)² + (y − 3)² = 16",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 5,
+      "input": "(x − 3)² + (y + 3)² = 4",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 6,
+      "input": "(x + 4)² + (y − 2)² = 4",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 6,
+      "input": "(x − 4)² + (y + 2)² = 4",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 6,
+      "input": "(x + 4)² + (y − 2)² = 2",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 10,
+      "input": "(x − 4)² + (y − 2)² = 25",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 10,
+      "input": "(x + 4)² + (y + 2)² = 25",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 10,
+      "input": "(x − 4)² + (y − 2)² = 5",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 20,
+      "input": "(-1, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 20,
+      "input": "(-2, 2)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 20,
+      "input": "(1, -1)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 30,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 30,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 36,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 36,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 38,
+      "input": "(3, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 38,
+      "input": "(6, -8)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 38,
+      "input": "(-3, 4)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 41,
+      "input": "on the circle",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 43,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 43,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 44,
+      "input": "outside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 57,
+      "input": "(-3, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 57,
+      "input": "(-6, -6)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 57,
+      "input": "(3, 3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 62,
+      "input": "(-3, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 62,
+      "input": "(-6, -6)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 62,
+      "input": "(3, 3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 64,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 64,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 67,
+      "input": "on the circle",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 69,
+      "input": "(-2, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 69,
+      "input": "(-4, 6)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 69,
+      "input": "(2, -3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 73,
+      "input": "(4, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 73,
+      "input": "(8, 8)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 73,
+      "input": "(-4, -4)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 80,
+      "input": "(2, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 80,
+      "input": "(4, 4)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 80,
+      "input": "(-2, -2)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 81,
+      "input": "on the circle",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 82,
+      "input": "(3, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 82,
+      "input": "(6, 2)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 82,
+      "input": "(-3, -1)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 88,
+      "input": "on the circle",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 89,
+      "input": "outside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 104,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 104,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 109,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 109,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 111,
+      "input": "on the circle",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 113,
+      "input": "(2, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 113,
+      "input": "(4, -2)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 113,
+      "input": "(-2, 1)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 120,
+      "input": "inside",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 120,
+      "input": "outside",
+      "label": "wrong",
+      "mistake": "pointVsRadius"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 180,
+      "input": "on the circle",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 242,
+      "input": "(1, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 242,
+      "input": "(2, 2)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 242,
+      "input": "(-1, -1)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 250,
+      "input": "(-3, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 250,
+      "input": "(-6, 6)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 250,
+      "input": "(3, -3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 294,
+      "input": "(-4, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 294,
+      "input": "(-8, 8)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 294,
+      "input": "(4, -4)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 299,
+      "input": "(2, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 299,
+      "input": "(4, -8)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 299,
+      "input": "(-2, 4)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 454,
+      "input": "(3, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 454,
+      "input": "(6, -8)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 454,
+      "input": "(-3, 4)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 457,
+      "input": "(-4, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 457,
+      "input": "(-8, 6)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 457,
+      "input": "(4, -3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 493,
+      "input": "(1, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 493,
+      "input": "(2, -8)",
+      "label": "wrong",
+      "mistake": "centreNotHalved"
+    },
+    {
+      "skill": "conics",
+      "level": 1,
+      "seed": 493,
+      "input": "(-1, 4)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 1,
+      "input": "(-4, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 1,
+      "input": "(4, -1)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 2,
+      "input": "(x + 2)²/16 + (y + 2)²/25 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 2,
+      "input": "(x + 2)²/25 + (y + 2)²/16 = 1",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 2,
+      "input": "(x + 2)²/4 + (y + 2)²/5 = 1",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 3,
+      "input": "(x + 4)²/4 + (y + 1)²/25 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 3,
+      "input": "(x + 4)²/25 + (y + 1)²/4 = 1",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 3,
+      "input": "(x + 4)²/2 + (y + 1)²/5 = 1",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 4,
+      "input": "(x + 2)²/4 + (y + 3)²/16 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 4,
+      "input": "(x + 2)²/16 + (y + 3)²/4 = 1",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 4,
+      "input": "(x + 2)²/2 + (y + 3)²/4 = 1",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 5,
+      "input": "(3, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 5,
+      "input": "(-3, 3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 6,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 6,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 6,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 6,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 10,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 10,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 10,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 10,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 11,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 11,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 11,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 11,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 13,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 13,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 13,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 13,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 16,
+      "input": "(-3, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 16,
+      "input": "(3, -3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 22,
+      "input": "(-3, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 22,
+      "input": "(3, 3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 25,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 25,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 25,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 25,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 26,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 26,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 26,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 26,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 30,
+      "input": "(x − 3)²/4 + (y + 1)²/9 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 30,
+      "input": "(x − 3)²/9 + (y + 1)²/4 = 1",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 30,
+      "input": "(x − 3)²/2 + (y + 1)²/3 = 1",
+      "label": "wrong",
+      "mistake": "radiusNotSquared"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 31,
+      "input": "(3, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 31,
+      "input": "(-3, -2)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 34,
+      "input": "(3, -4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 34,
+      "input": "(-3, 4)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 37,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 37,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 37,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 37,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 47,
+      "input": "(-4, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 47,
+      "input": "(4, 1)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 50,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 50,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 50,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 50,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 78,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 78,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 78,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 78,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 97,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 97,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 97,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 97,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 102,
+      "input": "(1, 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 102,
+      "input": "(-1, -3)",
+      "label": "wrong",
+      "mistake": "centreSignKept"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 126,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 126,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 126,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 126,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 154,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 154,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 154,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 154,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 204,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 204,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 204,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 204,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 229,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 229,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 229,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 229,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 263,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 263,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 263,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 263,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 317,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 317,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "radiusNotRooted"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 317,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "ellipseRadiiSwapped"
+    },
+    {
+      "skill": "conics",
+      "level": 2,
+      "seed": 317,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 1,
+      "input": "(4, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 1,
+      "input": "(5, 4)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 2,
+      "input": "x²/36 − y²/64 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 2,
+      "input": "x²/36 − y²/100 = 1",
+      "label": "wrong",
+      "mistake": "hyperbolaFocusForB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 3,
+      "input": "x²/9 − y²/16 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 3,
+      "input": "x²/9 − y²/25 = 1",
+      "label": "wrong",
+      "mistake": "hyperbolaFocusForB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 5,
+      "input": "(5, 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 5,
+      "input": "(12, 1)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 6,
+      "input": "up and down",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 6,
+      "input": "left and right",
+      "label": "wrong",
+      "mistake": "hyperbolaOpensWrongWay"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 10,
+      "input": "up and down",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 10,
+      "input": "left and right",
+      "label": "wrong",
+      "mistake": "hyperbolaOpensWrongWay"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 13,
+      "input": "left and right",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 13,
+      "input": "up and down",
+      "label": "wrong",
+      "mistake": "hyperbolaOpensWrongWay"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 16,
+      "input": "(7, -1)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 16,
+      "input": "(6, -1)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 17,
+      "input": "(5, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 17,
+      "input": "(4, -3)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 20,
+      "input": "y²/64 − x²/36 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 20,
+      "input": "y²/64 − x²/100 = 1",
+      "label": "wrong",
+      "mistake": "hyperbolaFocusForB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 22,
+      "input": "(1, -3)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 22,
+      "input": "(0, -3)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 34,
+      "input": "(4, -2)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 34,
+      "input": "(11, -2)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 37,
+      "input": "left and right",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 37,
+      "input": "up and down",
+      "label": "wrong",
+      "mistake": "hyperbolaOpensWrongWay"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 40,
+      "input": "(4, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 40,
+      "input": "(11, 2)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 41,
+      "input": "y²/25 − x²/144 = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 41,
+      "input": "y²/25 − x²/169 = 1",
+      "label": "wrong",
+      "mistake": "hyperbolaFocusForB"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 42,
+      "input": "(11, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "conics",
+      "level": 3,
+      "seed": 42,
+      "input": "(9, 2)",
+      "label": "wrong",
+      "mistake": "hyperbolaVertexB"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 1,
+      "input": "35",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 1,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 1,
+      "input": "42",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 2,
+      "input": "280",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 2,
+      "input": "80",
+      "label": "wrong",
+      "mistake": "minorForMajor"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 2,
+      "input": "287",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 3,
+      "input": "310",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 3,
+      "input": "50",
+      "label": "wrong",
+      "mistake": "minorForMajor"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 3,
+      "input": "317",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 4,
+      "input": "72",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 4,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "inscribedAsArc"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 4,
+      "input": "79",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 5,
+      "input": "180",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 5,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 5,
+      "input": "187",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 6,
+      "input": "205",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 6,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 6,
+      "input": "212",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 10,
+      "input": "100",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 10,
+      "input": "107",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 11,
+      "input": "155",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 11,
+      "input": "162",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 13,
+      "input": "235",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 13,
+      "input": "55",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 13,
+      "input": "242",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 16,
+      "input": "45",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 16,
+      "input": "45/2",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 16,
+      "input": "52",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 17,
+      "input": "240",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 17,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 17,
+      "input": "247",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 22,
+      "input": "185",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 22,
+      "input": "95",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 22,
+      "input": "192",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 30,
+      "input": "64",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 30,
+      "input": "128",
+      "label": "wrong",
+      "mistake": "arcAsInscribed"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 30,
+      "input": "71",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 31,
+      "input": "130",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 31,
+      "input": "70",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 31,
+      "input": "137",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 34,
+      "input": "230",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 34,
+      "input": "235/2",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 34,
+      "input": "237",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 36,
+      "input": "136",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 36,
+      "input": "68",
+      "label": "wrong",
+      "mistake": "inscribedAsArc"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 36,
+      "input": "143",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 40,
+      "input": "170",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 40,
+      "input": "80",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 40,
+      "input": "177",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 41,
+      "input": "45",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 41,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "arcAsInscribed"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 41,
+      "input": "52",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 42,
+      "input": "149",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 42,
+      "input": "77",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 42,
+      "input": "156",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 91,
+      "input": "150",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 91,
+      "input": "70",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 91,
+      "input": "157",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 95,
+      "input": "235",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 95,
+      "input": "115",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 95,
+      "input": "242",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 102,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 102,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 102,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 112,
+      "input": "235",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 112,
+      "input": "245/2",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 112,
+      "input": "242",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 134,
+      "input": "260",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 134,
+      "input": "125",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 134,
+      "input": "267",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 171,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 171,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 171,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 174,
+      "input": "55",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 174,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 174,
+      "input": "62",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 175,
+      "input": "110",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 175,
+      "input": "50",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 175,
+      "input": "117",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 179,
+      "input": "62",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 179,
+      "input": "26",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 179,
+      "input": "69",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 206,
+      "input": "145",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 206,
+      "input": "155/2",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 206,
+      "input": "152",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 331,
+      "input": "149",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 331,
+      "input": "77",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 331,
+      "input": "156",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 383,
+      "input": "235",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 383,
+      "input": "115",
+      "label": "wrong",
+      "mistake": "arcsTo180"
+    },
+    {
+      "skill": "circles",
+      "level": 1,
+      "seed": 383,
+      "input": "242",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 1,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 1,
+      "input": "583/100",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 1,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 2,
+      "input": "28",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 2,
+      "input": "35",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 3,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 3,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 3,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 4,
+      "input": "90",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 4,
+      "input": "45",
+      "label": "wrong",
+      "mistake": "halvedOutside"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 4,
+      "input": "97",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 5,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 5,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 5,
+      "input": "1879/100",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 5,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 20,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 20,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 20,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 30,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 30,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 30,
+      "input": "2267/100",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 30,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 36,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 36,
+      "input": "80",
+      "label": "wrong",
+      "mistake": "halvedOutside"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 36,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 41,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 41,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 41,
+      "input": "1281/100",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 41,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 62,
+      "input": "36",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 62,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 62,
+      "input": "43",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 69,
+      "input": "34",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 69,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 69,
+      "input": "41",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 80,
+      "input": "33",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 80,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 80,
+      "input": "40",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 123,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 123,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 123,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 170,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 170,
+      "input": "67",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 180,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 180,
+      "input": "67",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 299,
+      "input": "26",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 299,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "tangentPartOnly"
+    },
+    {
+      "skill": "circles",
+      "level": 2,
+      "seed": 299,
+      "input": "33",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 1,
+      "input": "2.5",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 1,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "diameterForRadius"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 1,
+      "input": "9.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 2,
+      "input": "6.5",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 2,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "diameterForRadius"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 2,
+      "input": "13.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 4,
+      "input": "252.5",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 4,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 4,
+      "input": "901349/100",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 4,
+      "input": "259.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 6,
+      "input": "131",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 6,
+      "input": "251",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 6,
+      "input": "138",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 10,
+      "input": "109",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 10,
+      "input": "10593/50",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 10,
+      "input": "116",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 11,
+      "input": "81",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 11,
+      "input": "171",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 11,
+      "input": "88",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 13,
+      "input": "94",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 13,
+      "input": "184",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 13,
+      "input": "101",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 25,
+      "input": "95",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 25,
+      "input": "9893/50",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 25,
+      "input": "102",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 30,
+      "input": "35.7",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 30,
+      "input": "1/10",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 30,
+      "input": "901003/100",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 30,
+      "input": "42.7",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 33,
+      "input": "103",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 33,
+      "input": "223",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 33,
+      "input": "110",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 36,
+      "input": "391.2",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 36,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 36,
+      "input": "225461/25",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 36,
+      "input": "398.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 41,
+      "input": "27.7",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 41,
+      "input": "3/50",
+      "label": "wrong",
+      "mistake": "tangentSubtracted"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 41,
+      "input": "9010",
+      "label": "wrong",
+      "mistake": "shorterAsHypotenuse"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 41,
+      "input": "34.7",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 61,
+      "input": "65",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 61,
+      "input": "7107/50",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 61,
+      "input": "72",
+      "label": "wrong"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 126,
+      "input": "85",
+      "label": "correct"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 126,
+      "input": "8107/50",
+      "label": "wrong",
+      "mistake": "oppositeTo360"
+    },
+    {
+      "skill": "circles",
+      "level": 3,
+      "seed": 126,
+      "input": "92",
       "label": "wrong"
     }
   ]

@@ -43,6 +43,7 @@ import { RODS_START, type LiveRods } from "./rods";
 import { DEC_GRID_START, type LiveDecGrid } from "./decGrid";
 import { MEASURE_HAND_START, type LiveMeasureHand } from "./measureHand";
 import { PERCENT_HAND_START, type LivePercentHand } from "./percentHand";
+import { CIRCLE_HAND_START, type LiveCircleHand } from "./circleHand";
 import { SIM_HAND_START, type LiveSimHand } from "./simHand";
 import { AREA_START, type LiveAreaBlocks } from "./areaBlocks";
 import { COUNTERS_START, type LiveCounters } from "./counters";
@@ -631,6 +632,7 @@ export type LiveStates = {
   measureHand: LiveMeasureHand;
   percentHand: LivePercentHand;
   simHand: LiveSimHand;
+  circleHand: LiveCircleHand;
   areaBlocks: LiveAreaBlocks;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
@@ -804,6 +806,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   measureHand: [740, 640],
   percentHand: [740, 520],
   simHand: [740, 720],
+  circleHand: [740, 680],
   areaBlocks: [780, 730],
   counters: [680, 600],
   signArrow: [680, 720],
@@ -979,6 +982,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     measureHand: MEASURE_HAND_START,
     percentHand: PERCENT_HAND_START,
     simHand: SIM_HAND_START,
+    circleHand: CIRCLE_HAND_START,
     areaBlocks: AREA_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,
