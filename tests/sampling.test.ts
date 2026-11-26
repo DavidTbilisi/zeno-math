@@ -1,5 +1,6 @@
 // Samples: a full sample of ten adds its estimate, a tap after it starts a new one, random draws are ten different
-// fish; every question is right with its own answer and wrong with each slip; the grades.
+// fish; every question is right with its own answer and wrong with each slip, named with its hint filled in (the study
+// design kinds of #741 too); the grades.
 import assert from "node:assert/strict";
 import test from "node:test";
 import { en } from "../src/locales/en.ts";
@@ -28,7 +29,7 @@ test("the pond: samples of ten, their estimates, and fresh random draws", () => 
 test("every question is right with its own answer, and every slip is wrong with its hint", () => {
   const seen = new Set<string>();
   for (const level of [1, 2, 3] as const)
-    for (let seed = 1; seed <= 150; seed++) {
+    for (let seed = 1; seed <= 300; seed++) {
       const ex = exercise("sampling", level, seed, w);
       assert.ok(check(ex, ex.plain, w).ok, `${level}/${seed} ${ex.prompt} ${ex.plain}`);
       for (const t of trapInputs(ex)) {
@@ -36,10 +37,14 @@ test("every question is right with its own answer, and every slip is wrong with 
         const v = check(ex, t.input, w);
         assert.ok(!v.ok, `${level}/${seed} ${t.id}`);
         assert.ok(v.hint && v.hint.length > 20, `${level}/${seed} ${t.id} ${t.input}`);
+        assert.equal(v.mistake, t.id, `${level}/${seed} ${ex.prompt} ${t.input}`);
+        assert.ok(!/\{\w+\}/.test(v.hint!), v.hint);
       }
     }
   for (const id of ["sampleAsPopulation", "convenienceFair", "leadingNeutral", "estimateSampleCount", "estimateAsPercent", "methodClusterStrata",
-    "methodSystematicRandom", "studyKindMixed", "volunteerGroups", "noControl", "causeFromObservation", "generalizeBeyond"])
+    "methodSystematicRandom", "studyKindMixed", "volunteerGroups", "noControl", "causeFromObservation", "generalizeBeyond", "oneAnswerQuestion", "sampleAsCensus", "componentsSwapped",
+    "summaryAsComponent", "sampleCountAsAll", "biasKindMixed", "biasMissed", "goalIgnored", "replacedForNot", "notReplacedForWith", "designMixed", "flawMixed",
+    "flawMissed", "onlyThoseAsked"])
     assert.ok(seen.has(id), id);
   assert.deepEqual([1, 2, 3].map((L) => gradeOf("sampling", L as 1 | 2 | 3)), [7, 8, 10]);
 });

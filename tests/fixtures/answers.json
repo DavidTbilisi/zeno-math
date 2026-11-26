@@ -21965,14 +21965,14 @@
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 1,
+      "seed": 8,
       "input": "20 names drawn at random from the school list",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 1,
+      "seed": 8,
       "input": "The first 20 students in the gym at lunch",
       "label": "wrong",
       "mistake": "convenienceFair"
@@ -21980,14 +21980,14 @@
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 2,
+      "seed": 9,
       "input": "How many hours a week do you spend on homework?",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 2,
+      "seed": 9,
       "input": "Don't you agree that students get too much homework?",
       "label": "wrong",
       "mistake": "leadingNeutral"
@@ -21995,14 +21995,14 @@
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 7,
+      "seed": 19,
       "input": "Everyone who lives in the town",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 7,
+      "seed": 19,
       "input": "The 200 residents asked",
       "label": "wrong",
       "mistake": "sampleAsPopulation"
@@ -22010,14 +22010,14 @@
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "The 50 bulbs tested",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 8,
+      "seed": 23,
       "input": "All 5000 bulbs made that day",
       "label": "wrong",
       "mistake": "sampleAsPopulation"
@@ -22025,14 +22025,14 @@
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 10,
+      "seed": 35,
       "input": "30 names drawn at random from the town's school lists",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 1,
-      "seed": 10,
+      "seed": 35,
       "input": "The 30 children in the library's reading club",
       "label": "wrong",
       "mistake": "convenienceFair"
@@ -22040,21 +22040,21 @@
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 1,
+      "seed": 9,
       "input": "Simple random",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 2,
+      "seed": 8,
       "input": "Stratified",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 2,
+      "seed": 8,
       "input": "Cluster",
       "label": "wrong",
       "mistake": "methodClusterStrata"
@@ -22062,14 +22062,14 @@
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 5,
+      "seed": 45,
       "input": "Systematic",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 5,
+      "seed": 45,
       "input": "Simple random",
       "label": "wrong",
       "mistake": "methodSystematicRandom"
@@ -22077,14 +22077,14 @@
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 7,
+      "seed": 1752,
       "input": "72",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 7,
+      "seed": 1752,
       "input": "18",
       "label": "wrong",
       "mistake": "estimateSampleCount"
@@ -22092,7 +22092,7 @@
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 7,
+      "seed": 1752,
       "input": "36",
       "label": "wrong",
       "mistake": "estimateAsPercent"
@@ -22100,21 +22100,21 @@
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 7,
+      "seed": 1752,
       "input": "79",
       "label": "wrong"
     },
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 11,
+      "seed": 18,
       "input": "Cluster",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 2,
-      "seed": 11,
+      "seed": 18,
       "input": "Stratified",
       "label": "wrong",
       "mistake": "methodClusterStrata"
@@ -22122,14 +22122,14 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "Toss a coin for each student: heads use the app, tails do not, then compare the two groups",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "Let the students who want the app use it, then compare them with the rest",
       "label": "wrong",
       "mistake": "volunteerGroups"
@@ -22137,7 +22137,7 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "Give the app to every student and see whether their reading improves",
       "label": "wrong",
       "mistake": "noControl"
@@ -22145,14 +22145,14 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "In that city, adults who own a dog tend to walk more",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "Owning a dog makes people walk more",
       "label": "wrong",
       "mistake": "causeFromObservation"
@@ -22160,7 +22160,7 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "Dog owners all over the world walk more",
       "label": "wrong",
       "mistake": "generalizeBeyond"
@@ -22168,14 +22168,14 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 5,
+      "seed": 28,
       "input": "At that school, students who eat breakfast tend to get higher marks",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 5,
+      "seed": 28,
       "input": "Eating breakfast raises students' marks",
       "label": "wrong",
       "mistake": "causeFromObservation"
@@ -22183,7 +22183,7 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 5,
+      "seed": 28,
       "input": "Students in every country who eat breakfast get higher marks",
       "label": "wrong",
       "mistake": "generalizeBeyond"
@@ -22191,14 +22191,14 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 7,
+      "seed": 19,
       "input": "Observational study",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 7,
+      "seed": 19,
       "input": "Experiment",
       "label": "wrong",
       "mistake": "studyKindMixed"
@@ -22206,14 +22206,14 @@
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 8,
+      "seed": 23,
       "input": "Experiment",
       "label": "correct"
     },
     {
       "skill": "sampling",
       "level": 3,
-      "seed": 8,
+      "seed": 23,
       "input": "Observational study",
       "label": "wrong",
       "mistake": "studyKindMixed"
@@ -75108,6 +75108,604 @@
       "input": "0.9544997361036416",
       "label": "wrong",
       "mistake": "keptForRejected"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 1,
+      "input": "How much do the dogs at the shelter weigh?",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 1,
+      "input": "How much does my dog weigh?",
+      "label": "wrong",
+      "mistake": "oneAnswerQuestion"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 1,
+      "input": "How many legs does a dog have?",
+      "label": "wrong",
+      "mistake": "oneAnswerQuestion"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 2,
+      "input": "How many hours do the students in my class sleep on a school night?",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 2,
+      "input": "How many hours did I sleep last night?",
+      "label": "wrong",
+      "mistake": "oneAnswerQuestion"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 2,
+      "input": "How many hours are there in a day?",
+      "label": "wrong",
+      "mistake": "oneAnswerQuestion"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 5,
+      "input": "Hours of sleep on a school night",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 5,
+      "input": "Students at our school",
+      "label": "wrong",
+      "mistake": "componentsSwapped"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 5,
+      "input": "The typical number, such as 8 hours",
+      "label": "wrong",
+      "mistake": "summaryAsComponent"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 10,
+      "input": "Time taken to reach the town centre",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 10,
+      "input": "Buses on route 5",
+      "label": "wrong",
+      "mistake": "componentsSwapped"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 10,
+      "input": "The usual time, such as 25 minutes",
+      "label": "wrong",
+      "mistake": "summaryAsComponent"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 11,
+      "input": "A town counts every tree in all 20 of its parks",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 11,
+      "input": "A town counts the trees in 5 of its 20 parks, picked at random",
+      "label": "wrong",
+      "mistake": "sampleAsCensus"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 11,
+      "input": "A town counts the trees along its main street",
+      "label": "wrong",
+      "mistake": "sampleAsCensus"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 13,
+      "input": "A school asks every one of its 600 students how they travel to school",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 13,
+      "input": "A school asks 200 of its students, picked at random, how they travel to school",
+      "label": "wrong",
+      "mistake": "sampleAsCensus"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 13,
+      "input": "A school asks the 30 students in one class how they travel to school",
+      "label": "wrong",
+      "mistake": "sampleAsCensus"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 26,
+      "input": "Buses on route 5",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 26,
+      "input": "Time taken to reach the town centre",
+      "label": "wrong",
+      "mistake": "componentsSwapped"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 26,
+      "input": "The usual time, such as 25 minutes",
+      "label": "wrong",
+      "mistake": "summaryAsComponent"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 30,
+      "input": "Students at our school",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 30,
+      "input": "Hours of sleep on a school night",
+      "label": "wrong",
+      "mistake": "componentsSwapped"
+    },
+    {
+      "skill": "sampling",
+      "level": 1,
+      "seed": 30,
+      "input": "The typical number, such as 8 hours",
+      "label": "wrong",
+      "mistake": "summaryAsComponent"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 1,
+      "input": "About 79% of the school's students walk to school",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 1,
+      "input": "Exactly 79 of the school's students walk to school",
+      "label": "wrong",
+      "mistake": "sampleCountAsAll"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 1,
+      "input": "About 79% of all students in the country walk to school",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 2,
+      "input": "About 42% of the school's students walk to school",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 2,
+      "input": "Exactly 21 of the school's students walk to school",
+      "label": "wrong",
+      "mistake": "sampleCountAsAll"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 2,
+      "input": "About 42% of all students in the country walk to school",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 5,
+      "input": "Stratified",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 5,
+      "input": "Cluster",
+      "label": "wrong",
+      "mistake": "methodClusterStrata"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 5,
+      "input": "Simple random",
+      "label": "wrong",
+      "mistake": "goalIgnored"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 10,
+      "input": "Cluster",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 10,
+      "input": "Stratified",
+      "label": "wrong",
+      "mistake": "methodClusterStrata"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 10,
+      "input": "Simple random",
+      "label": "wrong",
+      "mistake": "goalIgnored"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 11,
+      "input": "Undercoverage",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 11,
+      "input": "Voluntary response bias",
+      "label": "wrong",
+      "mistake": "biasKindMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 11,
+      "input": "Nonresponse bias",
+      "label": "wrong",
+      "mistake": "biasKindMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 11,
+      "input": "No bias: the sample is fair",
+      "label": "wrong",
+      "mistake": "biasMissed"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 13,
+      "input": "Voluntary response bias",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 13,
+      "input": "Undercoverage",
+      "label": "wrong",
+      "mistake": "biasKindMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 13,
+      "input": "Nonresponse bias",
+      "label": "wrong",
+      "mistake": "biasKindMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 2,
+      "seed": 13,
+      "input": "No bias: the sample is fair",
+      "label": "wrong",
+      "mistake": "biasMissed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 1,
+      "input": "2/11",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 1,
+      "input": "25/121",
+      "label": "wrong",
+      "mistake": "replacedForNot"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 2,
+      "input": "Completely randomised",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 2,
+      "input": "Randomised block",
+      "label": "wrong",
+      "mistake": "designMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 2,
+      "input": "Matched pairs",
+      "label": "wrong",
+      "mistake": "designMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 3,
+      "input": "10/21",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 3,
+      "input": "25/49",
+      "label": "wrong",
+      "mistake": "replacedForNot"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 4,
+      "input": "Completely randomised",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 4,
+      "input": "Randomised block",
+      "label": "wrong",
+      "mistake": "designMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 4,
+      "input": "Matched pairs",
+      "label": "wrong",
+      "mistake": "designMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 5,
+      "input": "Adults in that city",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 5,
+      "input": "All adults in the country",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 5,
+      "input": "Only the 500 adults asked",
+      "label": "wrong",
+      "mistake": "onlyThoseAsked"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 10,
+      "input": "Students at that school",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 10,
+      "input": "All students in the country",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 10,
+      "input": "Only the 200 students asked",
+      "label": "wrong",
+      "mistake": "onlyThoseAsked"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 11,
+      "input": "There is no group to compare with",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 11,
+      "input": "The people judging the results know who got what",
+      "label": "wrong",
+      "mistake": "flawMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 11,
+      "input": "Too few subjects to tell an effect from chance",
+      "label": "wrong",
+      "mistake": "flawMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 11,
+      "input": "Nothing: the design is sound",
+      "label": "wrong",
+      "mistake": "flawMissed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 16,
+      "input": "4/9",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 16,
+      "input": "5/12",
+      "label": "wrong",
+      "mistake": "notReplacedForWith"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 17,
+      "input": "25/49",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 17,
+      "input": "10/21",
+      "label": "wrong",
+      "mistake": "notReplacedForWith"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 25,
+      "input": "Students at that school",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 25,
+      "input": "All students in the country",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 25,
+      "input": "Only the 200 students asked",
+      "label": "wrong",
+      "mistake": "onlyThoseAsked"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 26,
+      "input": "There is no group to compare with",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 26,
+      "input": "The people judging the results know who got what",
+      "label": "wrong",
+      "mistake": "flawMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 26,
+      "input": "Too few subjects to tell an effect from chance",
+      "label": "wrong",
+      "mistake": "flawMixed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 26,
+      "input": "Nothing: the design is sound",
+      "label": "wrong",
+      "mistake": "flawMissed"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 30,
+      "input": "Adults in that city",
+      "label": "correct"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 30,
+      "input": "All adults in the country",
+      "label": "wrong",
+      "mistake": "generalizeBeyond"
+    },
+    {
+      "skill": "sampling",
+      "level": 3,
+      "seed": 30,
+      "input": "Only the 500 adults asked",
+      "label": "wrong",
+      "mistake": "onlyThoseAsked"
     }
   ]
 }
