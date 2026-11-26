@@ -44,11 +44,16 @@ test("a formula goes on the board at once and changes in the panel beside it; on
   await expect(panel.getByRole("heading", { name: "Edit formula" })).toBeVisible();
   const source = panel.getByRole("textbox");
   await expect(source).toHaveValue("x^2");
-  // Typed a key at a time, with pauses: several changes reach the board, and still one undo takes them all back.
+  // Typed a part at a time, each waited for until the board has it (it is saved with it): several changes reach the
+  // board, and still one undo takes them all back.
   await source.fill("");
+  let typed = "";
   for (const part of ["y", "^3", " + 1"]) {
+    typed += part;
+    const tex = `"tex":${JSON.stringify(typed)}`;
+    const saved = page.waitForRequest((r) => r.method() === "PUT" && /\/api\/boards\//.test(r.url()) && !!r.postData()?.includes(tex));
     await source.pressSequentially(part);
-    await page.waitForTimeout(300);
+    await saved;
   }
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/panel-formula.png` });
   await page.keyboard.press("Escape");
@@ -57,9 +62,12 @@ test("a formula goes on the board at once and changes in the panel beside it; on
   await expect(panel.getByRole("textbox")).toHaveValue("y^3 + 1");
   await page.keyboard.press("Escape");
 
-  // One undo goes back to before the second panel (all by keyboard: Ctrl+Z, then Enter on the picture).
+  // One undo goes back to before the second panel (all by keyboard: Ctrl+Z, then Enter on the picture). The panel
+  // hands the keyboard back to the board on the next frame, and Excalidraw hears keys only there: a Ctrl+Z pressed
+  // before that frame went to the page and undid nothing.
+  await expect(page.locator(".excalidraw-container")).toBeFocused();
   await page.keyboard.press("Control+z");
-  await page.waitForTimeout(300);
+  await expect(page.locator(".redo-button-container button")).toBeEnabled();
   await page.keyboard.press("Enter");
   await expect(panel.getByRole("textbox")).toHaveValue("x^2");
 });
