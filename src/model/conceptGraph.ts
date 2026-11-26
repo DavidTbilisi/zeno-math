@@ -391,12 +391,23 @@ const powerIdeas = (b: number, n: number): string[] => {
 export function signedUses(ex: Exercise): Uses<SignedNode> {
   const nodes = new Set<string>();
   const toks = ex.src!.split(" ");
-  const val = (t: string) => Number(t.replace(/[()]/g, ""));
+  // A number, a fraction (−3/4) or a decimal, in brackets or not.
+  const val = (t: string) => {
+    const [n, d = "1"] = t.replace(/[()]/g, "").split("/");
+    return Number(n) / Number(d);
+  };
   const terms = [{ v: val(toks[0]), op: "+" }];
   for (let i = 1; i < toks.length; i += 2) {
     const [op, v] = [toks[i], val(toks[i + 1])], last = terms.at(-1)!;
     if (op === "+" || op === "-") {
       terms.push({ v, op });
+      continue;
+    }
+    // A power of a negative number (#706): the sign rule once for each further factor.
+    if (op === "^") {
+      if (last.v < 0) nodes.add("signTimes");
+      product(last.v, last.v).forEach((n) => nodes.add(n));
+      last.v = last.v ** v;
       continue;
     }
     if (last.v < 0 || v < 0) nodes.add("signTimes");
@@ -489,7 +500,7 @@ export function orderUses(ex: Exercise): Uses<OrderIdea> {
   const nodes = new Set<string>();
   if (src.includes("(")) nodes.add("bracketsFirst");
   if (orderDiffers(src, "leftToRight")) nodes.add("mulFirst");
-  if (/\* (\d+|\([^()]*\)) \^/.test(src) && orderDiffers(src, "mulBeforePow")) nodes.add("powFirst");
+  if (/\* (-?\d+|\([^()]*\)) \^/.test(src) && orderDiffers(src, "mulBeforePow")) nodes.add("powFirst");
   if (orderDiffers(src, "grouped")) nodes.add("chainLeft");
   const work = (n: OrderNode): number => {
     if ("v" in n) return n.v;
@@ -560,6 +571,25 @@ export function roundingUses(ex: Exercise): Uses<RoundingNode> {
 export const SIGNED_GAPS: Partial<Record<MistakeId, SignedNode>> = {
   // 3 − (−5) answered −2: the negative taken away as if it were positive.
   subNeg: "minusNeg",
+  // #706. −7 + 3 said positive: the sign of the larger size not taken, adding a negative not seen as taking away.
+  sumSign: "addNeg",
+  // 11 − 7 + 6 taken as 11 − 6 + 7: the minus not kept with its number, a − b as a + (−b).
+  signStaysWith: "addNeg",
+  // −1 + □ = 8 answered 7: the number added, not taken away, to undo the sum.
+  missingAdd: "addWhole",
+  // a jump from −3 to 2 read as −3 − 5: the direction on the line, right for adding, not read.
+  jumpDirection: "negLine",
+  // a submarine at −40 m rising 15 m put at −55 m: rising is moving up the line, towards zero.
+  riseAdds: "negLine",
+  // −8/−4 said negative, or −3/4 taken for one of the other two places for the minus: the sign rule for a quotient.
+  twoMinuses: "signTimes",
+  // (−2)³ × (−5) said negative: the negative factors not counted.
+  signCount: "signTimes",
+  // (−3)⁴ answered −81: the power of a negative base taken with the minus left out of it.
+  negBasePower: "signTimes",
+  // −3/4 × 2/5 answered 3/10, or −6 ÷ −2 answered −3: the sign rule for unlike and like signs.
+  unlikeSigns: "signTimes",
+  likeSigns: "signTimes",
 };
 /** The idea each powers mistake shows is missing. */
 export const POWERS_GAPS: Partial<Record<MistakeId, PowersNode>> = {

@@ -1865,6 +1865,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     first term in the bracket multiplied, x · x taken for 2x
   - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
     and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
+  - Negative numbers also (#706) ask the sign of a sum without working it out, the missing number in −1 + □ = 8, the
+    sum a jump on a number line shows, and which of four has the same value as 11 − 7 + 6; then negative fractions
+    and decimals added and taken away, where the minus of −3/4 may go, a value put in for a letter, and stories of a
+    gull and a fish, a submarine and a bank balance; then signed fractions multiplied and divided, the sign of a long
+    product with a power in it, powers of negative numbers and fractions, and rates (a diver going down, a debt shared,
+    a tank emptying). The sign of the larger size not taken, the sign left behind when numbers are moved, the sum
+    undone by adding, the jump read the wrong way, a rise taken as going down, the negative factors not counted, the
+    minus left out of a power and the sign rules for like and unlike signs are named, each blamed on its idea of the
+    signed-numbers graph. Comparing's hardest level also orders and compares negative fractions and decimals, reads a
+    point off a line cut into quarters, fifths or tenths below zero, and writes an inequality from words (the dot
+    counted from the wrong end and the inequality facing the wrong way named); absolute value compares |−7| with |5|
+    and asks whether a cave floor or a hill top, or a debt or savings, is farther from 0; order of operations' hardest
+    level puts negative numbers in for the letters and works signed fractions with powers, a fraction bar holding its
+    numbers together. Ordering fractions stays at grades 2–4 with no negatives, and the fractions skill is unchanged:
+    its questions are the thesis's world of ideas
   - Rounding also estimates sums and differences by rounding each number first (#698), each number drawn on its line
     to the nearer ten, hundred or thousand, and in stories (seats in a stadium, a school's pencils and pens); a space
     probe's signal time and a pile of grains are worked in standard form, the numbers together and the powers

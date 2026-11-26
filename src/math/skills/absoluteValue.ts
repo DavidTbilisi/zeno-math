@@ -5,8 +5,10 @@
 // piece used and the pieces of |x − h| swapped are slips.
 import { absLineSvg, signed } from "../absValue";
 import { fill } from "../chart";
-import { ineqPlain, ineqTex, num } from "../practiceKit";
-import type { Gen, Part, Trap } from "../practiceTypes";
+import { compareSign } from "../live";
+import { ineqPlain, ineqTex, num, signExercise } from "../practiceKit";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+import { mi, pickOf, word } from "../signedKit";
 
 const absTex = (a: number) => (a === 0 ? "|x|" : a > 0 ? `|x - ${a}|` : `|x + ${-a}|`);
 const absPlain = (a: number) => (a === 0 ? "|x|" : a > 0 ? `|x − ${a}|` : `|x + ${-a}|`);
@@ -16,7 +18,8 @@ const place = (body: string) => (x: number, y: number) => `<g transform="transla
 const gen: Gen = (r, L, w) => {
   const W = w.absv;
   if (L === 1) {
-    const t = r.pick(["abs", "diff", "apart"] as const);
+    const t = r.pick(["abs", "diff", "apart", "cmp", "story"] as const);
+    if (t === "cmp" || t === "story") return absCompare(r, t, w);
     if (t === "abs") {
       const k = r.int(2, 9);
       const pic = absLineSvg(-10, 2, [{ v: -k, label: `−${k}` }, { v: 0, color: "#1e1e1e" }]);
@@ -131,5 +134,43 @@ const gen: Gen = (r, L, w) => {
   };
   return part;
 };
+
+/**
+ * Absolute values compared (#706): |−7| and |5|, or −|−4| and −3 (the challenge); and which of two places or two
+ * balances is farther from 0, a cave below sea level and a hill above it, a debt and savings.
+ */
+function absCompare(r: Rng, t: "cmp" | "story", w: PracticeWords): Part {
+  const S = w.signed;
+  if (t === "cmp") {
+    const k = r.int(2, 12);
+    let b: number;
+    do b = r.int(1, 12);
+    while (b === k);
+    if (r.next() < 0.3) {
+      // −|−k| against a negative number: the minus outside the bars stays.
+      const c = -b;
+      const [x, y, vx, vy] = r.next() < 0.5 ? [`-|-${k}|`, String(c), -k, c] : [String(c), `-|-${k}|`, c, -k];
+      const sign = compareSign(vx, vy);
+      return signExercise(w, x, y, sign, { steps: [`-|-${k}| = -${k}`, `${vx} ${sign} ${vy}`] });
+    }
+    const swap = r.next() < 0.5;
+    const [x, y, vx, vy, sx, sy] = swap ? [`|${b}|`, `|-${k}|`, b, k, b, -k] : [`|-${k}|`, `|${b}|`, k, b, -k, b];
+    const sign = compareSign(vx, vy);
+    const naive = compareSign(sx, sy);
+    return signExercise(w, x, y, sign, { steps: [`|-${k}| = ${k}, \\quad |${b}| = ${b}`, `${vx} ${sign} ${vy}`] }, naive !== sign ? [{ id: "absKeepsSign", a: { k: "sign", v: naive }, vars: { v: `−${k}`, d: k } }] : []);
+  }
+  // A place below and one above sea level, or a debt and savings: which is farther from 0?
+  const money = r.next() < 0.5;
+  const a = -r.int(money ? 5 : 20, money ? 90 : 400);
+  let b: number;
+  do b = r.int(money ? 5 : 20, money ? 90 : 400);
+  while (Math.abs(b + a) < (money ? 3 : 15));
+  const [A, B, same] = money ? [word(S.ana), word(S.gio), word(S.same)] : [word(S.cave), word(S.hill), word(S.same)];
+  const prompt = fill(money ? S.owes : S.farther, { a: mi(a), b });
+  const steps = [`|${a}| = ${-a}, \\quad |${b}| = ${b}`, `${Math.max(-a, b)} > ${Math.min(-a, b)}`];
+  // The slip: the bigger number taken as farther, which is the one above 0.
+  if (-a > b) return pickOf(r, prompt, A, [{ o: B, id: "absKeepsSign", vars: { v: mi(a), d: -a } }], [same], { steps });
+  return pickOf(r, prompt, B, [], [A, same], { steps });
+}
 
 export default gen;

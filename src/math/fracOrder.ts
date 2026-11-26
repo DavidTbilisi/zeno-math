@@ -66,6 +66,13 @@ export function bottomsOrder(items: OrderItem[]): number[] | null {
 
 /** A fraction typed in a list: 3/4, 1 1/3, 2, or a decimal. */
 export function readItem(src: string): number | null {
+  // A minus in front (#706: negative rationals in order), typed or real.
+  const m = src.trim().match(/^[-−]\s*(.+)$/);
+  if (m && /^[-−]/.test(m[1])) return null;
+  if (m) {
+    const v = readItem(m[1]);
+    return v === null ? null : -v;
+  }
   const s = src.trim().replace(/\s+/g, " ").replace(/\s*\/\s*/, "/");
   const mixed = s.match(/^(\d+) (\d+)\/(\d+)$/);
   if (mixed) return Number(mixed[3]) ? Number(mixed[1]) + Number(mixed[2]) / Number(mixed[3]) : null;

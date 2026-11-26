@@ -2207,22 +2207,22 @@
     {
       "skill": "order",
       "level": 3,
-      "seed": 7,
-      "input": "102",
+      "seed": 12,
+      "input": "90",
       "label": "correct"
     },
     {
       "skill": "order",
       "level": 3,
-      "seed": 7,
-      "input": "192",
+      "seed": 12,
+      "input": "144",
       "label": "wrong",
       "mistake": "leftToRight"
     },
     {
       "skill": "order",
       "level": 3,
-      "seed": 7,
+      "seed": 12,
       "input": "x",
       "label": "form",
       "note": "a letter, not a number"
@@ -20831,14 +20831,14 @@
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "6",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "-6",
       "label": "wrong",
       "mistake": "absKeepsSign"
@@ -20846,21 +20846,21 @@
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 1,
+      "seed": 12,
       "input": "13",
       "label": "wrong"
     },
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 2,
+      "seed": 390,
       "input": "6",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 2,
+      "seed": 390,
       "input": "0",
       "label": "wrong",
       "mistake": "distanceSubtracted"
@@ -20868,7 +20868,7 @@
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 2,
+      "seed": 390,
       "input": "13",
       "label": "wrong"
     },
@@ -20897,14 +20897,14 @@
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 10,
+      "seed": 444,
       "input": "7",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 10,
+      "seed": 444,
       "input": "-7",
       "label": "wrong",
       "mistake": "absKeepsSign"
@@ -20912,21 +20912,21 @@
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 10,
+      "seed": 444,
       "input": "14",
       "label": "wrong"
     },
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 27,
+      "seed": 278,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 27,
+      "seed": 278,
       "input": "-2",
       "label": "wrong",
       "mistake": "absKeepsSign"
@@ -20934,7 +20934,7 @@
     {
       "skill": "absoluteValue",
       "level": 1,
-      "seed": 27,
+      "seed": 278,
       "input": "9",
       "label": "wrong"
     },
@@ -35288,6 +35288,4395 @@
       "input": "90 s",
       "label": "wrong",
       "mistake": "unitOutOfScale"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 5,
+      "input": "−5 + 2 = −3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 5,
+      "input": "−5 − 2 = −7",
+      "label": "wrong",
+      "mistake": "jumpDirection"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 8,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 8,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 8,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 9,
+      "input": "−7 + 5 = −2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 9,
+      "input": "−7 − 5 = −12",
+      "label": "wrong",
+      "mistake": "jumpDirection"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 10,
+      "input": "11 + 6 − 7",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 10,
+      "input": "11 − 6 + 7",
+      "label": "wrong",
+      "mistake": "signStaysWith"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 11,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 11,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "sumSign"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 18,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 18,
+      "input": "-16",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 18,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 21,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 21,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "sumSign"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 24,
+      "input": "−6 + 3 − 7",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 24,
+      "input": "−6 − 3 + 7",
+      "label": "wrong",
+      "mistake": "signStaysWith"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 28,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 28,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 28,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 30,
+      "input": "−8 + 6 − 3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 30,
+      "input": "−8 − 6 + 3",
+      "label": "wrong",
+      "mistake": "signStaysWith"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 35,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 35,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "sumSign"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 37,
+      "input": "2 + 8 − 4",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 37,
+      "input": "2 − 8 + 4",
+      "label": "wrong",
+      "mistake": "signStaysWith"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 41,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 41,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "sumSign"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 49,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 49,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 49,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 54,
+      "input": "-8",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 54,
+      "input": "-12",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 54,
+      "input": "-1",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 59,
+      "input": "-9",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 59,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 59,
+      "input": "-2",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 61,
+      "input": "17",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 61,
+      "input": "-17",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 61,
+      "input": "24",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 88,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 88,
+      "input": "-10",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 88,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 92,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 92,
+      "input": "-14",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 92,
+      "input": "21",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 95,
+      "input": "-17",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 95,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 95,
+      "input": "-10",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 168,
+      "input": "-20",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 168,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 168,
+      "input": "-13",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 311,
+      "input": "-16",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 311,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "missingAdd"
+    },
+    {
+      "skill": "integers",
+      "level": 1,
+      "seed": 311,
+      "input": "-9",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 1,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 1,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 1,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 2,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 2,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 2,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 3,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 3,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 3,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 4,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 4,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 6,
+      "input": "x/(−y)",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 6,
+      "input": "−x/(−y)",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 10,
+      "input": "3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 10,
+      "input": "−3/2",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 11,
+      "input": "7/6",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 11,
+      "input": "−7/6",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 13,
+      "input": "−5/8",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 13,
+      "input": "−5/(−8)",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 14,
+      "input": "7/4",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 14,
+      "input": "-3/4",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 14,
+      "input": "8/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 16,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 16,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 16,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 18,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 18,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 18,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 20,
+      "input": "7 + 10",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 20,
+      "input": "7 − 10",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 21,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 21,
+      "input": "-5/2",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 21,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 22,
+      "input": "x/y",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 22,
+      "input": "−x/y",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 26,
+      "input": "−5/2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 26,
+      "input": "−5/(−2)",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 27,
+      "input": "3.2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 27,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 27,
+      "input": "10.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 28,
+      "input": "1/8",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 28,
+      "input": "2/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 30,
+      "input": "14 + 8",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 30,
+      "input": "14 − 8",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 32,
+      "input": "-5/6",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 32,
+      "input": "-4/3",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 32,
+      "input": "-4/6",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 36,
+      "input": "-47",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 36,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 36,
+      "input": "-40",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 43,
+      "input": "17",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 43,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 43,
+      "input": "24",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 50,
+      "input": "x/(−y)",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 50,
+      "input": "−x/(−y)",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 58,
+      "input": "-1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 58,
+      "input": "0/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 77,
+      "input": "1.8",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 77,
+      "input": "8.8",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 85,
+      "input": "4.3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 85,
+      "input": "-21/10",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 85,
+      "input": "11.3",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 89,
+      "input": "12 − (−11)",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 89,
+      "input": "12 − 11",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 104,
+      "input": "-29",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 104,
+      "input": "-91",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 104,
+      "input": "-22",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 108,
+      "input": "6.7",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 108,
+      "input": "3/2",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 108,
+      "input": "13.7",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 109,
+      "input": "-28",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 109,
+      "input": "-72",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 109,
+      "input": "-21",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 111,
+      "input": "-72",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 111,
+      "input": "48",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 111,
+      "input": "-65",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 120,
+      "input": "4 − (−7)",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 120,
+      "input": "4 − 7",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 139,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 139,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 147,
+      "input": "1.9",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 147,
+      "input": "-67/10",
+      "label": "wrong",
+      "mistake": "subNeg"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 147,
+      "input": "8.9",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 152,
+      "input": "-3.7",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 152,
+      "input": "3.3",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 170,
+      "input": "-320",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 170,
+      "input": "160",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 170,
+      "input": "-313",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 180,
+      "input": "-10",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 180,
+      "input": "-330",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 180,
+      "input": "-3",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 198,
+      "input": "-130",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 198,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 198,
+      "input": "-123",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 201,
+      "input": "-5/3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 201,
+      "input": "-4/3",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 219,
+      "input": "-3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 219,
+      "input": "-2/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 248,
+      "input": "160",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 248,
+      "input": "-320",
+      "label": "wrong",
+      "mistake": "riseAdds"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 248,
+      "input": "167",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 293,
+      "input": "-6.1",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 293,
+      "input": "0.9000000000000004",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 306,
+      "input": "x/y",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 2,
+      "seed": 306,
+      "input": "−x/y",
+      "label": "wrong",
+      "mistake": "twoMinuses"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 1,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 1,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 2,
+      "input": "-125/27",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 2,
+      "input": "125/27",
+      "label": "wrong",
+      "mistake": "negBasePower"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 2,
+      "input": "-124/27",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 3,
+      "input": "-1/27",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 3,
+      "input": "1/27",
+      "label": "wrong",
+      "mistake": "negBasePower"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 3,
+      "input": "0/27",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 4,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 4,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 4,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 5,
+      "input": "-8",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "negBasePower"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 5,
+      "input": "-1",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 6,
+      "input": "16/3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 6,
+      "input": "-16/3",
+      "label": "wrong",
+      "mistake": "likeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 6,
+      "input": "17/3",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 10,
+      "input": "45/8",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 10,
+      "input": "-45/8",
+      "label": "wrong",
+      "mistake": "likeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 10,
+      "input": "46/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 13,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 13,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 16,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 16,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 18,
+      "input": "-11/16",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 18,
+      "input": "11/16",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 18,
+      "input": "-10/16",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 21,
+      "input": "21/20",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 21,
+      "input": "-21/20",
+      "label": "wrong",
+      "mistake": "likeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 21,
+      "input": "22/20",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 22,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 22,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 25,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 25,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 30,
+      "input": "40 ÷ 5",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 30,
+      "input": "−(40 ÷ 5)",
+      "label": "wrong",
+      "mistake": "likeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 31,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 31,
+      "input": "-16",
+      "label": "wrong",
+      "mistake": "negBasePower"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 31,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 32,
+      "input": "-5/9",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 32,
+      "input": "5/9",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 32,
+      "input": "-4/9",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 34,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 34,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 36,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 36,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 36,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 40,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 40,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 41,
+      "input": "−(6 × 7)",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 41,
+      "input": "6 × 7",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 42,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 42,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 43,
+      "input": "-9",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 43,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 43,
+      "input": "-2",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 44,
+      "input": "−(3 × 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 44,
+      "input": "3 × 2",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 47,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 47,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 48,
+      "input": "24 ÷ 4",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 48,
+      "input": "−(24 ÷ 4)",
+      "label": "wrong",
+      "mistake": "likeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 49,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 49,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 49,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 59,
+      "input": "-1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 59,
+      "input": "1/6",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 59,
+      "input": "0/6",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 67,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 67,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 67,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 68,
+      "input": "-36/65",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 68,
+      "input": "36/65",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 68,
+      "input": "-35/65",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 77,
+      "input": "15/4",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 77,
+      "input": "-15/4",
+      "label": "wrong",
+      "mistake": "likeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 77,
+      "input": "16/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 91,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 91,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 92,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 92,
+      "input": "-10",
+      "label": "wrong",
+      "mistake": "likeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 92,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 95,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 95,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 97,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 97,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 104,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 104,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 104,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 107,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 107,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "unlikeSigns"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 107,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 112,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 112,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 133,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 133,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 134,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 134,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 142,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 142,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 145,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 145,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 165,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 165,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 171,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 171,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 174,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 174,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 175,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 175,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 177,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 177,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 179,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 179,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 186,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 186,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 188,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 188,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 204,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 204,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 206,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 206,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 221,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 221,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 223,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 223,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 226,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 226,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 227,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 227,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 237,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 237,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 259,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 259,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 262,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 262,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 264,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 264,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 273,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 273,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 275,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 275,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 277,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 277,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 287,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 287,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 288,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 288,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 305,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 305,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 306,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 306,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 311,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 311,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 335,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 335,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 342,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 342,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 355,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 355,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 357,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 357,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 374,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 374,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 376,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 376,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 377,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 377,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 395,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 395,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 400,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 400,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 439,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 439,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 441,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 441,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 459,
+      "input": "positive",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 459,
+      "input": "negative",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 499,
+      "input": "negative",
+      "label": "correct"
+    },
+    {
+      "skill": "integers",
+      "level": 3,
+      "seed": 499,
+      "input": "positive",
+      "label": "wrong",
+      "mistake": "signCount"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 5,
+      "input": "-7/4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 5,
+      "input": "-5/4",
+      "label": "wrong",
+      "mistake": "negLineWrongEnd"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 5,
+      "input": "-6/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 8,
+      "input": "0.544, 0.576, 0.6, 0.68",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 8,
+      "input": "0.6, 0.68, 0.544, 0.576",
+      "label": "wrong",
+      "mistake": "longerDecimal"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 9,
+      "input": "-9/4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 9,
+      "input": "-11/4",
+      "label": "wrong",
+      "mistake": "negLineWrongEnd"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 9,
+      "input": "-8/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 10,
+      "input": "−6 × 4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 10,
+      "input": "1 − 12",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 11,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 11,
+      "input": ">",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 18,
+      "input": "−0.5, −0.4, −1/10, 9/20",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 18,
+      "input": "−1/10, −0.4, −0.5, 9/20",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 21,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 21,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 24,
+      "input": "−2 > −12",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 24,
+      "input": "−2 < −12",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 28,
+      "input": "−11/4, −0.875, −1/4, 4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 28,
+      "input": "−1/4, −0.875, −11/4, 4",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 30,
+      "input": "−11 < −4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 30,
+      "input": "−11 > −4",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 35,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 35,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 36,
+      "input": "6 < 7",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 36,
+      "input": "6 > 7",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 37,
+      "input": "2 < 11",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 37,
+      "input": "2 > 11",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 41,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 41,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 45,
+      "input": "−3 × 4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 45,
+      "input": "1 − 12",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 46,
+      "input": "−6 < −1.5",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 46,
+      "input": "−6 > −1.5",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 48,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 48,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 49,
+      "input": "−2.5, −5/3, −1.5, 3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 49,
+      "input": "−1.5, −5/3, −2.5, 3/4",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 54,
+      "input": "0.426, 0.476, 0.5, 0.56",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 54,
+      "input": "0.5, 0.56, 0.426, 0.476",
+      "label": "wrong",
+      "mistake": "longerDecimal"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 58,
+      "input": "−2.5, −5/4, −0.625, 1",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 58,
+      "input": "−0.625, −5/4, −2.5, 1",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 61,
+      "input": "−12/5, −1.2, −0.25, 7/4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 61,
+      "input": "−0.25, −1.2, −12/5, 7/4",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 80,
+      "input": "−5/2, −8/5, −0.2, 2",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 80,
+      "input": "−0.2, −8/5, −5/2, 2",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 102,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 102,
+      "input": ">",
+      "label": "wrong",
+      "mistake": "negativeSize"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 103,
+      "input": "−7 > −12",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 103,
+      "input": "−7 < −12",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 125,
+      "input": "4 > −4",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 125,
+      "input": "4 < −4",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 164,
+      "input": "−0.5 > −5",
+      "label": "correct"
+    },
+    {
+      "skill": "compare",
+      "level": 3,
+      "seed": 164,
+      "input": "−0.5 < −5",
+      "label": "wrong",
+      "mistake": "ineqFacing"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 1,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 1,
+      "input": ">",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 2,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 2,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "absKeepsSign"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 3,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 3,
+      "input": ">",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 4,
+      "input": "Ana's",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 4,
+      "input": "Gio's",
+      "label": "wrong",
+      "mistake": "absKeepsSign"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 5,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 5,
+      "input": ">",
+      "label": "wrong",
+      "mistake": "absKeepsSign"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 16,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 16,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 17,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 17,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 20,
+      "input": ">",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 20,
+      "input": "<",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 30,
+      "input": "the cave floor",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 30,
+      "input": "the hill top",
+      "label": "wrong",
+      "mistake": "absKeepsSign"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 36,
+      "input": "the cave floor",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 36,
+      "input": "the hill top",
+      "label": "wrong",
+      "mistake": "absKeepsSign"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 43,
+      "input": "Ana's",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 43,
+      "input": "Gio's",
+      "label": "wrong",
+      "mistake": "absKeepsSign"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 73,
+      "input": "<",
+      "label": "correct"
+    },
+    {
+      "skill": "absoluteValue",
+      "level": 1,
+      "seed": 73,
+      "input": ">",
+      "label": "wrong",
+      "mistake": "compareFlip"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 1,
+      "input": "-90",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 1,
+      "input": "-83",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 2,
+      "input": "-65",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 2,
+      "input": "-58",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 3,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 3,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 4,
+      "input": "-19/9",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 4,
+      "input": "-28/9",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 4,
+      "input": "-18/9",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 5,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 5,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 6,
+      "input": "56",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 6,
+      "input": "63",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 10,
+      "input": "-38",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 10,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 10,
+      "input": "232",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 10,
+      "input": "-31",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 11,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 11,
+      "input": "155",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 11,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 13,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 13,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 16,
+      "input": "28",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 16,
+      "input": "-36",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 16,
+      "input": "35",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 17,
+      "input": "-14",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 17,
+      "input": "-32",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 17,
+      "input": "-7",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 20,
+      "input": "7/8",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 20,
+      "input": "1/8",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 20,
+      "input": "8/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 22,
+      "input": "-23",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 22,
+      "input": "-35",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 22,
+      "input": "-16",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 25,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 25,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 26,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 26,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 30,
+      "input": "1/8",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 30,
+      "input": "2/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 31,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 31,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 33,
+      "input": "-7",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 33,
+      "input": "0",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 34,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 34,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 36,
+      "input": "5/24",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 36,
+      "input": "6/24",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 37,
+      "input": "47",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 37,
+      "input": "-9",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 37,
+      "input": "317",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 37,
+      "input": "54",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 41,
+      "input": "-1/9",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 41,
+      "input": "1/9",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 41,
+      "input": "0/9",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 42,
+      "input": "85",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 42,
+      "input": "-427",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 42,
+      "input": "92",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 43,
+      "input": "-7/4",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 43,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 43,
+      "input": "-6/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 44,
+      "input": "21/20",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 44,
+      "input": "13/10",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 44,
+      "input": "22/20",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 47,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 47,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 48,
+      "input": "5/36",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 48,
+      "input": "37/36",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 48,
+      "input": "6/36",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 61,
+      "input": "-54",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 61,
+      "input": "-47",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 62,
+      "input": "13",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 62,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 62,
+      "input": "20",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 64,
+      "input": "19/20",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 64,
+      "input": "23/40",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 64,
+      "input": "20/20",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 69,
+      "input": "-15/2",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 69,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 69,
+      "input": "-14/2",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 70,
+      "input": "-67/12",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 70,
+      "input": "-43/12",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 70,
+      "input": "-66/12",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 73,
+      "input": "-90",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 73,
+      "input": "-162",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 73,
+      "input": "720",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 73,
+      "input": "-83",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 78,
+      "input": "-56",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 78,
+      "input": "-49",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 82,
+      "input": "3/8",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 82,
+      "input": "4/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 83,
+      "input": "-15",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 83,
+      "input": "-39",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 83,
+      "input": "-8",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 88,
+      "input": "1/8",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 88,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 88,
+      "input": "2/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 95,
+      "input": "-48",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 95,
+      "input": "-41",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 97,
+      "input": "24",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 97,
+      "input": "48",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 97,
+      "input": "31",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 104,
+      "input": "-1/16",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 104,
+      "input": "0/16",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 111,
+      "input": "9/8",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 111,
+      "input": "7/8",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 111,
+      "input": "10/8",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 122,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 122,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 125,
+      "input": "3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 125,
+      "input": "4/4",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 126,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 126,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 133,
+      "input": "296",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 133,
+      "input": "576",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 133,
+      "input": "2312",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 133,
+      "input": "303",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 134,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 134,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 137,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 137,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 142,
+      "input": "-89",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 142,
+      "input": "-82",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 148,
+      "input": "-168",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 148,
+      "input": "-648",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 148,
+      "input": "318",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 148,
+      "input": "-161",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 150,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 150,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 171,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 171,
+      "input": "52",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 171,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 177,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 177,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 177,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 178,
+      "input": "41/16",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 178,
+      "input": "21/8",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 179,
+      "input": "-238",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 179,
+      "input": "98",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 179,
+      "input": "1232",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 179,
+      "input": "-231",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 187,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 187,
+      "input": "2/3",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 188,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 188,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 196,
+      "input": "57",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 196,
+      "input": "106",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 196,
+      "input": "64",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 206,
+      "input": "141",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 206,
+      "input": "-75",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 206,
+      "input": "891",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 206,
+      "input": "148",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 263,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 263,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 264,
+      "input": "19",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 264,
+      "input": "55",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 264,
+      "input": "26",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 288,
+      "input": "249",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 288,
+      "input": "729",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 288,
+      "input": "735",
+      "label": "wrong",
+      "mistake": "mulBeforePow"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 288,
+      "input": "256",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 317,
+      "input": "72",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 317,
+      "input": "79",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 335,
+      "input": "39",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 335,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 335,
+      "input": "46",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 351,
+      "input": "21",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 351,
+      "input": "-224",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 351,
+      "input": "28",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 409,
+      "input": "92",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 409,
+      "input": "-196",
+      "label": "wrong",
+      "mistake": "leftToRight"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 409,
+      "input": "99",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 483,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 483,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 499,
+      "input": "99",
+      "label": "correct"
+    },
+    {
+      "skill": "order",
+      "level": 3,
+      "seed": 499,
+      "input": "106",
+      "label": "wrong"
     }
   ]
 }

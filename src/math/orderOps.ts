@@ -22,6 +22,11 @@ export function orderTree(src: string, mode: OrderMode): OrderNode {
   const rightAssoc = (op: string) => op === "^" || mode === "grouped";
   const atom = (): OrderNode => {
     const t = toks[i++];
+    // A minus where a number should be is the number's own sign (#706: −3 put in for a letter): (−3)², not −(3²).
+    if (t === "-") {
+      const n = atom();
+      return "v" in n ? { v: -n.v } : { op: "*", l: { v: -1 }, r: n, par: false };
+    }
     if (t !== "(") return { v: Number(t) };
     const inner = expr(0);
     i++;
