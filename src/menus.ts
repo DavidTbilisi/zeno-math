@@ -145,6 +145,7 @@ export const MENUS: MenuGroup[] = [
           { kind: "multivar", icon: "∇", label: "multivar" },
           { live: "surface", icon: "⛰" },
           { live: "tracePath", icon: "➰" },
+          { live: "closeIn", icon: "⦚" },
           { kind: "ode", icon: "y′", label: "odes" },
           { kind: "numerical", icon: "≈", label: "numericalTool" },
         ],

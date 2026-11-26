@@ -1061,6 +1061,11 @@ function mirrorPreview(): Piece[] {
   ];
 }
 
+function closeInPreview(): Piece[] {
+  // Two lines with a jump between them at the middle.
+  return [poly([[20, 150], [120, 90]], { width: 3 }), poly([[120, 160], [220, 110]], { width: 3 }), poly([[120, 30], [120, 190]], { width: 1 })];
+}
+
 function tracePathPreview(): Piece[] {
   // A thrown ball's arc with an arrow along it.
   const arc = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 170 - 0.05 * i * (40 - i) * 6] as [number, number]);
@@ -2648,6 +2653,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveWheelWave", build: wheelWavePreview, live: "wheelWave" },
   { id: "livePinString", build: pinStringPreview, live: "pinString" },
   { id: "liveTracePath", build: tracePathPreview, live: "tracePath" },
+  { id: "liveCloseIn", build: closeInPreview, live: "closeIn" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

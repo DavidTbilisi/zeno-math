@@ -47,6 +47,7 @@ import { MoveGraph } from "./MoveGraph";
 import { WheelWave } from "./WheelWave";
 import { PinString } from "./PinString";
 import { TracePath } from "./TracePath";
+import { CloseIn } from "./CloseIn";
 import { Estimate } from "./Estimate";
 import { FracOrder } from "./FracOrder";
 import { FractionWall } from "./FractionWall";
@@ -264,6 +265,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   wheelWave: WheelWave,
   pinString: PinString,
   tracePath: TracePath,
+  closeIn: CloseIn,
   solid: Solid,
   turned: Turned,
   cubeMatrix: CubeMatrix,

@@ -1180,6 +1180,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     dy/dx upside down, the speed's parts added and the ½ forgotten in ½∫r² dθ. The piece *Trace the path* (Insert →
     Calculus, grades 12–13): drag t along a thrown ball, a circle or a cardioid; the velocity arrow gives the slope
     as its rise over its run and the speed as its length
+  - Continuity and limits from graphs (grade 12; #666): a limit from a table, a one-sided limit of two pieces and
+    whether a limit exists; then a hole, a jump, an asymptote or no break, and the k that joins two pieces; then
+    whether the intermediate value theorem promises a root, a limit squeezed to 0 and, in a new setting, a car park's
+    charge as the time comes down to a whole hour. Thirteen slips are named, among them f(a) taken for the limit, a
+    zero denominator always called an asymptote and the slopes matched instead of the values. The piece *Close in on
+    the break* (Insert → Calculus, grades 12–13): walk two points towards x = 2 on a hole, a jump and an asymptote,
+    and drag k until two pieces join
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

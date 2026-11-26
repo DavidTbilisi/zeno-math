@@ -77,6 +77,7 @@ import { MOVE_START, type LiveMoveGraph } from "./fnTransform";
 import { WHEEL_START, type LiveWheelWave } from "./trigWave";
 import { PIN_START, type LivePinString } from "./conics";
 import { TRACE_START, type LiveTracePath } from "./parametric";
+import { CLOSE_START, type LiveCloseIn } from "./continuity";
 import { SOLID_START, type LiveSolid } from "./solid";
 import { TURNED_START, type LiveTurned } from "./turned";
 import { CUBE_MATRIX_START, type LiveCubeMatrix } from "./cubeMatrix";
@@ -664,6 +665,7 @@ export type LiveStates = {
   wheelWave: LiveWheelWave;
   pinString: LivePinString;
   tracePath: LiveTracePath;
+  closeIn: LiveCloseIn;
   solid: LiveSolid;
   turned: LiveTurned;
   cubeMatrix: LiveCubeMatrix;
@@ -829,6 +831,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   wheelWave: [700, 580],
   pinString: [700, 510],
   tracePath: [700, 540],
+  closeIn: [700, 560],
   solid: [680, 760],
   turned: [680, 760],
   cubeMatrix: [680, 720],
@@ -996,6 +999,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     wheelWave: WHEEL_START,
     pinString: PIN_START,
     tracePath: TRACE_START,
+    closeIn: CLOSE_START,
     solid: SOLID_START,
     turned: TURNED_START,
     cubeMatrix: CUBE_MATRIX_START,

@@ -75,7 +75,7 @@ export const TOPICS: readonly Topic[] = [
   },
   {
     id: "calculus", shelf: "university", icon: "∫",
-    skills: ["differentiate", "tangent", "stationary", "integrate", "definite", "limits", "implicit", "intTechniques", "improper", "intApplications", "parametric", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "bifurcations", "iteratedMaps", "lyapunov", "fourier", "pdeClassify", "separation"],
+    skills: ["differentiate", "tangent", "stationary", "integrate", "definite", "limits", "implicit", "intTechniques", "improper", "intApplications", "parametric", "continuity", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "bifurcations", "iteratedMaps", "lyapunov", "fourier", "pdeClassify", "separation"],
     sections: ["secCalculus"],
   },
   {

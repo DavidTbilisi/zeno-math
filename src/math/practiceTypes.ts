@@ -392,6 +392,8 @@ export type PracticeWords = {
     evaluate: string; fromZero: string; apart: string; solveEq: string; bothWays: string; or: string; solveIneq: string; within: string;
     corner: string; cornerWhy: string; split: string; splitWhy: string; piecewise: string;
   };
+  /** Continuity and limits from graphs (continuity): prompts and options. */
+  qct: { tableQ: string; leftQ: string; existsQ: string; limitIs: string; noLimit: string; hole: string; jump: string; asymptote: string; none: string; kindQ: string; piecesQ: string; kQ: string; yes: string; noBreak: string; noSigns: string; noRising: string; ivtQ: string; wiggles: string; signsDiffer: string; brokenQ: string; breaks: string; swings: string; squeezeQ: string; parkQ: string; };
   /** Parametric and polar curves (parametric): prompts and options. */
   qpm: { pointQ: string; removeQ: string; polarQ: string; slopeQ: string; speedQ: string; nameQ: string; circle: string; line: string; spiral: string; arcQ: string; areaQ: string; accelQ: string; ballQ: string; };
   /** Conic sections (conics): prompts and options. */
