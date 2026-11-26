@@ -56,7 +56,7 @@ export async function restoreCheck(backupFile: string): Promise<RestoreResult> {
     let server: Awaited<ReturnType<typeof startServer>>;
     try {
       // No backups of the copy: it is thrown away.
-      server = await startServer(data, 20000 + Math.floor(Math.random() * 20000), teacher, { BACKUP_KEEP: "0" });
+      server = await startServer(data, teacher, { BACKUP_KEEP: "0" });
     } catch (e) {
       checks.push({ name: "Zeno opens it", ok: false, detail: `${(e as Error).message} (a damaged file, or one from a newer Zeno)` });
       return { checks, counts };

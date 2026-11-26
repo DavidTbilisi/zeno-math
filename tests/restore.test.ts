@@ -15,7 +15,7 @@ after(() => rmSync(dir, { recursive: true, force: true }));
 
 test("a backup comes back whole; a damaged one, or one from a newer Zeno, is caught", async () => {
   const teacher = { "X-Teacher-Password": "chalk" };
-  const server = await startServer(join(dir, "data"), 20000 + Math.floor(Math.random() * 20000), "chalk", { BACKUP_KEEP: "0" });
+  const server = await startServer(join(dir, "data"), "chalk", { BACKUP_KEEP: "0" });
   const backup = join(dir, "backup.db");
   try {
     const call = async (method: string, path: string, body: unknown, headers: Record<string, string> = {}) =>
