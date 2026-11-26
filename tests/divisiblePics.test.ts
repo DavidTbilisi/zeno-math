@@ -27,9 +27,10 @@ test("every divisibility question: one row per divisor, ticks where the answer i
     for (let seed = 1; seed <= 100; seed++) {
       const ex = exercise("divisibility", level, seed, w);
       const where = `level ${level} seed ${seed}`;
+      // Factors, multiples and primes are picked, worked in lines (#701).
+      if (ex.answer.k !== "divisors") continue;
       assert.equal(ex.solution?.kind, "divisible", where);
       const s = ex.solution!.spec as DivSolution;
-      if (ex.answer.k !== "divisors") throw new Error("not a divisors question");
       const { body } = divisibleSvg(s);
       assert.equal(body.split(">✓<").length - 1, ex.answer.right.length, where);
       assert.equal(body.split(">✗<").length - 1, s.offered.length - ex.answer.right.length, where);

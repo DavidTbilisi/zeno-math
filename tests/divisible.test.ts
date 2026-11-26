@@ -69,9 +69,10 @@ test("the slips each number invites, never its right answer", () => {
 test("in practice: typed or tapped in any order, the slips named, each test drawn; the server agrees", async () => {
   let named = 0;
   for (const level of LEVELS)
-    for (let seed = 1; seed <= 80; seed++) {
+    for (let seed = 1; seed <= 320; seed++) {
       const ex = exercise("divisibility", level, seed, w);
-      if (ex.answer.k !== "divisors") throw new Error("not a divisors question");
+      // Factors, multiples and primes are picked (#701; tests/factors.test.ts).
+      if (ex.answer.k !== "divisors") continue;
       assert.deepEqual(check(ex, [...ex.answer.right].reverse().join(" "), w), { ok: true });
       for (const t of trapInputs(ex)) {
         const v = check(ex, t.input, w);
