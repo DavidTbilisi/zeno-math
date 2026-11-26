@@ -29,12 +29,17 @@ test("every rounding and estimation question draws its picture, and the picture 
       if (s.pic === "estimate") assert.ok(Math.abs(s.x1 * s.y1 - v) < 1e-6 * Math.max(1, v), where);
       if (s.pic === "bound") assert.ok(Math.abs(s.x + (s.low ? -s.unit : s.unit) / 2 - v) < 1e-9, where);
       if (s.pic === "boundTotal") assert.equal(s.n * (s.x + 0.5), v, where);
+      if (s.pic === "estimateSum") {
+        const R = (n: number) => Math.round(n / 10 ** -s.k) * 10 ** -s.k;
+        assert.equal(s.ns.reduce((acc, n, i) => (i === 0 ? R(n) : s.signs[i - 1] === "+" ? acc + R(n) : acc - R(n)), 0), v, where);
+      }
       if (s.pic === "std") assert.ok(Math.abs(Number(s.text) - v) < 1e-9 * Math.max(1, v) && Math.abs(Number(s.text) / 10 ** s.e) < 10, where);
       if (s.pic === "stdMul") assert.ok(Math.abs(Number(s.mant) * 10 ** s.e - v) < 1e-9 * Math.abs(v) && Number(s.mant) < 10, where);
+      if (s.pic === "stdMul") assert.ok(Math.abs(Number(s.prod) * 10 ** (s.div ? s.m1 - s.m2 : s.m1 + s.m2) - v) < 1e-9 * Math.abs(v), where);
       assert.deepEqual(check(ex, ex.plain, w), { ok: true }, where);
       if (seed <= 12) {
         assert.ok(!(await renderSolution(ex.solution!, en)).svg.includes("NaN"), where);
       }
     }
-  assert.deepEqual([...seen].sort(), ["bound", "boundTotal", "estimate", "round", "std", "stdMul"]);
+  assert.deepEqual([...seen].sort(), ["bound", "boundTotal", "estimate", "estimateSum", "round", "std", "stdMul"]);
 });

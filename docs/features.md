@@ -901,7 +901,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - The first skills, each from the facts a class drills to automaticity:
     - Place value: what a digit is worth (the 9 in 197 is 90), a number put together from its parts (600 + 8) and a
       number as so many tens (340 = ☐ × 10); then four and five digits with × and ÷ by 10, 100 and 1000; then six
-      digits and decimals. The digit given for its value and an empty place left out (68 for 608) are named
+      digits and decimals. The digit given for its value and an empty place left out (68 for 608) are named. Each
+      level also reads numbers in words (#698), in English, Georgian and Russian: three digits, then four and five
+      with an empty place (seventy thousand four hundred and sixty-nine), then decimals to thousandths; makes the
+      largest or smallest number from some digits (a 0 never first); writes a number from too many of one place (3
+      thousands, 14 hundreds, 5 ones; then 2 ones, 13 tenths, 4 hundredths); multiplies and divides a decimal by a
+      power of ten; and picks the larger of a number in figures and one in words. The parts written after each other
+      (70 000 469), the opposite of the largest or smallest, a 0 put first, the counts set side by side and forms
+      compared by their look are named
     - Addition and subtraction: the facts within 20 and the bonds to 10 and 20, worked with counters and a number
       bond; then two-digit sums and differences in the head and the bonds to 100; then three digits and a number
       missing from a subtraction. A carry left out, the smaller digit taken from the larger, 37 + 73 for a bond to
@@ -1788,6 +1795,11 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     first term in the bracket multiplied, x · x taken for 2x
   - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
     and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
+  - Rounding also estimates sums and differences by rounding each number first (#698), each number drawn on its line
+    to the nearer ten, hundred or thousand, and in stories (seats in a stadium, a school's pencils and pens); a space
+    probe's signal time and a pile of grains are worked in standard form, the numbers together and the powers
+    together; a number is rounded to one digit times a power of ten. The exact answer given for an estimate, the
+    powers added when dividing and a power one out are named
   - A live preview shows how the answer was read; two misses show the answer, and the worked solution comes from
     the tool that covers the topic (Algebra, Powers & logs, Derivatives, Coordinate geometry, Inference, …)
   - Progress per skill is kept in the browser, and a missed question comes back three questions later
