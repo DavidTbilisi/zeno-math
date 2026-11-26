@@ -2294,6 +2294,17 @@ function trigFindPreview(): Piece[] {
   ];
 }
 
+function vecFindPreview(): Piece[] {
+  // Two vectors tip to tail on a grid and their sum from the start of the first to the end of the second.
+  const k = 12;
+  const out: Piece[] = [];
+  for (let i = 0; i <= 6; i++) out.push(seg([i * k, 0], [i * k, 6 * k], { color: "#e9ecef", width: 1 }), seg([0, i * k], [6 * k, i * k], { color: "#e9ecef", width: 1 }));
+  return [
+    ...out, seg([0, 6 * k], [3 * k, 5 * k], { color: "#e8590c", width: 2 }), seg([3 * k, 5 * k], [5 * k, 1 * k], { color: "#1971c2", width: 2 }),
+    seg([0, 6 * k], [5 * k, 1 * k], { color: "#2f9e44", width: 2 }), dot([5 * k, 1 * k]),
+  ];
+}
+
 function measureHandPreview(): Piece[] {
   // A pencil from 3 to 10 on a ruler that starts at 2: its ends read 3 and 10.
   const k = 12;
@@ -2695,6 +2706,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSimHand", build: simHandPreview, live: "simHand" },
   { id: "liveCircleHand", build: circleHandPreview, live: "circleHand" },
   { id: "liveTrigFind", build: trigFindPreview, live: "trigFind" },
+  { id: "liveVecFind", build: vecFindPreview, live: "vecFind" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

@@ -70,7 +70,7 @@ export const TOPICS: readonly Topic[] = [
   { id: "algorithms", shelf: "beyond", icon: "⇅", skills: ["inversions"], sections: ["secAlgorithms", "senseAlgo", "senseData", "senseSystem"] },
   {
     id: "vectors", shelf: "university", icon: "[ ]",
-    skills: ["vectors", "dotangle", "projection", "complex", "polarForm", "deMoivre", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd"],
+    skills: ["vectors", "dotangle", "crossPlanes", "projection", "complex", "polarForm", "deMoivre", "matrices", "determinant", "elimination", "eigen", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd"],
     sections: ["secCoordinates", "secMatrices"],
   },
   {

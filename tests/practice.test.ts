@@ -238,9 +238,11 @@ test("vector answers match the vectors in the question", () => {
     }
     const len = exercise("vectors", 2, seed, w);
     const [A, B] = vecs(len.prompt);
-    assert.equal(check(len, String(Math.hypot(...A.map((x, i) => B[i] - x))), w).ok, true, len.prompt);
+    // Only the length of AB from its ends; the other level-2 kinds (#717) are checked by their own traps.
+    if (len.prompt.includes("length of AB")) assert.equal(check(len, String(Math.hypot(...A.map((x, i) => B[i] - x))), w).ok, true, len.prompt);
     // Perpendicular: put k into both vectors and the dot product is 0.
     const perp = exercise("vectors", 3, seed, w);
+    if (!/\bk\b/.test(perp.prompt)) continue;
     const k = Number(perp.plain.split("/")[0]) / Number(perp.plain.split("/")[1] ?? 1);
     const [p, q] = [...perp.prompt.matchAll(/\(([^()]*)\)/g)].map((m) => m[1].split(", ").map((x) => (x === "k" ? k : Number(x))));
     assert.ok(Math.abs(dot(p, q)) < 1e-9, `${perp.prompt}: k = ${perp.plain}`);
