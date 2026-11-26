@@ -55,8 +55,12 @@ test("the slips: the wrong total, and an isosceles triangle's base angles not sh
 });
 
 test("in practice: the angle typed, the slips named, the figure drawn with the answer; the server agrees", async () => {
+  // The kinds #710 added (a protractor, a turn, angles in x) carry their working as steps, not a drawn solution.
+  const old = (level: 1 | 2 | 3, seed: number) => exercise("missingAngle", level, seed, w).solution !== undefined;
   for (const level of LEVELS) {
-    const ex = exercise("missingAngle", level, 7, w);
+    let seed = 7;
+    while (!old(level, seed)) seed++;
+    const ex = exercise("missingAngle", level, seed, w);
     assert.ok(ex.pic);
     assert.deepEqual(check(ex, ex.plain, w), { ok: true });
     assert.deepEqual(check(ex, `${ex.plain}°`, w), { ok: true });
@@ -65,7 +69,9 @@ test("in practice: the angle typed, the slips named, the figure drawn with the a
   }
   for (const [level, id] of [[1, "wrongTotal"], [2, "wrongTotal"], [3, "notHalved"]] as const) {
     let found = 0;
-    for (let seed = 1; seed <= 40; seed++) {
+    for (let seed = 1, seen = 0; seen < 40; seed++) {
+      if (!old(level, seed)) continue;
+      seen++;
       const ex = exercise("missingAngle", level, seed, w);
       const trap = trapInputs(ex).find((x) => x.id === id);
       if (!trap) continue;
