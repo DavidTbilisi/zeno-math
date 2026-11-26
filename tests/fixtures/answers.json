@@ -21815,14 +21815,14 @@
     {
       "skill": "scatter",
       "level": 1,
-      "seed": 1,
+      "seed": 8,
       "input": "D",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 1,
-      "seed": 1,
+      "seed": 8,
       "input": "C",
       "label": "wrong",
       "mistake": "outlierExtreme"
@@ -21830,14 +21830,14 @@
     {
       "skill": "scatter",
       "level": 1,
-      "seed": 6,
+      "seed": 21,
       "input": "Positive",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 1,
-      "seed": 6,
+      "seed": 21,
       "input": "Negative",
       "label": "wrong",
       "mistake": "directionReversed"
@@ -21845,14 +21845,14 @@
     {
       "skill": "scatter",
       "level": 2,
-      "seed": 1,
+      "seed": 386,
       "input": "Each extra hour adds about 4 marks",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 2,
-      "seed": 1,
+      "seed": 386,
       "input": "With no revision the mark is about 10",
       "label": "wrong",
       "mistake": "slopeAsIntercept"
@@ -21860,7 +21860,7 @@
     {
       "skill": "scatter",
       "level": 2,
-      "seed": 1,
+      "seed": 386,
       "input": "Each extra mark takes about 4 hours",
       "label": "wrong",
       "mistake": "slopePerMark"
@@ -21868,14 +21868,14 @@
     {
       "skill": "scatter",
       "level": 2,
-      "seed": 2,
+      "seed": 450,
       "input": "40",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 2,
-      "seed": 2,
+      "seed": 450,
       "input": "20",
       "label": "wrong",
       "mistake": "predictNoIntercept"
@@ -21883,21 +21883,21 @@
     {
       "skill": "scatter",
       "level": 2,
-      "seed": 2,
+      "seed": 450,
       "input": "47",
       "label": "wrong"
     },
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 1,
+      "seed": 56551,
       "input": "Line B: y = x + 3",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 1,
+      "seed": 56551,
       "input": "Line A: y = −0.5x + 6.5",
       "label": "wrong",
       "mistake": "fitByOnePoint"
@@ -21905,14 +21905,14 @@
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "No: both go up on hot days",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "Yes: the association is strong",
       "label": "wrong",
       "mistake": "correlationCause"
@@ -21920,14 +21920,14 @@
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 5,
+      "seed": 28,
       "input": "No: bigger fires bring more engines and do more damage",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 5,
+      "seed": 28,
       "input": "Yes: the association is strong",
       "label": "wrong",
       "mistake": "correlationCause"
@@ -21935,14 +21935,14 @@
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 7,
+      "seed": 32343,
       "input": "−9",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 7,
+      "seed": 32343,
       "input": "9",
       "label": "wrong",
       "mistake": "residualSign"
@@ -21950,14 +21950,14 @@
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 20,
+      "seed": 39,
       "input": "No: older children have bigger feet and read better",
       "label": "correct"
     },
     {
       "skill": "scatter",
       "level": 3,
-      "seed": 20,
+      "seed": 39,
       "input": "Yes: the association is strong",
       "label": "wrong",
       "mistake": "correlationCause"
@@ -70742,6 +70742,566 @@
       "seed": 10,
       "input": "11",
       "label": "wrong"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 1,
+      "input": "D",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 1,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "pointAxesSwapped"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 2,
+      "input": "The height and the arm span of each pupil",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 2,
+      "input": "The favourite sport of each pupil",
+      "label": "wrong",
+      "mistake": "categoryForScatter"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 2,
+      "input": "The number of pupils in each class",
+      "label": "wrong",
+      "mistake": "oneVariableForScatter"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 3,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 3,
+      "input": "D",
+      "label": "wrong",
+      "mistake": "pointAxesSwapped"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 4,
+      "input": "The height and the arm span of each pupil",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 4,
+      "input": "The favourite sport of each pupil",
+      "label": "wrong",
+      "mistake": "categoryForScatter"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 4,
+      "input": "The number of pupils in each class",
+      "label": "wrong",
+      "mistake": "oneVariableForScatter"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 5,
+      "input": "Strong and linear",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 5,
+      "input": "Weak and linear",
+      "label": "wrong",
+      "mistake": "strengthBySteepness"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 10,
+      "input": "Nonlinear (curved)",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 10,
+      "input": "Weak and linear",
+      "label": "wrong",
+      "mistake": "curveAsLinear"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 11,
+      "input": "Hours",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 11,
+      "input": "The test mark",
+      "label": "wrong",
+      "mistake": "responseOnX"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 25,
+      "input": "Weak and linear",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 25,
+      "input": "Strong and linear",
+      "label": "wrong",
+      "mistake": "strengthBySteepness"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 26,
+      "input": "Hours",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 26,
+      "input": "The test mark",
+      "label": "wrong",
+      "mistake": "responseOnX"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 31,
+      "input": "Nonlinear (curved)",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 31,
+      "input": "Weak and linear",
+      "label": "wrong",
+      "mistake": "curveAsLinear"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 48,
+      "input": "The temperature",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 48,
+      "input": "The ice creams sold",
+      "label": "wrong",
+      "mistake": "responseOnX"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 88,
+      "input": "The temperature",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 1,
+      "seed": 88,
+      "input": "The ice creams sold",
+      "label": "wrong",
+      "mistake": "responseOnX"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 1,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 1,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "slopeRunOverRise"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 1,
+      "input": "513/100",
+      "label": "wrong",
+      "mistake": "slopeFromOrigin"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 2,
+      "input": "2.5",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 2,
+      "input": "2/5",
+      "label": "wrong",
+      "mistake": "slopeRunOverRise"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 2,
+      "input": "219/50",
+      "label": "wrong",
+      "mistake": "slopeFromOrigin"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 2,
+      "input": "9.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 3,
+      "input": "y = 2x + 25",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 3,
+      "input": "y = −2x + 25",
+      "label": "wrong",
+      "mistake": "slopeSignFlipped"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 3,
+      "input": "y = 2x + 29",
+      "label": "wrong",
+      "mistake": "interceptAtFirstX"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 3,
+      "input": "y = 0.5x + 25",
+      "label": "wrong",
+      "mistake": "slopeRunOverRise"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 4,
+      "input": "y = 2.5x + 15",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 4,
+      "input": "y = −2.5x + 15",
+      "label": "wrong",
+      "mistake": "slopeSignFlipped"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 4,
+      "input": "y = 2.5x + 20",
+      "label": "wrong",
+      "mistake": "interceptAtFirstX"
+    },
+    {
+      "skill": "scatter",
+      "level": 2,
+      "seed": 4,
+      "input": "y = 0.4x + 15",
+      "label": "wrong",
+      "mistake": "slopeRunOverRise"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 1,
+      "input": "r = 0.4",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 1,
+      "input": "r = −0.4",
+      "label": "wrong",
+      "mistake": "rSignIgnored"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 1,
+      "input": "r = 0.9",
+      "label": "wrong",
+      "mistake": "rStrengthMisjudged"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 2,
+      "input": "No: the residuals make a curve",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 2,
+      "input": "Yes: the residuals scatter with no pattern",
+      "label": "wrong",
+      "mistake": "residualPatternIgnored"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 3,
+      "input": "r = −0.9",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 3,
+      "input": "r = 0.9",
+      "label": "wrong",
+      "mistake": "rSignIgnored"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 3,
+      "input": "r = −0.4",
+      "label": "wrong",
+      "mistake": "rStrengthMisjudged"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 4,
+      "input": "No: the residuals make a curve",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 4,
+      "input": "Yes: the residuals scatter with no pattern",
+      "label": "wrong",
+      "mistake": "residualPatternIgnored"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 5,
+      "input": "Interpolation",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 5,
+      "input": "Extrapolation",
+      "label": "wrong",
+      "mistake": "interpExtrapSwapped"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 10,
+      "input": "68.3",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 10,
+      "input": "371/2",
+      "label": "wrong",
+      "mistake": "coefSwapped"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 10,
+      "input": "393/10",
+      "label": "wrong",
+      "mistake": "seForSlope"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 10,
+      "input": "75.3",
+      "label": "wrong"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 11,
+      "input": "It gets steeper",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 11,
+      "input": "It stays about the same",
+      "label": "wrong",
+      "mistake": "influenceIgnored"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 11,
+      "input": "It gets less steep",
+      "label": "wrong",
+      "mistake": "influenceReversed"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 20,
+      "input": "Yes: the residuals scatter with no pattern",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 20,
+      "input": "No: the residuals make a curve",
+      "label": "wrong",
+      "mistake": "residualsNotZero"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 25,
+      "input": "44.7",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 25,
+      "input": "354/5",
+      "label": "wrong",
+      "mistake": "coefSwapped"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 25,
+      "input": "333/10",
+      "label": "wrong",
+      "mistake": "seForSlope"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 25,
+      "input": "51.7",
+      "label": "wrong"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 26,
+      "input": "Extrapolation",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 26,
+      "input": "Interpolation",
+      "label": "wrong",
+      "mistake": "interpExtrapSwapped"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 41,
+      "input": "It gets steeper",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 41,
+      "input": "It stays about the same",
+      "label": "wrong",
+      "mistake": "influenceIgnored"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 41,
+      "input": "It gets less steep",
+      "label": "wrong",
+      "mistake": "influenceReversed"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 43,
+      "input": "Yes: the residuals scatter with no pattern",
+      "label": "correct"
+    },
+    {
+      "skill": "scatter",
+      "level": 3,
+      "seed": 43,
+      "input": "No: the residuals make a curve",
+      "label": "wrong",
+      "mistake": "residualsNotZero"
     }
   ]
 }

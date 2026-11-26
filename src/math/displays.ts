@@ -65,6 +65,18 @@ export function countTableSvg(head: readonly [string, string], rows: readonly { 
   return { body: out.join(""), w: c1 + c2 + 6, h: (rows.length + 1) * rh + 6 };
 }
 
+/** A table: a heading row and rows of cells, the first column left-aligned (as a computer's regression output). */
+export function tableSvg(head: readonly string[], rows: readonly (readonly (string | number)[])[]): Pic {
+  const cw = head.map((h, i) => Math.max(90, 16 + 8 * Math.max(h.length, ...rows.map((row) => String(row[i]).length))));
+  const rh = 30;
+  const W = cw.reduce((a, b) => a + b, 0);
+  const at = (i: number) => 2 + cw.slice(0, i).reduce((a, b) => a + b, 0);
+  const out = [`<rect x="2" y="2" width="${W}" height="${(rows.length + 1) * rh}" fill="#fff" stroke="${C.ink}" stroke-width="1.4"/>`, `<line x1="2" y1="${2 + rh}" x2="${2 + W}" y2="${2 + rh}" stroke="${C.ink}" stroke-width="1.4"/>`];
+  head.forEach((h, i) => out.push(text(i ? at(i) + cw[i] - 10 : at(i) + 10, 2 + 20, h, 14, C.ink, i ? "end" : "start", true)));
+  rows.forEach((row, j) => row.forEach((c, i) => out.push(text(i ? at(i) + cw[i] - 10 : at(i) + 10, 2 + (j + 1) * rh + 20, c, 15, C.ink, i ? "end" : "start"))));
+  return { body: out.join(""), w: W + 6, h: (rows.length + 1) * rh + 6 };
+}
+
 /**
  * A mosaic plot of two groups: each column is as wide as its group's share of everyone, and split from the bottom into
  * the first part's share of that group and the rest. Both scales are marked every 10 %.

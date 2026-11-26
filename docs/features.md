@@ -2017,6 +2017,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Scatter plots by hand and regression output (#737): in scatter plots, a car placed from its age and value, which
+    data suits a scatter plot, which variable goes across, and a plot described as strong, weak or curved (grade 8);
+    the slope of a drawn line of fit from two of its points and its equation picked (grade 8); r matched to a plot,
+    a residual plot read, what removing a far point does to the slope, interpolation or extrapolation, and a
+    prediction from a computer's least-squares output (grade 10); the slips (across and up swapped, a category or a
+    single number plotted, the explained variable across, strength judged by steepness, a curve called linear, run
+    over rise, the slope measured from the origin, its sign flipped, the intercept read at the first point, r's sign
+    or size misjudged, residuals expected to be 0, a pattern ignored, a far point's pull ignored or reversed,
+    interpolation and extrapolation swapped, the constant and the slope swapped, the standard error used as the
+    slope) are named
   - Centre, spread and shape (#736): in averages, which questions are statistical, the mean read off a dot plot or a
     table of counts, a missing value from the mean (grade 6), the median of a table of counts or a histogram's bar,
     a range puzzle, what a shift does to the mean and the range, the mean after one more value (grade 7), the variance,
