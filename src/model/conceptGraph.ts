@@ -575,8 +575,8 @@ export const SIGNED_GAPS: Partial<Record<MistakeId, SignedNode>> = {
   sumSign: "addNeg",
   // 11 − 7 + 6 taken as 11 − 6 + 7: the minus not kept with its number, a − b as a + (−b).
   signStaysWith: "addNeg",
-  // −1 + □ = 8 answered 7: the number added, not taken away, to undo the sum.
-  missingAdd: "addWhole",
+  // −1 + □ = 8 answered 7: 8 − (−1) taken as 7, taking a negative away read as taking its size away.
+  missingAdd: "minusNeg",
   // a jump from −3 to 2 read as −3 − 5: the direction on the line, right for adding, not read.
   jumpDirection: "negLine",
   // a submarine at −40 m rising 15 m put at −55 m: rising is moving up the line, towards zero.

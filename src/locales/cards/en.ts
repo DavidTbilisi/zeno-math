@@ -113,7 +113,7 @@ export const cards = {
       essence: "Numbers below zero: count on and back past zero, as on a number line, and further left is smaller.",
       like: "how big the number looks",
       test: "On the line −5 lies left of −2, so −5 < −2, though 5 > 2: below zero, further from zero is smaller.",
-      failure: "Counting back without passing zero: 2 − 5 answered 3, not −3.",
+      failure: "Moving the wrong way on the line: a diver at −40 m who rises 15 m put at −55 m, not −25 m.",
     },
     addNeg: {
       essence: "Adding a negative number takes its size away: 5 + (−3) = 5 − 3 = 2.",
