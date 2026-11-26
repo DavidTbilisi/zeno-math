@@ -103,20 +103,54 @@ test("the hard level: the step of a row, whether a count says a number, the pari
       const row = rowOf(ex.q) as number[];
       assert.equal(Number(ex.plain), Math.abs(row[1] - row[0]));
       if (Number(ex.plain) <= 6) assert.equal(check(ex, String(Number(ex.plain) - 1), w).mistake, "gapNotStep");
-    } else if (ex.answer.k === "pick" && ex.q === "") {
+    } else if (ex.answer.k === "pick" && ex.q === "" && !ex.prompt.includes("times table")) {
       said++;
       const [a, s, n] = ex.prompt.match(/\d+/g)!.map(Number);
       const right = (n - a) % s === 0;
       assert.equal(ex.plain, right ? "yes" : "no", `#${seed}: ${ex.prompt}`);
       if (right) yes++;
       else no++;
-    } else if (ex.answer.k === "pick") {
+    } else if (ex.answer.k === "pick" && ex.q !== "") {
       sums++;
       const [a, b] = ex.q.split(" + ").map(Number);
       assert.equal(ex.plain, (a + b) % 2 ? "odd" : "even");
     }
   }
   assert.ok(steps > 40 && said > 40 && sums > 40 && yes > 10 && no > 10);
+});
+
+test("a hundred square: the number below is ten more, the one above ten less, and the one beside is named", () => {
+  let [below, above] = [0, 0];
+  for (const seed of SEEDS) {
+    const ex = exercise("skipCount", 2, seed, w);
+    const m = ex.prompt.match(/just (below|above) (\d+)/);
+    if (!m) continue;
+    const [down, n] = [m[1] === "below", Number(m[2])];
+    if (down) below++;
+    else above++;
+    assert.equal(Number(ex.plain), down ? n + 10 : n - 10, `#${seed}: ${ex.prompt}`);
+    assert.equal(check(ex, String(down ? n + 1 : n - 1), w).mistake, "besideNotBelow");
+  }
+  assert.ok(below > 5 && above > 5, `${below} below, ${above} above`);
+});
+
+test("a times table: one of the four is in it, two are odd, and the even one that is not is named", () => {
+  let seen = 0;
+  for (const seed of SEEDS) {
+    const ex = exercise("skipCount", 3, seed, w);
+    const m = ex.prompt.match(/the (\d+) times table/);
+    if (!m || ex.answer.k !== "pick") continue;
+    seen++;
+    const s = Number(m[1]);
+    const ns = ex.answer.options.map((o) => Number(o.plain));
+    assert.equal(new Set(ns).size, 4);
+    assert.deepEqual(ns.filter((n) => n % s === 0), [Number(ex.plain)], `#${seed}: ${ns.join(" ")}`);
+    assert.equal(ns.filter((n) => n % 2 === 0).length, 2);
+    const [trap] = trapInputs(ex);
+    assert.ok(Number(trap.input) % 2 === 0 && Number(trap.input) % s !== 0);
+    assert.equal(check(ex, trap.input, w).mistake, "evenNotInTable");
+  }
+  assert.ok(seen > 20, `${seen} seen`);
 });
 
 test("its grades: the first level in grade 1, the others in grade 2", () => {

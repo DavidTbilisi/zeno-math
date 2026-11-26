@@ -905,7 +905,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     - Addition and subtraction: the facts within 20 and the bonds to 10 and 20, worked with counters and a number
       bond; then two-digit sums and differences in the head and the bonds to 100; then three digits and a number
       missing from a subtraction. A carry left out, the smaller digit taken from the larger, 37 + 73 for a bond to
-      100 and the sign in the question used instead of its inverse are named
+      100 and the sign in the question used instead of its inverse are named. Each level also tells stories (#697):
+      put together, take away and fewer within 20, drawn as a number bond; more, how many more, the start missing, a
+      bus that loses some passengers and gains others, and four classes' cans added within 100; a longer flight and
+      two journeys compared in hundreds. The first level asks what the equal sign means (7 + 5 = ☐ + 4), the
+      subtraction that goes with an addition and which sum makes a number; the second adds three or four numbers and
+      picks the right rounding shortcut (48 + 29 = 48 + 30 − 1); the third picks it for hundreds and picks the
+      equation a two-step story makes (612 − 245 + 180 = ☐). The other operation (with what the story does), the sum
+      of the left side put in the box, all three added, the number added back, a shortcut adjusted the wrong way and
+      both steps taken away are named
     - Written addition and subtraction (grades 3 and 4; #636): three-digit sums and differences set out in columns
       under the question, a ten carried or taken; then four and five digits and taking away across zeros (40 004 −
       14 827); then six digits to a million, a digit missing from a written sum (4☐58 + 1645 = 6403) and a number
@@ -951,9 +959,11 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     one left out. In ones and in tens within 100 (27, 37, 47, □), and the tens and ones of a number; then in twos,
     fives and tens with the gap anywhere after the first, and which of four numbers is odd or even; then in threes,
     fours, twenties, twenty-fives, fifties and hundreds to 1000 with the gap anywhere, the step of a row asked for,
-    whether a count from 3 in fives will say 48, and whether 48 + 37 is odd without adding. One on from the last
-    number where the count goes further, the tens and the ones swapped or added, a number judged odd by its tens
-    digit and the numbers in between given for the step are named. The hundred square is where the steps are seen:
+    whether a count from 3 in fives will say 48, and whether 48 + 37 is odd without adding. The second level also
+    asks for the number just above or below on a hundred square, the third which of four numbers is in the 4, 6 or 8
+    times table (#697). One on from the last number where the count goes further, the tens and the ones swapped or
+    added, a number judged odd by its tens digit, the numbers in between given for the step, the number beside for
+    the one below and an even number that is not in an even table are named. The hundred square is where the steps are seen:
     marked by hand, a count in tens runs down a column and a count in fives makes two columns
   - Number line estimation, answered by putting a pin on a line with only its ends labelled: 0 to 10 or 20, then 0 to
     100 or 1000, then fractions and decimals on 0 to 1 or negative numbers. Within 5 % of the line's length is right,
