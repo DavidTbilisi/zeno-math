@@ -64,6 +64,7 @@ import trigEquations from "./trigEquations";
 import conics from "./conics";
 import parametric from "./parametric";
 import continuity from "./continuity";
+import derivContext from "./derivContext";
 import stackedFractions from "./stackedFractions";
 import ratio from "./ratio";
 import rate from "./rate";
@@ -348,6 +349,7 @@ export const GENS: Record<SkillId, Gen> = {
   conics,
   parametric,
   continuity,
+  derivContext,
   stackedFractions,
   ratio,
   rate,

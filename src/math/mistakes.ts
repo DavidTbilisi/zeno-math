@@ -1241,5 +1241,15 @@ export const MISTAKES = [
   "ivtSameSignRoot",
   "ivtNoContinuity",
   "swingNotSqueezed",
+  "rateAsValue",
+  "rateOverInterval",
+  "positionForVelocity",
+  "accelSignOnly",
+  "stepNotScaled",
+  "xForStep",
+  "maxMinSwapped",
+  "endpointRootKept",
+  "fourSidesAssumed",
+  "endpointsIgnored",
 ] as const;
 export type MistakeId = (typeof MISTAKES)[number];
