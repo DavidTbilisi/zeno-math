@@ -353,7 +353,7 @@ export type PracticeWords = {
   mulDiv: {
     groupsTotal: string; whichTimes: string; otherFact: string;
     bags: string; eggs: string; garden: string; pencils: string; timesAsTall: string; cinema: string; train: string;
-    share: string; teams: string; related: string; family: string; stickers: string; packs: string; baker: string;
+    share: string; teams: string; related: string; family: string; stickers: string; packs: string; baker: string; bestEstimate: string; packsLeft: string; treeFromTower: string; estimateQuotient: string;
   };
   /**
    * Written sums and long division (columnSums, longDivide): the prompts for a digit missing from a written sum, how

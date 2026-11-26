@@ -91,6 +91,10 @@ test("a fact family divides the product; a sharing story's equation divides", ()
     if (fills(ex.prompt, W.family)) {
       const [a, b, c] = nums(ex.prompt);
       assert.equal(right, `${c} ÷ ${a} = ${b}`);
+    } else if (fills(ex.prompt, W.estimateQuotient)) {
+      // The estimate is of a number near a, one the divisor goes into: within a third of a place.
+      const [a, b] = nums(ex.prompt);
+      assert.ok(Math.abs(Number(right) * b - a) < a / 20, `${a} ÷ ${b} ≈ ${right}`);
     } else assert.match(right, /^\d+ ÷ \d+ = □$/);
     for (const t of trapInputs(ex)) assert.ok(check(ex, t.input, w).hint);
   }
@@ -107,4 +111,50 @@ test("each new kind is asked at the level whose grade fits it", () => {
   assert.deepEqual(where("divide", (ex) => fills(ex.prompt, W.family) || fills(ex.prompt, W.share)), [1]);
   assert.deepEqual(where("divide", (ex) => fills(ex.prompt, W.stickers)), [2]);
   assert.deepEqual(where("divide", (ex) => fills(ex.prompt, W.baker)), [3]);
+});
+
+test("an area model's parts make the product, the asked part is the answer; estimates round, then multiply or divide", () => {
+  const texts = (svg: string) => [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]);
+  let areas = 0;
+  for (const { ex, seed } of [...all("times"), ...all("divide")]) {
+    const where = `#${seed}: ${ex.prompt} ${ex.q}`;
+    if (ex.pic && ex.q.includes("\\square") && /\\times|\\div/.test(ex.q)) {
+      areas++;
+      // The q is a × b = parts (times) or a ÷ b = parts (divide); the drawn labels are the sides and the cells.
+      // The sides' lengths are drawn first, then each cell's area.
+      const svg = ex.pic.svg(0, 0);
+      const shown = texts(svg).map((t) => (t === "?" ? Number(ex.plain) : Number(t)));
+      if (ex.q.includes("\\times")) {
+        const [a, b] = nums(ex.q);
+        const cells = shown.slice(shown.length - count(svg, "rect"));
+        assert.equal(cells.reduce((s, c) => s + c, 0), a * b, where);
+      } else {
+        const [a, b] = nums(ex.q);
+        const [top1, top2, side, c1, c2] = shown;
+        assert.deepEqual([side, top1 + top2, c1 + c2], [b, a / b, a], where);
+      }
+    }
+    if (ex.answer.k === "pick" && fills(ex.prompt, W.bestEstimate)) {
+      const [a, b] = nums(ex.prompt);
+      const lead = (n: number) => Math.round(n / 10 ** Math.floor(Math.log10(n))) * 10 ** Math.floor(Math.log10(n));
+      assert.equal(ex.plain, String(lead(a) * lead(b)), where);
+    }
+  }
+  assert.ok(areas > 80, `${areas}`);
+});
+
+test("the multi-digit kinds sit where their grade is: estimates and area models at P4, stories in two steps at the top", () => {
+  const where = (skill: "times" | "divide", f: (ex: ReturnType<typeof exercise>) => boolean) => [...new Set(all(skill).filter(({ ex }) => f(ex)).map(({ level }) => level))].sort();
+  assert.deepEqual(where("times", (ex) => fills(ex.prompt, W.bestEstimate)), [2]);
+  assert.deepEqual(where("times", (ex) => fills(ex.prompt, W.packsLeft) || fills(ex.prompt, W.treeFromTower)), [3]);
+  assert.deepEqual(where("divide", (ex) => fills(ex.prompt, W.estimateQuotient) || (!!ex.pic && ex.q.includes("\\div"))), [3]);
+  // Three and four digits divided by one, with a remainder.
+  const big = all("divide").filter(({ ex }) => fills(ex.prompt, w.written.fits) || fills(ex.prompt, w.basics.remainder));
+  assert.ok(big.some(({ ex }) => nums(ex.prompt)[0] >= 1000));
+  for (const { ex } of big) {
+    // "How many whole times does b go into a?" names the divisor first.
+    const fits = fills(ex.prompt, w.written.fits);
+    const [a, b] = fits ? nums(ex.prompt).reverse() : nums(ex.prompt);
+    assert.equal(Number(ex.plain), fits ? Math.floor(a / b) : a % b);
+  }
 });
