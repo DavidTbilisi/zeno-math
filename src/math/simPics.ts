@@ -49,11 +49,19 @@ export type Figure = {
   hide?: string[];
   /** Words under a point, such as "pole" or "tree". */
   notes?: { at: string; text: string; dy?: number }[];
+  /** Circles round a named point, of a radius in plain units (#715). */
+  rings?: { at: string; r: number }[];
+  /** Free labels at plain coordinates, such as an arc's measure (#715). */
+  marks?: { p: P2; text: string; color?: string }[];
 };
 
 /** A figure of named points scaled to fit about `fw` × `fh` pixels. */
 export function figurePic(f: Figure, fw = 300, fh = 190): Pic {
-  const P = Object.values(f.pts);
+  const P = [
+    ...Object.values(f.pts),
+    ...(f.rings ?? []).flatMap(({ at, r }): P2[] => [[f.pts[at][0] - r, f.pts[at][1] - r], [f.pts[at][0] + r, f.pts[at][1] + r]]),
+    ...(f.marks ?? []).map((m) => m.p),
+  ];
   const [x0, x1] = [Math.min(...P.map((p) => p[0])), Math.max(...P.map((p) => p[0]))];
   const [y0, y1] = [Math.min(...P.map((p) => p[1])), Math.max(...P.map((p) => p[1]))];
   const k = Math.min(fw / Math.max(x1 - x0, 1e-9), fh / Math.max(y1 - y0, 1e-9));
@@ -73,6 +81,10 @@ export function figurePic(f: Figure, fw = 300, fh = 190): Pic {
     return [x + (dx / n) * d, y + (dy / n) * d];
   };
   const out: string[] = [];
+  for (const g of f.rings ?? []) {
+    const [cx, cy] = at(g.at);
+    out.push(`<circle cx="${r2(cx)}" cy="${r2(cy)}" r="${r2(g.r * k)}" fill="none" stroke="${C.ink}" stroke-width="2"/>`);
+  }
   for (const [i, poly] of (f.polys ?? []).entries())
     out.push(`<polygon points="${poly.map((n) => at(n).map(r2).join(",")).join(" ")}" fill="${i ? FILL2 : FILL}" stroke="${i ? C.orange : C.ink}" stroke-width="2"/>`);
   for (const s of f.segs ?? []) {
@@ -112,13 +124,16 @@ export function figurePic(f: Figure, fw = 300, fh = 190): Pic {
     const [bx, by] = [da[0] + db[0], da[1] + db[1]];
     const n = Math.hypot(bx, by) || 1;
     out.push(`<path d="M ${r2(o[0] + da[0] * 16)} ${r2(o[1] + da[1] * 16)} A 16 16 0 0 ${da[0] * db[1] - da[1] * db[0] > 0 ? 1 : 0} ${r2(o[0] + db[0] * 16)} ${r2(o[1] + db[1] * 16)}" fill="none" stroke="${g.color ?? C.red}" stroke-width="1.4"/>`);
-    out.push(text(o[0] + (bx / n) * 34, o[1] + (by / n) * 34 + 5, g.text, "middle", g.color ?? C.red, 13));
+    // Long labels (an expression in x) sit further out, clear of the sides.
+    const off = 34 + 3.5 * Math.max(0, g.text.length - 4);
+    out.push(text(o[0] + (bx / n) * off, o[1] + (by / n) * off + 5, g.text, "middle", g.color ?? C.red, 13));
   }
   for (const n of Object.keys(f.pts)) {
     if (f.hide?.includes(n)) continue;
     const [x, y] = away(at(n), all, 13);
     out.push(text(x, y + 5, n, "middle", C.ink, 15));
   }
+  for (const m of f.marks ?? []) out.push(text(M + (m.p[0] - x0) * k, M + (y1 - m.p[1]) * k + 5, m.text, "middle", m.color ?? C.purple, 14));
   for (const t of f.notes ?? []) {
     const [x, y] = at(t.at);
     out.push(text(x, y + (t.dy ?? 20), t.text, "middle", C.grey, 13));

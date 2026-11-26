@@ -2273,6 +2273,17 @@ function simHandPreview(): Piece[] {
   return [seg([0, 60], [140, 60], { color: "#868e96", width: 1 }), tri(0, 0.5, "#e7f5ff", "#1971c2"), tri(36, 1, "#d3f9d8", "#2f9e44"), text(54, 74, "× 2", 10)];
 }
 
+function circleHandPreview(): Piece[] {
+  // A circle with A and B below and C above: the angle at C on the arc AB, the dashed radii to the centre.
+  const [cx, cy, r] = [40, 40, 34];
+  const at = (deg: number): Pt => [cx + r * Math.cos((deg * Math.PI) / 180), cy - r * Math.sin((deg * Math.PI) / 180)];
+  const [A, B, C] = [at(210), at(-30), at(100)];
+  return [
+    ellipse(cx, cy, r, r, { color: "#1e1e1e", width: 1.4 }), seg(C, A, { color: "#1971c2", width: 1.4 }), seg(C, B, { color: "#1971c2", width: 1.4 }),
+    seg([cx, cy], A, { color: "#868e96", width: 1, dashed: true }), seg([cx, cy], B, { color: "#868e96", width: 1, dashed: true }), dot(C), dot([cx, cy], 2.5),
+  ];
+}
+
 function measureHandPreview(): Piece[] {
   // A pencil from 3 to 10 on a ruler that starts at 2: its ends read 3 and 10.
   const k = 12;
@@ -2672,6 +2683,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveMeasureHand", build: measureHandPreview, live: "measureHand" },
   { id: "livePercentHand", build: percentHandPreview, live: "percentHand" },
   { id: "liveSimHand", build: simHandPreview, live: "simHand" },
+  { id: "liveCircleHand", build: circleHandPreview, live: "circleHand" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
