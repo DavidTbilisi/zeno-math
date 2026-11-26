@@ -1553,7 +1553,8 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     table chosen to estimate a limit, conjugates, trigonometric identities, infinite limits, roots and sine at infinity,
     the next step after 0/0, L'Hôpital for ∞/∞ and, in a new setting, salt water in a tank and a medicine in the
     blood in the long run), implicit differentiation (dy/dx at a point of a circle or of a curve with an
-    xy term, a related rate: a sliding ladder or a spreading ripple), techniques of integration (a substitution, by parts, partial fractions or a squared
+    xy term, a related rate: a sliding ladder or a spreading ripple; since #745 also the derivative of an inverse
+    function from values of f, the derivatives of arcsin, arccos and arctan of kx, and the second derivative of a circle), techniques of integration (a substitution, by parts, partial fractions or a squared
     sine, typed as an antiderivative and judged up to its constant), improper integrals (∫ 1/xᵖ converges or not
     at infinity and at 0, their values, ∫ 1/(1 + x²) to π), area, volume and arc length (between a parabola and a
     line, a solid of revolution as a multiple of π, curves whose length is an integral done by hand), Taylor series

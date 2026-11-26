@@ -1596,28 +1596,28 @@
     {
       "skill": "differentiate",
       "level": 1,
-      "seed": 7,
+      "seed": 115221,
       "input": "-9x^2 - 4x",
       "label": "correct"
     },
     {
       "skill": "differentiate",
       "level": 1,
-      "seed": 7,
+      "seed": 115221,
       "input": "-4x - 9x^2",
       "label": "correct"
     },
     {
       "skill": "differentiate",
       "level": 1,
-      "seed": 7,
+      "seed": 115221,
       "input": "dy/dx = -9x^2 - 4x",
       "label": "correct"
     },
     {
       "skill": "differentiate",
       "level": 1,
-      "seed": 7,
+      "seed": 115221,
       "input": "-9x² - 4x",
       "label": "correct",
       "note": "a superscript ²"
@@ -1625,70 +1625,70 @@
     {
       "skill": "differentiate",
       "level": 1,
-      "seed": 7,
+      "seed": 115221,
       "input": "-9x^2 - 4x + 9",
       "label": "wrong"
     },
     {
       "skill": "differentiate",
       "level": 1,
-      "seed": 7,
+      "seed": 115221,
       "input": "-3x^3 - 2x^2",
       "label": "wrong"
     },
     {
       "skill": "differentiate",
       "level": 1,
-      "seed": 7,
+      "seed": 115221,
       "input": "-9x^2 - 4",
       "label": "wrong"
     },
     {
       "skill": "differentiate",
       "level": 3,
-      "seed": 7,
+      "seed": 12,
       "input": "e^x sin(x) + e^x cos(x)",
       "label": "correct"
     },
     {
       "skill": "differentiate",
       "level": 3,
-      "seed": 7,
+      "seed": 12,
       "input": "e^x(sin(x) + cos(x))",
       "label": "correct"
     },
     {
       "skill": "differentiate",
       "level": 3,
-      "seed": 7,
+      "seed": 12,
       "input": "e^x(sin x + cos x)",
       "label": "correct"
     },
     {
       "skill": "differentiate",
       "level": 3,
-      "seed": 7,
+      "seed": 12,
       "input": "e^x cos(x)",
       "label": "wrong"
     },
     {
       "skill": "tangent",
       "level": 3,
-      "seed": 7,
+      "seed": 37617,
       "input": "y = -6x - 6",
       "label": "correct"
     },
     {
       "skill": "tangent",
       "level": 3,
-      "seed": 7,
+      "seed": 37617,
       "input": "y=-6x-6",
       "label": "correct"
     },
     {
       "skill": "tangent",
       "level": 3,
-      "seed": 7,
+      "seed": 37617,
       "input": "y = -6x",
       "label": "wrong"
     },
@@ -2342,7 +2342,7 @@
     {
       "skill": "differentiate",
       "level": 2,
-      "seed": 7,
+      "seed": 52,
       "input": "2sin(2x)",
       "label": "wrong",
       "mistake": "sign"
@@ -8667,14 +8667,14 @@
     {
       "skill": "implicit",
       "level": 1,
-      "seed": 7,
+      "seed": 60,
       "input": "-4/3",
       "label": "correct"
     },
     {
       "skill": "implicit",
       "level": 1,
-      "seed": 7,
+      "seed": 60,
       "input": "-3/4",
       "label": "wrong",
       "note": "x and y swapped"
@@ -8682,14 +8682,14 @@
     {
       "skill": "implicit",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "implicit",
       "level": 2,
-      "seed": 7,
+      "seed": 910,
       "input": "5/2",
       "label": "wrong",
       "note": "the y part of the product xy dropped",
@@ -8698,14 +8698,14 @@
     {
       "skill": "implicit",
       "level": 3,
-      "seed": 7,
+      "seed": 269,
       "input": "4",
       "label": "correct"
     },
     {
       "skill": "implicit",
       "level": 3,
-      "seed": 7,
+      "seed": 269,
       "input": "3",
       "label": "wrong",
       "note": "the top taken to slide as fast as the foot",
@@ -80903,6 +80903,1604 @@
       "input": "There is no limit",
       "label": "wrong",
       "mistake": "infiniteCalledNoLimit"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 1,
+      "input": "f′(5), f(x) = x³",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 1,
+      "input": "f′(h), f(x) = x³",
+      "label": "wrong",
+      "mistake": "limitPointAsH"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 1,
+      "input": "f(5), f(x) = x³",
+      "label": "wrong",
+      "mistake": "derivativeAsValue"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 2,
+      "input": "f′(4), f(x) = x²",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 2,
+      "input": "f′(h), f(x) = x²",
+      "label": "wrong",
+      "mistake": "limitPointAsH"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 2,
+      "input": "f(4), f(x) = x²",
+      "label": "wrong",
+      "mistake": "derivativeAsValue"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 5,
+      "input": "x - 2",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 5,
+      "input": "((x)^(2) + x + ((-1) * 6))",
+      "label": "wrong",
+      "mistake": "secantNotDivided"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 10,
+      "input": "x + 5",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 10,
+      "input": "((x)^(2) + (3 * x) + ((-1) * 10))",
+      "label": "wrong",
+      "mistake": "secantNotDivided"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 11,
+      "input": "5/2",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 11,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "slopeNotDivided"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 13,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 13,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "slopeNotDivided"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 13,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 20,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 20,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "slopeNotDivided"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 20,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 41,
+      "input": "9/4",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 41,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "slopeNotDivided"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 332,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 332,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 349,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 1,
+      "seed": 349,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 1,
+      "input": "No: its tangent at x = 0 is vertical",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 1,
+      "input": "Yes: it is smooth at x = 0",
+      "label": "wrong",
+      "mistake": "continuousSoDifferentiable"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 2,
+      "input": "No: it is not continuous at x = −1",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 3,
+      "input": "Yes: it is smooth at x = 0",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 5,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 5,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "indeterminateAsZero"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 5,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "disguisedPowerKept"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 5,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 10,
+      "input": "256",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 10,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "indeterminateAsZero"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 10,
+      "input": "1024",
+      "label": "wrong",
+      "mistake": "disguisedPowerKept"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 10,
+      "input": "263",
+      "label": "wrong"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 16,
+      "input": "No: it has a corner at x = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 2,
+      "seed": 16,
+      "input": "Yes: it is smooth at x = 1",
+      "label": "wrong",
+      "mistake": "continuousSoDifferentiable"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 1,
+      "input": "continuous and differentiable",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 2,
+      "input": "neither continuous nor differentiable",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 2,
+      "input": "continuous and differentiable",
+      "label": "wrong",
+      "mistake": "slopesMatchEnough"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 3,
+      "input": "continuous but not differentiable",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 3,
+      "input": "continuous and differentiable",
+      "label": "wrong",
+      "mistake": "valuesMatchEnough"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 4,
+      "input": "continuous and differentiable",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 5,
+      "input": "1/(2x)",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 5,
+      "input": "(((-1) * 1) * ((2 * x))^((-1)))",
+      "label": "wrong",
+      "mistake": "secantSignLost"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 6,
+      "input": "continuous but not differentiable",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 6,
+      "input": "continuous and differentiable",
+      "label": "wrong",
+      "mistake": "valuesMatchEnough"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 10,
+      "input": "-1/(1x)",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 10,
+      "input": "(1 * ((1 * x))^((-1)))",
+      "label": "wrong",
+      "mistake": "secantSignLost"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 17,
+      "input": "neither continuous nor differentiable",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 17,
+      "input": "continuous and differentiable",
+      "label": "wrong",
+      "mistake": "slopesMatchEnough"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 30,
+      "input": "x^2 - 2x + 4",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 30,
+      "input": "((x)^(3) + ((-1) * ((-1) * 8)))",
+      "label": "wrong",
+      "mistake": "secantNotDivided"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 31,
+      "input": "x^2 + 2x + 4",
+      "label": "correct"
+    },
+    {
+      "skill": "tangent",
+      "level": 3,
+      "seed": 31,
+      "input": "((x)^(3) + ((-1) * 8))",
+      "label": "wrong",
+      "mistake": "secantNotDivided"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 1,
+      "input": "-7",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 1,
+      "input": "-27",
+      "label": "wrong",
+      "mistake": "valuesNotDerivatives"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 1,
+      "input": "0",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 2,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "valuesNotDerivatives"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 5,
+      "input": "h = f(g(x)); f(x) = sin x; g(x) = 2x + 2",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 5,
+      "input": "h = f(g(x)); f(x) = 2x + 2; g(x) = sin x",
+      "label": "wrong",
+      "mistake": "compositeLayersSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 5,
+      "input": "h = f(x) · g(x); f(x) = sin x; g(x) = 2x + 2",
+      "label": "wrong",
+      "mistake": "compositeReadAsProduct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 10,
+      "input": "h = f(g(x)); f(x) = x³; g(x) = 4x + 4",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 10,
+      "input": "h = f(g(x)); f(x) = 4x + 4; g(x) = x³",
+      "label": "wrong",
+      "mistake": "compositeLayersSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 10,
+      "input": "h = f(x) · g(x); f(x) = x³; g(x) = 4x + 4",
+      "label": "wrong",
+      "mistake": "compositeReadAsProduct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 11,
+      "input": "The power was not lowered by 1",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 11,
+      "input": "Nothing: the working is right",
+      "label": "wrong",
+      "mistake": "errorNotSeen"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 13,
+      "input": "The power was not lowered by 1",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 13,
+      "input": "Nothing: the working is right",
+      "label": "wrong",
+      "mistake": "errorNotSeen"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 41,
+      "input": "Nothing: the working is right",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 1,
+      "seed": 64,
+      "input": "Nothing: the working is right",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 1,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 1,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 2,
+      "input": "4/3",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 2,
+      "input": "-4/3",
+      "label": "wrong",
+      "mistake": "quotientTopSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "quotientNotSquared"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 3,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 3,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "derivativesMultiplied"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 3,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 4,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 4,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "quotientTopSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 4,
+      "input": "-12",
+      "label": "wrong",
+      "mistake": "quotientNotSquared"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 4,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 5,
+      "input": "1 ÷ (x · ln 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 5,
+      "input": "1 ÷ x",
+      "label": "wrong",
+      "mistake": "lnFactorLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 5,
+      "input": "ln 2 ÷ x",
+      "label": "wrong",
+      "mistake": "lnFactorInverted"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 6,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 6,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "derivativesMultiplied"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 6,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 10,
+      "input": "((3 * (x)^(2)) + (4 * x))",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 10,
+      "input": "(2 * x)",
+      "label": "wrong",
+      "mistake": "derivativesMultiplied"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 11,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 11,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 11,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 13,
+      "input": "-8/9",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 13,
+      "input": "8/9",
+      "label": "wrong",
+      "mistake": "quotientTopSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 13,
+      "input": "8/3",
+      "label": "wrong",
+      "mistake": "quotientNotSquared"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 25,
+      "input": "((3 * (x)^(2)) + (2 * x))",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 25,
+      "input": "(2 * x)",
+      "label": "wrong",
+      "mistake": "derivativesMultiplied"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 26,
+      "input": "5ˣ · ln 5",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 26,
+      "input": "x · 5ˣ⁻¹",
+      "label": "wrong",
+      "mistake": "powerRuleOnExponential"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 26,
+      "input": "5ˣ",
+      "label": "wrong",
+      "mistake": "lnFactorLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 26,
+      "input": "5ˣ ÷ ln 5",
+      "label": "wrong",
+      "mistake": "lnFactorInverted"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 30,
+      "input": "((2 * x) + ((-1) * 1))",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 30,
+      "input": "((3 * (x)^(2)) + ((-1) * (2 * x)) + ((-1) * 4))",
+      "label": "wrong",
+      "mistake": "derivativesDivided"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 31,
+      "input": "((2 * x) + 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 31,
+      "input": "((3 * (x)^(2)) + (6 * x) + ((-1) * 1))",
+      "label": "wrong",
+      "mistake": "derivativesDivided"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 33,
+      "input": "5ˣ · ln 5",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 33,
+      "input": "x · 5ˣ⁻¹",
+      "label": "wrong",
+      "mistake": "powerRuleOnExponential"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 33,
+      "input": "5ˣ",
+      "label": "wrong",
+      "mistake": "lnFactorLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 33,
+      "input": "5ˣ ÷ ln 5",
+      "label": "wrong",
+      "mistake": "lnFactorInverted"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 41,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 41,
+      "input": "-16",
+      "label": "wrong",
+      "mistake": "chainOuterAtPoint"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 41,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 41,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 42,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 42,
+      "input": "-9",
+      "label": "wrong",
+      "mistake": "chainOuterAtPoint"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 42,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 42,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 57,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 57,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "quotientTopSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 57,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "quotientNotSquared"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 57,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 61,
+      "input": "1 ÷ (x · ln 10)",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 61,
+      "input": "1 ÷ x",
+      "label": "wrong",
+      "mistake": "lnFactorLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 61,
+      "input": "ln 10 ÷ x",
+      "label": "wrong",
+      "mistake": "lnFactorInverted"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 69,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 69,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "quotientTopSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 69,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 78,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 78,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 81,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 81,
+      "input": "-22",
+      "label": "wrong",
+      "mistake": "quotientTopSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 81,
+      "input": "29",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 145,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 145,
+      "input": "-16",
+      "label": "wrong",
+      "mistake": "chainOuterAtPoint"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 145,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 170,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 170,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "chainOuterAtPoint"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 170,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 221,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 221,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 2,
+      "seed": 221,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 1,
+      "input": "4sec(4x) tan(4x)",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 1,
+      "input": "−4sec(4x) tan(4x)",
+      "label": "wrong",
+      "mistake": "trigDerivSign"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 1,
+      "input": "−4csc(4x) cot(4x)",
+      "label": "wrong",
+      "mistake": "trigCofunctionSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 1,
+      "input": "sec(4x) tan(4x)",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 2,
+      "input": "−3csc²(3x)",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 2,
+      "input": "3csc²(3x)",
+      "label": "wrong",
+      "mistake": "trigDerivSign"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 2,
+      "input": "3sec²(3x)",
+      "label": "wrong",
+      "mistake": "trigCofunctionSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 2,
+      "input": "−csc²(3x)",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 3,
+      "input": "−csc²(x)",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 3,
+      "input": "csc²(x)",
+      "label": "wrong",
+      "mistake": "trigDerivSign"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 3,
+      "input": "sec²(x)",
+      "label": "wrong",
+      "mistake": "trigCofunctionSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 4,
+      "input": "sec²(x)",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 4,
+      "input": "−sec²(x)",
+      "label": "wrong",
+      "mistake": "trigDerivSign"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 4,
+      "input": "−csc²(x)",
+      "label": "wrong",
+      "mistake": "trigCofunctionSwapped"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 5,
+      "input": "The top of the quotient rule is the wrong way round",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 5,
+      "input": "Nothing: the working is right",
+      "label": "wrong",
+      "mistake": "errorNotSeen"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 10,
+      "input": "The two derivatives were multiplied instead of using the product rule",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 10,
+      "input": "Nothing: the working is right",
+      "label": "wrong",
+      "mistake": "errorNotSeen"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 11,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 11,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "firstForSecond"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 11,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 13,
+      "input": "-16",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 13,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "firstForSecond"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 13,
+      "input": "-9",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 33,
+      "input": "Nothing: the working is right",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 34,
+      "input": "Nothing: the working is right",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 102,
+      "input": "70",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 102,
+      "input": "77",
+      "label": "wrong"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 445,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "differentiate",
+      "level": 3,
+      "seed": 445,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 1,
+      "input": "1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "inverseDerivNotFlipped"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 2,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "inverseDerivNotFlipped"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 2,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "inverseDerivWrongPoint"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 3,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 3,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "inverseDerivNotFlipped"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 3,
+      "input": "-1/4",
+      "label": "wrong",
+      "mistake": "inverseDerivWrongPoint"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 11,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 11,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "inverseDerivWrongPoint"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 11,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 13,
+      "input": "-1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 13,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "inverseDerivNotFlipped"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 16,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 16,
+      "input": "-1/2",
+      "label": "wrong",
+      "mistake": "inverseDerivWrongPoint"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 16,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 180,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 180,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 355,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 1,
+      "seed": 355,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 1,
+      "input": "3 ÷ √(1 − 9x²)",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 1,
+      "input": "−3 ÷ √(1 − 9x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigSign"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 1,
+      "input": "3 ÷ (1 + 9x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigFormsMixed"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 1,
+      "input": "1 ÷ √(1 − 9x²)",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 2,
+      "input": "2 ÷ √(1 − 4x²)",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 2,
+      "input": "−2 ÷ √(1 − 4x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigSign"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 2,
+      "input": "2 ÷ (1 + 4x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigFormsMixed"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 2,
+      "input": "1 ÷ √(1 − 4x²)",
+      "label": "wrong",
+      "mistake": "chainInsideLost"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 4,
+      "input": "1 ÷ √(1 − x²)",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 4,
+      "input": "−1 ÷ √(1 − x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigSign"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 4,
+      "input": "1 ÷ (1 + x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigFormsMixed"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 5,
+      "input": "1 ÷ (1 + x²)",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 5,
+      "input": "−1 ÷ (1 + x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigSign"
+    },
+    {
+      "skill": "implicit",
+      "level": 2,
+      "seed": 5,
+      "input": "1 ÷ √(1 − x²)",
+      "label": "wrong",
+      "mistake": "inverseTrigFormsMixed"
+    },
+    {
+      "skill": "implicit",
+      "level": 3,
+      "seed": 1,
+      "input": "-25/27",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 3,
+      "seed": 1,
+      "input": "-1/3",
+      "label": "wrong",
+      "mistake": "implicitSecondYConstant"
+    },
+    {
+      "skill": "implicit",
+      "level": 3,
+      "seed": 2,
+      "input": "-169/1728",
+      "label": "correct"
+    },
+    {
+      "skill": "implicit",
+      "level": 3,
+      "seed": 2,
+      "input": "-1/12",
+      "label": "wrong",
+      "mistake": "implicitSecondYConstant"
     }
   ]
 }

@@ -1,11 +1,14 @@
 // Practice: Implicit differentiation. Easy is the gradient of a circle or an ellipse at a point; medium a curve with
 // an xy term, whose derivative needs the product rule (the x·dy/dx part left out, named); hard is related rates: a
 // ladder sliding down a wall (both ends taken to move at the same speed, named) or a spreading ripple (the rate dr/dt
-// left out of dA/dt, named).
+// left out of dA/dt, named). Since #745 half the seeds ask about inverses instead: the derivative of an inverse
+// function at a point from values of f (L1), the derivatives of arcsin, arccos and arctan of kx (L2), and the second
+// derivative of a circle at a point (L3).
 import { exact, F, piTimes } from "../calculusTwo";
 import { fill } from "../chart";
 import { minus } from "../logicSets";
 import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
+import { pickPart } from "../tTails";
 
 const coef = (k: number, v: string) => `${k === 1 ? "" : k === -1 ? "-" : k}${v}`;
 
@@ -82,6 +85,48 @@ function ratesPart(r: Rng, w: PracticeWords): Part {
   };
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? conicPart(r, w) : L === 2 ? productPart(r, w) : ratesPart(r, w));
+/** Inverses (#745): an inverse function's derivative, inverse trigonometry, a circle's second derivative. */
+function more(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
+  const K = w.imK;
+  if (L === 1) {
+    const a = r.int(-3, 4);
+    const b = a + r.nz(-4, 5);
+    const [d, e] = [r.nz(-6, 6), r.nz(-6, 6)];
+    return {
+      prompt: fill(K.inverseQ, { b: minus(b) }), q: `f(${a}) = ${b}, \\quad f'(${a}) = ${d}, \\quad f'(${b}) = ${e}`,
+      ...exact(F(1, d), [["inverseDerivNotFlipped", F(d), { a: minus(a), b: minus(b) }], ["inverseDerivWrongPoint", F(1, e), { a: minus(a), b: minus(b) }]]),
+      steps: [`g(${b}) = ${a}`, `g'(${b}) = \\frac{1}{f'(g(${b}))} = \\frac{1}{f'(${a})} = ${F(1, d).tex()}`],
+    };
+  }
+  if (L === 2) {
+    const fn = r.pick(["arcsin", "arccos", "arctan"] as const);
+    const k = r.int(1, 4);
+    const u = k === 1 ? "x" : `${k}x`;
+    const u2 = k === 1 ? "x²" : `${k * k}x²`;
+    const root = (c: number) => `${c < 0 ? "−" : ""}${Math.abs(c)} ÷ √(1 − ${u2})`;
+    const over = (c: number) => `${c < 0 ? "−" : ""}${Math.abs(c)} ÷ (1 + ${u2})`;
+    const sign = fn === "arccos" ? -1 : 1;
+    const right = fn === "arctan" ? over(k) : root(sign * k);
+    const opts = [right, fn === "arctan" ? over(-k) : root(-sign * k), fn === "arctan" ? root(k) : over(sign * k), ...(k > 1 ? [fn === "arctan" ? over(1) : root(sign)] : [])];
+    const tx = { arcsin: "\\arcsin", arccos: "\\arccos", arctan: "\\arctan" }[fn];
+    const rule = { arcsin: "\\frac{1}{\\sqrt{1 - u^{2}}}", arccos: "-\\frac{1}{\\sqrt{1 - u^{2}}}", arctan: "\\frac{1}{1 + u^{2}}" }[fn];
+    return pickPart(r, opts, 0, [{ id: "inverseTrigSign", at: 1 }, { id: "inverseTrigFormsMixed", at: 2 }, ...(k > 1 ? [{ id: "chainInsideLost" as const, at: 3, vars: { k, u } }] : [])],
+      fill(w.dvK.whichQ, { f: `${fn}(${u})` }), [`\\frac{d}{du}${tx}\\,u = ${rule}`, `u = ${u}: \\quad \\frac{du}{dx} = ${k}`]);
+  }
+  const [s0, t0] = r.pick([[3, 4], [5, 12], [6, 8], [8, 15]] as const);
+  const [p, q] = (r.next() < 0.5 ? [s0, t0] : [t0, s0]).map((v) => v * r.sign());
+  const c = p * p + q * q;
+  const v = F(-c, q ** 3);
+  return {
+    prompt: fill(K.secondQ, { x: minus(p), y: minus(q) }), q: `x^{2} + y^{2} = ${c}`,
+    ...exact(v, [["implicitSecondYConstant", F(-1, q)]]),
+    steps: [`\\frac{dy}{dx} = -\\frac{x}{y}`, `\\frac{d^{2}y}{dx^{2}} = -\\frac{y - x\\frac{dy}{dx}}{y^{2}} = -\\frac{y^{2} + x^{2}}{y^{3}} = -\\frac{${c}}{y^{3}}`, `= -\\frac{${c}}{${q < 0 ? `(${q})` : q}^{3}} = ${v.tex()}`],
+  };
+}
+
+const gen: Gen = (r, L, w) => {
+  if (r.int(0, 9) >= 5) return more(r, L, w);
+  return L === 1 ? conicPart(r, w) : L === 2 ? productPart(r, w) : ratesPart(r, w);
+};
 
 export default gen;
