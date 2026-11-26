@@ -54,7 +54,7 @@ export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   signTimes: { glyph: "−×−", home: "integers", like: "addNeg" },
   // powers
   powValue: { glyph: "2⁵", home: "indices", like: "multiplyFacts" },
-  powLaws: { glyph: "aᵐ⁺ⁿ", home: "indices" },
+  powLaws: { glyph: "aᵐ⁺ⁿ", home: "indices", trap: "powersAddedForDivide" },
   negIndex: { glyph: "2⁻³", home: "indices", trap: "negPower" },
   fracIndex: { glyph: "x^½", home: "indices", like: "negIndex", trap: "powTimes" },
   // brackets
@@ -70,7 +70,7 @@ export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   roundPlace: { glyph: "5↑4↓", home: "rounding", trap: "doubleRound" },
   placeHolders: { glyph: "…00", home: "rounding", trap: "placeLost" },
   sigFigs: { glyph: "0.0①②", home: "rounding", like: "roundPlace" },
-  stdForm: { glyph: "×10ⁿ", home: "rounding" },
+  stdForm: { glyph: "×10ⁿ", home: "rounding", trap: "powerOneOut" },
   bounds: { glyph: "±½", home: "rounding", like: "roundPlace", trap: "fullUnit" },
 };
 
