@@ -81,7 +81,7 @@ test("time answers: either clock where it is the same time, 12 at most on a cloc
   const face = find(1, (ex) => ex.answer.k === "clock" && ex.answer.t >= 60);
   if (face.answer.k !== "clock") throw new Error("unreachable");
   assert.equal(check(face, clock24(face.answer.t + 12 * 60), w).why, w.reasons.time.face, "a clock with hands shows 3:40, not 15:40");
-  const end = find(2, (ex) => ex.format === "clock");
+  const end = find(2, (ex) => ex.answer.k === "clock" && !ex.answer.face);
   if (end.answer.k !== "clock") throw new Error("unreachable");
   assert.equal(check(end, clock24(end.answer.t + 12 * 60), w).ok, true, "a film's end on the 24-hour clock is the same time");
   const len = find(2, (ex) => ex.answer.k === "dur" && ex.answer.m > 60);
@@ -101,6 +101,11 @@ test("every time question has a worked solution, in each language", async () => 
     for (const level of LEVELS)
       for (let seed = 1; seed <= 12; seed++) {
         const ex = exercise("time", level, seed, words.pracWords);
+        // Units of time written in a smaller one, and how long things take (#705): worked lines, not a clock or line.
+        if (ex.format === "number" || ex.format === "pick") {
+          assert.ok(ex.steps?.length && !/NaN|undefined|\{\w+\}/.test(ex.prompt + ex.steps.join(" ")), `${level} #${seed}`);
+          continue;
+        }
         assert.equal(ex.solution?.kind, "time");
         assert.equal(check(ex, ex.plain, words.pracWords).ok, true, `${level} #${seed} ${ex.plain}`);
         const pic = await renderSolution(ex.solution!, words);

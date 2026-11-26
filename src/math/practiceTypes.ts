@@ -73,7 +73,7 @@ export type MeasurePair = { big: MeasureUnit; small: MeasureUnit; f: number };
 export type DayPart = "morning" | "afternoon" | "evening" | "night";
 
 /** The units a measurement is converted between (decimals). */
-export type MeasureUnit = "km" | "m" | "cm" | "kg" | "g" | "l" | "ml";
+export type MeasureUnit = "km" | "m" | "cm" | "mm" | "kg" | "g" | "l" | "ml";
 
 /** One end of the solution set of an inequality: closed when the number itself is included. */
 export type Bound = { v: number; closed: boolean };
@@ -372,6 +372,11 @@ export type PracticeWords = {
   fracSums: { asFraction: string; of: string; pizzas: string; cake: string; servings: string; whichSum: string } & Record<"lunch" | "ribbon" | "walk" | "plank" | "sameAs" | "laps" | "sugar" | "scale" | "more" | "less" | "equal" | "asks" | "howMany" | "partOf" | "howManyBig" | "area" | "ateOf", string>;
   /** Decimals on grids and number lines, estimates and stories (#704). */
   decPics: Record<"gridDecimal" | "gridFraction" | "lineDecimal" | "lineFraction" | "bestEstimate" | "jug" | "rope" | "jump" | "nino" | "gio" | "pencil" | "apples" | "laps" | "faster" | "placeTimes", string>;
+  measTime: Record<"ribbonsLong" | "ribbonsShort" | "ribbonsOrder" | "taller" | "same" | "handFoot" | "clipPencil" | "hands" | "feet" | "clips" | "pencils" | "sameCount" | "fewerFit" | "aboutLong" | "aboutHeavy" | "aboutHolds" | "aboutB" | "apples" | "glasses" | "jug" | "ribbonCut" | "rice" | "lineTime" | "homework" | "sec" | "days" | "aboutTime" | "film" | "song" | "trip", string> & {
+    names: string[];
+    things: Record<"pencil" | "book" | "shoe" | "crayon" | "door" | "bus" | "classroom" | "apple" | "clip" | "flour" | "dog" | "melon" | "egg" | "spoon" | "cup" | "bath" | "bucket" | "bottle" | "ant" | "rice" | "towns" | "marathon" | "pitch" | "finger", string>;
+    acts: Record<"blink" | "shoes" | "teeth" | "lunch" | "match" | "sleep" | "cake", string>;
+  };
   /** Fractions as numbers on a line, equal parts, and fractions compared in stories (#702). */
   fracLine: {
     point: string; findOne: string; barToLine: string; toOne: string; sameLine: string; pastOne: string; equalParts: string;
