@@ -1958,28 +1958,28 @@
     {
       "skill": "probability",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "3/10",
       "label": "correct"
     },
     {
       "skill": "probability",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "0.3",
       "label": "correct"
     },
     {
       "skill": "probability",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "6/20",
       "label": "form"
     },
     {
       "skill": "probability",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "9/25",
       "label": "wrong",
       "note": "with replacement"
@@ -1987,21 +1987,21 @@
     {
       "skill": "probability",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "3/5",
       "label": "wrong"
     },
     {
       "skill": "counting",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "15",
       "label": "correct"
     },
     {
       "skill": "counting",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "30",
       "label": "wrong"
     },
@@ -71302,6 +71302,1528 @@
       "input": "No: the residuals make a curve",
       "label": "wrong",
       "mistake": "residualsNotZero"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 1,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 1,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "experimentalAsOdds"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 1,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "theoryForExperiment"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 2,
+      "input": "Bag B",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 2,
+      "input": "Bag A",
+      "label": "wrong",
+      "mistake": "moreByCount"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 3,
+      "input": "3/25",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 3,
+      "input": "3/22",
+      "label": "wrong",
+      "mistake": "experimentalAsOdds"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 3,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "theoryForExperiment"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 4,
+      "input": "Bag A",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 4,
+      "input": "Bag B",
+      "label": "wrong",
+      "mistake": "moreByCount"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 5,
+      "input": "The coin may be fair: 10 flips are too few to tell",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 5,
+      "input": "The coin is unfair: it will land on heads 6 times in every 10 flips",
+      "label": "wrong",
+      "mistake": "smallSampleClaim"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 5,
+      "input": "The next flip is more likely to be tails, to even things out",
+      "label": "wrong",
+      "mistake": "gamblersFallacy"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 7,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 10,
+      "input": "9/20",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 10,
+      "input": "2/5",
+      "label": "wrong",
+      "mistake": "theoryForSimulation"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 10,
+      "input": "11/20",
+      "label": "wrong",
+      "mistake": "simulationComplement"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 11,
+      "input": "0.15",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 11,
+      "input": "17/20",
+      "label": "wrong",
+      "mistake": "modelMissingAsSum"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 11,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "modelEqualShares"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 11,
+      "input": "7.15",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 12,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 13,
+      "input": "11",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 13,
+      "input": "33",
+      "label": "wrong",
+      "mistake": "predictedComplement"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 13,
+      "input": "18",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 20,
+      "input": "93",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 20,
+      "input": "31",
+      "label": "wrong",
+      "mistake": "predictionOnePart"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 20,
+      "input": "155",
+      "label": "wrong",
+      "mistake": "predictedComplement"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 20,
+      "input": "100",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 25,
+      "input": "The coin may be fair: 10 flips are too few to tell",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 25,
+      "input": "The coin is unfair: it will land on heads 7 times in every 10 flips",
+      "label": "wrong",
+      "mistake": "smallSampleClaim"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 25,
+      "input": "The next flip is more likely to be tails, to even things out",
+      "label": "wrong",
+      "mistake": "gamblersFallacy"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 30,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 30,
+      "input": "3/10",
+      "label": "wrong",
+      "mistake": "theoryForSimulation"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 30,
+      "input": "4/5",
+      "label": "wrong",
+      "mistake": "simulationComplement"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 41,
+      "input": "0.1",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 41,
+      "input": "9/10",
+      "label": "wrong",
+      "mistake": "modelMissingAsSum"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 41,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "modelEqualShares"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 41,
+      "input": "7.1",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 42,
+      "input": "126",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 42,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "predictionOnePart"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 42,
+      "input": "54",
+      "label": "wrong",
+      "mistake": "predictedComplement"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 42,
+      "input": "133",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 67,
+      "input": "144",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 67,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "predictionOnePart"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 67,
+      "input": "151",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 107,
+      "input": "51",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 107,
+      "input": "17",
+      "label": "wrong",
+      "mistake": "predictionOnePart"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 107,
+      "input": "58",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 137,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 137,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "predictedComplement"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 137,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 190,
+      "input": "0.5",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 190,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "modelEqualShares"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 190,
+      "input": "7.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 242,
+      "input": "0.5",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 242,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "modelEqualShares"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 242,
+      "input": "7.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 306,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 306,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "experimentalAsOdds"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 414,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 1,
+      "seed": 414,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "experimentalAsOdds"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 1,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 1,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 2,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 2,
+      "input": "7/12",
+      "label": "wrong",
+      "mistake": "bothCountedTwice"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 3,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 3,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 3,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 4,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 4,
+      "input": "11/20",
+      "label": "wrong",
+      "mistake": "bothCountedTwice"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 5,
+      "input": "0.52",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 5,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "atLeastOneAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 5,
+      "input": "0.0007716049382716048",
+      "label": "wrong",
+      "mistake": "atLeastAsAll"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 5,
+      "input": "7.52",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 6,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 6,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 6,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 10,
+      "input": "A marble drawn is red, it is put back, then a second marble drawn is red",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 10,
+      "input": "A marble drawn is red, then a second marble, drawn without putting the first back, is red",
+      "label": "wrong",
+      "mistake": "withoutReplacementIndependent"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 11,
+      "input": "1/12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 11,
+      "input": "7/12",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 16,
+      "input": "3, 4, 6, 8, 9, 12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 16,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "intersectionForUnion"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 16,
+      "input": "3, 4, 6, 8, 9",
+      "label": "wrong",
+      "mistake": "unionOverlapDropped"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 17,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 17,
+      "input": "3, 4, 6, 8, 9, 12",
+      "label": "wrong",
+      "mistake": "unionForIntersection"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 20,
+      "input": "19/22",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 20,
+      "input": "15/22",
+      "label": "wrong",
+      "mistake": "vennBothDropped"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 22,
+      "input": "2, 3, 4, 6, 8, 9, 10, 12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 22,
+      "input": "6, 12",
+      "label": "wrong",
+      "mistake": "intersectionForUnion"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 22,
+      "input": "2, 3, 4, 8, 9, 10",
+      "label": "wrong",
+      "mistake": "unionOverlapDropped"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 25,
+      "input": "0.6",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 25,
+      "input": "5/6",
+      "label": "wrong",
+      "mistake": "atLeastOneAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 25,
+      "input": "0.00012860082304526745",
+      "label": "wrong",
+      "mistake": "atLeastAsAll"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 25,
+      "input": "7.6",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 26,
+      "input": "39/40",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 26,
+      "input": "1/39",
+      "label": "wrong",
+      "mistake": "complementAsOdds"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 33,
+      "input": "49/50",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 33,
+      "input": "1/49",
+      "label": "wrong",
+      "mistake": "complementAsOdds"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 36,
+      "input": "A coin shows heads, then a dice shows a 6",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 36,
+      "input": "A card drawn is a heart, then a second card, drawn without putting the first back, is a heart",
+      "label": "wrong",
+      "mistake": "withoutReplacementIndependent"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 41,
+      "input": "1/12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 41,
+      "input": "7/12",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 42,
+      "input": "17/27",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 42,
+      "input": "11/27",
+      "label": "wrong",
+      "mistake": "vennOnlyRegion"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 47,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 47,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 47,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 48,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 48,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 62,
+      "input": "6, 12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 62,
+      "input": "2, 3, 4, 6, 8, 9, 10, 12",
+      "label": "wrong",
+      "mistake": "unionForIntersection"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 64,
+      "input": "12/17",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 64,
+      "input": "10/17",
+      "label": "wrong",
+      "mistake": "vennBothDropped"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 91,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 91,
+      "input": "11",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 91,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 141,
+      "input": "1, 3, 5, 7, 9, 11",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 141,
+      "input": "2, 4, 6, 8, 10, 12",
+      "label": "wrong",
+      "mistake": "complementAsSet"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 143,
+      "input": "6/13",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 143,
+      "input": "7/26",
+      "label": "wrong",
+      "mistake": "vennOnlyRegion"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 145,
+      "input": "1/10",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 145,
+      "input": "7/10",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 160,
+      "input": "1, 2, 3, 5, 6, 7, 9, 10, 11",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 160,
+      "input": "4, 8, 12",
+      "label": "wrong",
+      "mistake": "complementAsSet"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 182,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 182,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 182,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 190,
+      "input": "1/12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 190,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 193,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 193,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 193,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 226,
+      "input": "1/18",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 226,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 242,
+      "input": "1/12",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 242,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 320,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 320,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "outcomesAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 320,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 371,
+      "input": "1/24",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 2,
+      "seed": 371,
+      "input": "5/12",
+      "label": "wrong",
+      "mistake": "independentAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 1,
+      "input": "1/221",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 1,
+      "input": "1/169",
+      "label": "wrong",
+      "mistake": "replacementIgnored"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 2,
+      "input": "1/17",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 2,
+      "input": "1/16",
+      "label": "wrong",
+      "mistake": "replacementIgnored"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 5,
+      "input": "0.2",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 5,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "conditionalAsJoint"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 5,
+      "input": "9/10",
+      "label": "wrong",
+      "mistake": "generalRuleAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 5,
+      "input": "7.2",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 10,
+      "input": "0.45",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 10,
+      "input": "3/4",
+      "label": "wrong",
+      "mistake": "conditionalAsJoint"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 10,
+      "input": "27/20",
+      "label": "wrong",
+      "mistake": "generalRuleAdded"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 10,
+      "input": "7.45",
+      "label": "wrong"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 11,
+      "input": "37/105",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 11,
+      "input": "152/441",
+      "label": "wrong",
+      "mistake": "atLeastReplaced"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 13,
+      "input": "9/35",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 13,
+      "input": "56/225",
+      "label": "wrong",
+      "mistake": "atLeastReplaced"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 16,
+      "input": "11/221",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 16,
+      "input": "9/169",
+      "label": "wrong",
+      "mistake": "replacementIgnored"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 69,
+      "input": "11/221",
+      "label": "correct"
+    },
+    {
+      "skill": "probability",
+      "level": 3,
+      "seed": 69,
+      "input": "9/169",
+      "label": "wrong",
+      "mistake": "replacementIgnored"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 1,
+      "input": "96",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 1,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "countingAdded"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 1,
+      "input": "103",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 2,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "countingAdded"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 2,
+      "input": "67",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 3,
+      "input": "36",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 3,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "countingAdded"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 3,
+      "input": "43",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 4,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 4,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "countingAdded"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 4,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 5,
+      "input": "1000",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 5,
+      "input": "720",
+      "label": "wrong",
+      "mistake": "repeatsForbidden"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 5,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "digitsTimesPlaces"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 5,
+      "input": "1007",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 10,
+      "input": "10000",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 10,
+      "input": "5040",
+      "label": "wrong",
+      "mistake": "repeatsForbidden"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 10,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "digitsTimesPlaces"
+    },
+    {
+      "skill": "counting",
+      "level": 1,
+      "seed": 10,
+      "input": "10007",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 1,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "orderIgnored"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 1,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 2,
+      "input": "28",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 2,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "orderCountedTwice"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 2,
+      "input": "35",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 3,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 3,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "orderCountedTwice"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 3,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 6,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 6,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "orderIgnored"
+    },
+    {
+      "skill": "counting",
+      "level": 2,
+      "seed": 6,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 1,
+      "input": "1/84",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 1,
+      "input": "1/504",
+      "label": "wrong",
+      "mistake": "lotteryOrdered"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 2,
+      "input": "1/56",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 2,
+      "input": "1/336",
+      "label": "wrong",
+      "mistake": "lotteryOrdered"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 5,
+      "input": "1/21",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 5,
+      "input": "64/729",
+      "label": "wrong",
+      "mistake": "committeeWithReplacement"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 10,
+      "input": "1/11",
+      "label": "correct"
+    },
+    {
+      "skill": "counting",
+      "level": 3,
+      "seed": 10,
+      "input": "1/8",
+      "label": "wrong",
+      "mistake": "committeeWithReplacement"
     }
   ]
 }

@@ -90,6 +90,7 @@ import { IneqFind } from "./IneqFind";
 import { CxPlane } from "./CxPlane";
 import { MatPlane } from "./MatPlane";
 import { MeanBalance } from "./MeanBalance";
+import { CountTree } from "./CountTree";
 import { VecFind } from "./VecFind";
 import { SimHand } from "./SimHand";
 import { AreaBlocks } from "./AreaBlocks";
@@ -246,6 +247,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   cxPlane: CxPlane,
   matPlane: MatPlane,
   meanBalance: MeanBalance,
+  countTree: CountTree,
   areaBlocks: AreaBlocks,
   counters: Counters,
   signArrow: SignArrow,

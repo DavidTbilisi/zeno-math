@@ -2017,6 +2017,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Probability rules, sample spaces and counting (#738): in probability, an experiment's result, two bags compared,
+    a prediction from a chance, a model's missing chance, which claim about a few coin flips is valid, and a chance
+    estimated from a simulation's digits (grade 7); a sample space counted, the numbers in A ∩ B, A ∪ B or A′, the
+    addition rule with its overlap, a Venn diagram read, two independent events, a complement and "at least one six"
+    (grade 8); two cards or bulbs taken without putting the first back, and the general multiplication rule (grade
+    10). In counting, meals, outfits and lock codes by the counting principle (grade 7), handshakes and a captain and
+    vice-captain (grade 8), and a lottery and a committee's chance by combinations (grade 10). The slips (odds for a
+    probability, theory for an experiment, more counted instead of more likely, a prediction short by a part or the
+    complement, a missing chance taken as the sum or a quarter, a small sample or a coin's memory trusted, union and
+    intersection swapped, the overlap dropped or counted twice, chances added for "and", "at least one" added up or
+    taken as "all", the first draw put back, a conditional share taken for the joint chance, choices added, digits
+    multiplied by places, order counted or ignored, a committee chosen with replacement) are named. A new piece,
+    "Counting: grow a tree of outfits", has the learner tap shirts and trousers to grow every branch of an outfit
+    tree, then say how many outfits there are with no tree drawn; only after a right count is the rule said: multiply
+    the numbers of choices
   - Scatter plots by hand and regression output (#737): in scatter plots, a car placed from its age and value, which
     data suits a scatter plot, which variable goes across, and a plot described as strong, weak or curved (grade 8);
     the slope of a drawn line of fit from two of its points and its equation picked (grade 8); r matched to a plot,

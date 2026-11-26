@@ -2340,6 +2340,20 @@ function meanBalancePreview(): Piece[] {
   ];
 }
 
+function countTreePreview(): Piece[] {
+  // A dot branching to 3 shirts, and the first shirt branching on to its 2 pairs of trousers.
+  const k = 12;
+  const dot: [number, number] = [k, 6 * k];
+  const shirts = [2, 6, 10].map((y): [number, number] => [5 * k, y * k]);
+  const trousers = [1, 3].map((y): [number, number] => [9 * k, y * k]);
+  return [
+    ...shirts.map((p) => seg(dot, p, { color: "#adb5bd", width: 2 })),
+    ...trousers.map((p) => seg(shirts[0], p, { color: "#adb5bd", width: 2 })),
+    ...shirts.map((p, i) => seg([p[0], p[1] - 6], [p[0], p[1] + 6], { color: ["#e03131", "#1971c2", "#2f9e44"][i], width: 12 })),
+    ...trousers.map((p, i) => seg([p[0], p[1] - 6], [p[0], p[1] + 6], { color: ["#343a40", "#8d6e63"][i], width: 8 })),
+  ];
+}
+
 function cxPlanePreview(): Piece[] {
   // Axes, z as an arrow from 0 and i·z a quarter turn on from it, with the corner of the turn.
   const k = 12;
@@ -2771,6 +2785,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCxPlane", build: cxPlanePreview, live: "cxPlane" },
   { id: "liveMatPlane", build: matPlanePreview, live: "matPlane" },
   { id: "liveMeanBalance", build: meanBalancePreview, live: "meanBalance" },
+  { id: "liveCountTree", build: countTreePreview, live: "countTree" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
