@@ -110,6 +110,8 @@ test("the marked version is the question as practice shows it, in every language
   for (const [skill, levels] of [["barModels", LEVELS], ["proportion", [1]]] as const)
     for (const level of levels)
       for (const seed of SEEDS.slice(0, 60)) {
+        // Not the #708 picks (is a table proportional, which proportion), which are not stories to mark.
+        if (skill === "proportion" && exercise(skill, level, seed, en.pracWords).format === "pick") continue;
         const marks = [en, ka, ru].map(({ pracWords: w }) => {
           const ex = exercise(skill, level, seed, w);
           assert.ok(ex.marked?.length, `${skill} ${level} ${seed}`);

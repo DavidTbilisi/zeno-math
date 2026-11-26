@@ -23,7 +23,8 @@ test("speed questions come in the medium and hard rate questions, take their uni
   for (const level of LEVELS)
     for (let seed = 1; seed <= 200; seed++) {
       const ex = exercise("rate", level, seed, w);
-      if (!/km|m\/s/.test(ex.prompt)) continue;
+      // Not the #708 kinds: a unit to pick, km/h into m/s, km in a fraction of an hour.
+      if (!/km|m\/s/.test(ex.prompt) || /unit\?|metres a second|of an hour/.test(ex.prompt)) continue;
       seen.add(`${level}`);
       const where = `${level} #${seed}: ${ex.prompt}`;
       if (ex.answer.k !== "num") throw new Error(where);
