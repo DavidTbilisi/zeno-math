@@ -2266,6 +2266,13 @@ function percentHandPreview(): Piece[] {
   return [...out, text(0, 8, "0%", 10), text(10 * k, 8, "100%", 10), text(1.5 * k, 28, "30%", 10)];
 }
 
+function simHandPreview(): Piece[] {
+  // A small right triangle and its copy twice as big, both on the ground line.
+  const k = 12;
+  const tri = (x: number, s: number, fill: string, color: string): Piece => poly([[x, 60], [x + 3 * k * s, 60], [x + 3 * k * s, 60 - 4 * k * s]], { fill, color, width: 1.4 });
+  return [seg([0, 60], [140, 60], { color: "#868e96", width: 1 }), tri(0, 0.5, "#e7f5ff", "#1971c2"), tri(36, 1, "#d3f9d8", "#2f9e44"), text(54, 74, "× 2", 10)];
+}
+
 function measureHandPreview(): Piece[] {
   // A pencil from 3 to 10 on a ruler that starts at 2: its ends read 3 and 10.
   const k = 12;
@@ -2664,6 +2671,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDecGrid", build: decGridPreview, live: "decGrid" },
   { id: "liveMeasureHand", build: measureHandPreview, live: "measureHand" },
   { id: "livePercentHand", build: percentHandPreview, live: "percentHand" },
+  { id: "liveSimHand", build: simHandPreview, live: "simHand" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

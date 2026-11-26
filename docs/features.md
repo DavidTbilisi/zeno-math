@@ -884,7 +884,11 @@ The front page for schools and universities is published at **[davidtbilisi.gith
       Dividing where the scale multiplies, the wrong change of unit, metres and centimetres mixed, an area scaled by
       k instead of k² and the redrawing turned upside down are named. The piece *The plan and the floor* (Insert →
       Geometry → plane geometry, grades 6–8) puts a room on a squared plan beside the real floor: drag the room's
-      corner and the scale, and the plan's shaded square centimetre is a k × k block of square metres on the floor
+      corner and the scale, and the plan's shaded square centimetre is a k × k block of square metres on the floor.
+      Also (#714), scale copies: which shape on squared paper is a scale copy of another, and the scale factor read off
+      two shapes (grade 7); a side of a scale copy, and a side of the original from the copy and its scale factor
+      (grade 7). The same amount added to each side, a shape stretched one way only, the factor upside down or taken
+      as a difference, and the copy multiplied again for the original are named
     - *Bar-model word problems* (Singapore Math Challenge Word Problems; Visible Thinking 2A, 3A), one form per
       structure the bar model solves: easy is one amount less than another, posts along a straight fence, how much more
       one has when the total is known; medium a total and a difference, "k times as many" with a total, trees round a
@@ -1139,6 +1143,21 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     down or taken as a difference, the mirror lines for the order, the interior angle for the turn, the midpoint for
     the centre, the gap for the mirror, the same difference taken for similar and a reflection taken to keep sides
     parallel are named
+  - Similar triangles (grades 8 and 10): a side of a similar triangle, a triangle cut by a line parallel to a side,
+    and areas and volumes of similar shapes. Also (#714): the side that matches another when the second triangle is
+    named in another order, and whether two triangles with two angles given are similar (easy); whether two triangles
+    with three sides given are similar, and a tree's height from its shadow and a pole's (medium); the height to the
+    hypotenuse of a right triangle, an angle bisector cutting the opposite side, a line parallel to a side, which test
+    (AA, SAS, SSS or not enough) proves two triangles similar, and a tower's height seen in a mirror on the ground
+    (hard). Letters matched in the alphabet's order, the third angle not worked out, one equal angle taken as enough,
+    sides compared unsorted, two sides in ratio taken as enough, the same amount added instead of multiplied, the mean
+    for the height, half the side for the bisector, the whole side for its part, two ratios taken for SSS and an
+    angle not between the sides taken for SAS are named. The piece *Similar triangles: stretch the copy by hand*
+    (Insert → Geometry → plane geometry, grades 7–10) puts a right triangle ABC beside a copy to stretch by its corner,
+    by pressing where the corner goes, or by the arrow keys: at A′B′ = 6 from AB = 3 every side of the copy shows
+    × 2, and only then does the right tile count, the side plus what A′B′ gained being named; the angle at A′ stays
+    37° at three times the size; a dashed triangle DEF is covered by one stretch, or a side sticks out; and a stick's
+    shadow is stretched to a tree's. Each rule is said only after the right tap
   - Congruent triangles (grades 8 and 10; #643): two triangles with the same parts written on them, congruent by SSS,
     SAS, ASA, AAS or RHS, or not necessarily, when the angle is not between the two sides (drawn as the two different
     triangles those parts allow) or only the angles are given (drawn in two sizes); then a side or an angle found by
