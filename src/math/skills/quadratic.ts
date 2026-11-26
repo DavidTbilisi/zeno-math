@@ -15,8 +15,10 @@ import { sgn } from "../readFunction";
 import { pickPart } from "../tTails";
 import { polyText } from "../whichTool";
 
-const gen: Gen = (r, L, w) => {
-  if (r.int(0, 9) >= 4) return more(r, L, w);
+const gen: Gen = (r, L, w) => (r.int(0, 9) >= 4 ? more(r, L, w) : classic(r, L, w));
+
+/** The equations from before #727: by factorisation, then by the formula. src/math/whichTool.ts draws its quadratics here. */
+export const classic: Gen = (r, L, w) => {
   if (L < 3) {
     let p: number, q: number, a: number, cs: number[];
     let roots: Frac[];

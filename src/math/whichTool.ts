@@ -16,7 +16,7 @@ import { gcd, rngOf } from "./practiceKit";
 import type { Exercise, PracticeWords, Rng } from "./practiceTypes";
 import fracGen from "./skills/fractions";
 import { old as linearGen } from "./skills/linear";
-import quadGen from "./skills/quadratic";
+import { classic as quadGen } from "./skills/quadratic";
 
 export const GROUPS = ["frac", "word", "eq", "quad"] as const;
 export type Group = (typeof GROUPS)[number];
