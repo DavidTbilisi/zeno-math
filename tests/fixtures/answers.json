@@ -1086,28 +1086,28 @@
     {
       "skill": "line",
       "level": 1,
-      "seed": 7,
+      "seed": 21644,
       "input": "y = 2x + 5",
       "label": "correct"
     },
     {
       "skill": "line",
       "level": 1,
-      "seed": 7,
+      "seed": 21644,
       "input": "y=2x+5",
       "label": "correct"
     },
     {
       "skill": "line",
       "level": 1,
-      "seed": 7,
+      "seed": 21644,
       "input": "y = 5 + 2x",
       "label": "correct"
     },
     {
       "skill": "line",
       "level": 1,
-      "seed": 7,
+      "seed": 21644,
       "input": "2x + 5",
       "label": "correct",
       "note": "y = left out"
@@ -1115,7 +1115,7 @@
     {
       "skill": "line",
       "level": 1,
-      "seed": 7,
+      "seed": 21644,
       "input": "y - 3 = 2(x + 1)",
       "label": "form",
       "note": "right line, not in y = mx + c"
@@ -1123,35 +1123,35 @@
     {
       "skill": "line",
       "level": 1,
-      "seed": 7,
+      "seed": 21644,
       "input": "y = 2x - 5",
       "label": "wrong"
     },
     {
       "skill": "line",
       "level": 1,
-      "seed": 7,
+      "seed": 21644,
       "input": "y = 5x + 2",
       "label": "wrong"
     },
     {
       "skill": "line",
       "level": 2,
-      "seed": 7,
+      "seed": 16572,
       "input": "y = (3/4)x - 5/4",
       "label": "correct"
     },
     {
       "skill": "line",
       "level": 2,
-      "seed": 7,
+      "seed": 16572,
       "input": "y = 0.75x - 1.25",
       "label": "correct"
     },
     {
       "skill": "line",
       "level": 2,
-      "seed": 7,
+      "seed": 16572,
       "input": "4y = 3x - 5",
       "label": "form",
       "note": "right line, not rearranged"
@@ -1159,7 +1159,7 @@
     {
       "skill": "line",
       "level": 2,
-      "seed": 7,
+      "seed": 16572,
       "input": "y = (4/3)x - 5/4",
       "label": "wrong"
     },
@@ -3773,14 +3773,14 @@
     {
       "skill": "findRule",
       "level": 2,
-      "seed": 7,
+      "seed": 278,
       "input": "195",
       "label": "correct"
     },
     {
       "skill": "findRule",
       "level": 2,
-      "seed": 7,
+      "seed": 278,
       "input": "150",
       "label": "wrong",
       "mistake": "scaledOutput"
@@ -3788,14 +3788,14 @@
     {
       "skill": "findRule",
       "level": 3,
-      "seed": 7,
+      "seed": 910,
       "input": "20",
       "label": "correct"
     },
     {
       "skill": "findRule",
       "level": 3,
-      "seed": 7,
+      "seed": 910,
       "input": "56",
       "label": "wrong"
     },
@@ -5112,14 +5112,14 @@
     {
       "skill": "slope",
       "level": 2,
-      "seed": 7,
+      "seed": 19,
       "input": "-1",
       "label": "correct"
     },
     {
       "skill": "slope",
       "level": 2,
-      "seed": 7,
+      "seed": 19,
       "input": "1",
       "label": "wrong",
       "mistake": "sign"
@@ -5127,21 +5127,21 @@
     {
       "skill": "slope",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "-1/4",
       "label": "correct"
     },
     {
       "skill": "slope",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "-0.25",
       "label": "correct"
     },
     {
       "skill": "slope",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "-4",
       "label": "wrong",
       "mistake": "runOverRise"
@@ -5149,7 +5149,7 @@
     {
       "skill": "slope",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "-2/8",
       "label": "form",
       "note": "not in lowest terms"
@@ -5157,7 +5157,7 @@
     {
       "skill": "slope",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "1/4",
       "label": "wrong",
       "mistake": "sign"
@@ -22491,14 +22491,14 @@
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 1,
+      "seed": 79,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 1,
+      "seed": 79,
       "input": "2",
       "label": "wrong",
       "mistake": "readXForY"
@@ -22506,21 +22506,21 @@
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 1,
+      "seed": 79,
       "input": "12",
       "label": "wrong"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 2,
+      "seed": 35,
       "input": "-5",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 2,
+      "seed": 35,
       "input": "-1",
       "label": "wrong",
       "mistake": "readXForY"
@@ -22528,21 +22528,21 @@
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 2,
+      "seed": 35,
       "input": "2",
       "label": "wrong"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 7,
+      "seed": 15,
       "input": "No",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 7,
+      "seed": 15,
       "input": "Yes",
       "label": "wrong",
       "mistake": "oneToManyFunction"
@@ -22550,14 +22550,14 @@
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 10,
+      "seed": 632,
       "input": "4",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 10,
+      "seed": 632,
       "input": "1",
       "label": "wrong",
       "mistake": "readXForY"
@@ -22565,21 +22565,21 @@
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 10,
+      "seed": 632,
       "input": "11",
       "label": "wrong"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 11,
+      "seed": 363,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 11,
+      "seed": 363,
       "input": "0",
       "label": "wrong",
       "mistake": "readXForY"
@@ -22587,21 +22587,21 @@
     {
       "skill": "readFunction",
       "level": 1,
-      "seed": 11,
+      "seed": 363,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "2",
       "label": "wrong",
       "mistake": "interceptsSwapped"
@@ -22609,21 +22609,21 @@
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "8",
       "label": "wrong"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 3,
+      "seed": 106,
       "input": "6",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 3,
+      "seed": 106,
       "input": "2",
       "label": "wrong",
       "mistake": "interceptsSwapped"
@@ -22631,21 +22631,21 @@
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 3,
+      "seed": 106,
       "input": "13",
       "label": "wrong"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 4,
+      "seed": 772,
       "input": "−5 < x < −1",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 4,
+      "seed": 772,
       "input": "−1 < x < 3",
       "label": "wrong",
       "mistake": "positiveVsIncreasing"
@@ -22653,14 +22653,14 @@
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 7,
+      "seed": 1325,
       "input": "−5 ≤ x ≤ 4",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 7,
+      "seed": 1325,
       "input": "−3 ≤ x ≤ 0",
       "label": "wrong",
       "mistake": "domainRangeSwapped"
@@ -22668,14 +22668,14 @@
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 12,
+      "seed": 1139,
       "input": "−3 ≤ y ≤ 2",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 12,
+      "seed": 1139,
       "input": "−5 ≤ y ≤ 3",
       "label": "wrong",
       "mistake": "domainRangeSwapped"
@@ -22683,7 +22683,7 @@
     {
       "skill": "readFunction",
       "level": 2,
-      "seed": 12,
+      "seed": 1139,
       "input": "−3 ≤ y ≤ 0",
       "label": "wrong",
       "mistake": "rangeFromEnds"
@@ -22691,14 +22691,14 @@
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "Not linear",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "Linear",
       "label": "wrong",
       "mistake": "linearByIncreasing"
@@ -22706,14 +22706,14 @@
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 2,
+      "seed": 3868,
       "input": "Plan A",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 2,
+      "seed": 3868,
       "input": "Plan B",
       "label": "wrong",
       "mistake": "startForRate"
@@ -22721,14 +22721,14 @@
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 3,
+      "seed": 714,
       "input": "Plan A",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 3,
+      "seed": 714,
       "input": "Plan B",
       "label": "wrong",
       "mistake": "startForRate"
@@ -22736,14 +22736,14 @@
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 7,
+      "seed": 26602,
       "input": "5",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 7,
+      "seed": 26602,
       "input": "25",
       "label": "wrong",
       "mistake": "rateNotDivided"
@@ -22751,7 +22751,7 @@
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 7,
+      "seed": 26602,
       "input": "1/5",
       "label": "wrong",
       "mistake": "rateUpsideDown"
@@ -22759,21 +22759,21 @@
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 7,
+      "seed": 26602,
       "input": "12",
       "label": "wrong"
     },
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 8,
+      "seed": 3795,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 8,
+      "seed": 3795,
       "input": "3",
       "label": "wrong",
       "mistake": "rateNotDivided"
@@ -22781,7 +22781,7 @@
     {
       "skill": "readFunction",
       "level": 3,
-      "seed": 8,
+      "seed": 3795,
       "input": "8",
       "label": "wrong"
     },
@@ -58329,6 +58329,1924 @@
       "input": "41",
       "label": "wrong",
       "mistake": "middleForSmallest"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 1,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 1,
+      "input": "27/8",
+      "label": "wrong",
+      "mistake": "slopeFromOneRow"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 3,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 3,
+      "input": "-23/8",
+      "label": "wrong",
+      "mistake": "slopeFromOneRow"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 3,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 5,
+      "input": "not defined",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 5,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "flatSteepSwapped"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 10,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 10,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "runOverRise"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 10,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 11,
+      "input": "not defined",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 11,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "flatSteepSwapped"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 25,
+      "input": "7/2",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 25,
+      "input": "2/7",
+      "label": "wrong",
+      "mistake": "runOverRise"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 30,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 30,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "runOverRise"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 31,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 31,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "runOverRise"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 31,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 64,
+      "input": "-3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 64,
+      "input": "-9/10",
+      "label": "wrong",
+      "mistake": "slopeFromOneRow"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 83,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 83,
+      "input": "1/8",
+      "label": "wrong",
+      "mistake": "slopeFromOneRow"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 204,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 1,
+      "seed": 204,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 1,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "interceptForSlope"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 1,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 2,
+      "input": "-3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "interceptForSlope"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 3,
+      "input": "-1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 3,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "interceptForSlope"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 4,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 4,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "interceptForSlope"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 5,
+      "input": "-1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 5,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "standardSlopeSign"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 10,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 10,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "standardSlopeSign"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 10,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 11,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 11,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "slopeBeforeDividing"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 25,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 25,
+      "input": "-1/3",
+      "label": "wrong",
+      "mistake": "standardSlopeSign"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 30,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 30,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "standardSlopeSign"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 30,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 41,
+      "input": "2/5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 41,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "slopeBeforeDividing"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 48,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 48,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "slopeBeforeDividing"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 48,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 89,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 89,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 95,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 95,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "slopeBeforeDividing"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 95,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 150,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 2,
+      "seed": 150,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 1,
+      "input": "-1.5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 1,
+      "input": "3/2",
+      "label": "wrong",
+      "mistake": "slopeSignInContext"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 1,
+      "input": "5.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 2,
+      "input": "-1.5",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 2,
+      "input": "3/2",
+      "label": "wrong",
+      "mistake": "slopeSignInContext"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 2,
+      "input": "5.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 5,
+      "input": "the cost of starting",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 5,
+      "input": "the cost of each kilometre",
+      "label": "wrong",
+      "mistake": "graphFeatureSwapped"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 6,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 6,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 10,
+      "input": "how much it burns down each hour",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 10,
+      "input": "its height when it is lit",
+      "label": "wrong",
+      "mistake": "graphFeatureSwapped"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 11,
+      "input": "25",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 11,
+      "input": "32",
+      "label": "wrong"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 25,
+      "input": "how much it burns down each hour",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 25,
+      "input": "its height when it is lit",
+      "label": "wrong",
+      "mistake": "graphFeatureSwapped"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 30,
+      "input": "the cost of each kilometre",
+      "label": "correct"
+    },
+    {
+      "skill": "slope",
+      "level": 3,
+      "seed": 30,
+      "input": "the cost of starting",
+      "label": "wrong",
+      "mistake": "graphFeatureSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 1,
+      "input": "y = (3)x + (4)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 1,
+      "input": "(4 + ((-3) * x))",
+      "label": "wrong",
+      "mistake": "slopeSignFromGraph"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 2,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 2,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 2,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 3,
+      "input": "y = (-3)x + (2)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 3,
+      "input": "((3 * x) + 2)",
+      "label": "wrong",
+      "mistake": "slopeSignFromGraph"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 4,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 5,
+      "input": "y = −4",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 5,
+      "input": "x = −4",
+      "label": "wrong",
+      "mistake": "lineLetterSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 10,
+      "input": "(3, 6)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 10,
+      "input": "(3, −6)",
+      "label": "wrong",
+      "mistake": "slopeSignFromGraph"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 11,
+      "input": "(3, 4)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 11,
+      "input": "(4, 3)",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 13,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 13,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 13,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 20,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 20,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 22,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 22,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 22,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 25,
+      "input": "(2, 0)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 25,
+      "input": "(2, −8)",
+      "label": "wrong",
+      "mistake": "slopeSignFromGraph"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 26,
+      "input": "y = −6",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 26,
+      "input": "x = −6",
+      "label": "wrong",
+      "mistake": "lineLetterSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 41,
+      "input": "(−2, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 41,
+      "input": "(2, −2)",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 57,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 57,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 57,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 107,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 107,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 283,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 1,
+      "seed": 283,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 1,
+      "input": "y = (2)x + (5)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 1,
+      "input": "((2 * x) + (-3))",
+      "label": "wrong",
+      "mistake": "pointSlopeSign"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 2,
+      "input": "y = (-2)x + (10)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 2,
+      "input": "(((-2) * x) + (-6))",
+      "label": "wrong",
+      "mistake": "pointSlopeSign"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 5,
+      "input": "(4, 0), (0, 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 5,
+      "input": "(2, 0), (0, 4)",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 10,
+      "input": "y = (2)x + (-7)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 10,
+      "input": "((2 * x) + (-5))",
+      "label": "wrong",
+      "mistake": "pointSlopeSign"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 11,
+      "input": "x − 4y = −20",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 11,
+      "input": "x + 4y = −20",
+      "label": "wrong",
+      "mistake": "standardFormSign"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 25,
+      "input": "y = (1)x + (-6)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 25,
+      "input": "x",
+      "label": "wrong",
+      "mistake": "pointSlopeSign"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 26,
+      "input": "(−1, 0), (0, −3)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 26,
+      "input": "(−3, 0), (0, −1)",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 41,
+      "input": "5x − 4y = −20",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 2,
+      "seed": 41,
+      "input": "5x + 4y = −20",
+      "label": "wrong",
+      "mistake": "standardFormSign"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 1,
+      "input": "y = (8)x + (20)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 1,
+      "input": "((20 * x) + 8)",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 2,
+      "input": "y = (30)x + (60)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 2,
+      "input": "((60 * x) + 30)",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 3,
+      "input": "y = (20)x + (60)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 3,
+      "input": "((60 * x) + 20)",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 5,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 5,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 6,
+      "input": "y = (2)x + (15)",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 6,
+      "input": "((15 * x) + 2)",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 10,
+      "input": "how much it grows each week",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 10,
+      "input": "its height at the start",
+      "label": "wrong",
+      "mistake": "termsMeaningSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 11,
+      "input": "320",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 11,
+      "input": "840",
+      "label": "wrong",
+      "mistake": "proportionalAssumed"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 11,
+      "input": "327",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 25,
+      "input": "how much it grows each week",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 25,
+      "input": "its height at the start",
+      "label": "wrong",
+      "mistake": "termsMeaningSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 26,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 26,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 26,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 41,
+      "input": "320",
+      "label": "correct"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 41,
+      "input": "840",
+      "label": "wrong",
+      "mistake": "proportionalAssumed"
+    },
+    {
+      "skill": "line",
+      "level": 3,
+      "seed": 41,
+      "input": "327",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 1,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 1,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "sameOutputNotFunction"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 2,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 2,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "sameOutputNotFunction"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 3,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 3,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "twoOutputsMissed"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 4,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 4,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "sameOutputNotFunction"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 5,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 5,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "readXForY"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 5,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 6,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 6,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "sameOutputNotFunction"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 10,
+      "input": "-24",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 10,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "readXForY"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 10,
+      "input": "-17",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 11,
+      "input": "the growth",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 11,
+      "input": "the water given",
+      "label": "wrong",
+      "mistake": "dependentIndependentSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 20,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 20,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "twoOutputsMissed"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 41,
+      "input": "the growth",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 41,
+      "input": "the water given",
+      "label": "wrong",
+      "mistake": "dependentIndependentSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 42,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 42,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "twoOutputsMissed"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 43,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 43,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "twoOutputsMissed"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 48,
+      "input": "the hours worked",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 48,
+      "input": "the money earned",
+      "label": "wrong",
+      "mistake": "dependentIndependentSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 95,
+      "input": "the money earned",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 95,
+      "input": "the hours worked",
+      "label": "wrong",
+      "mistake": "dependentIndependentSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 102,
+      "input": "the temperature",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 102,
+      "input": "the time the oven is on",
+      "label": "wrong",
+      "mistake": "dependentIndependentSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 134,
+      "input": "the temperature",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 1,
+      "seed": 134,
+      "input": "the time the oven is on",
+      "label": "wrong",
+      "mistake": "dependentIndependentSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 1,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 2,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 3,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 3,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 4,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 4,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 5,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 5,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 10,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 10,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 10,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 11,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 11,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 25,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 25,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 25,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 26,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 26,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "interceptsSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 26,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 41,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 41,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 48,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 48,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "pairOrderSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 48,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 122,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 122,
+      "input": "-5",
+      "label": "wrong",
+      "mistake": "pairOrderSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 2,
+      "seed": 122,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 2,
+      "input": "y = 40x + 500",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 2,
+      "input": "((500 * x) + 40)",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 3,
+      "input": "y = 20x + 500",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 3,
+      "input": "((500 * x) + 20)",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 20,
+      "input": "y = -2x + 24",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 20,
+      "input": "((24 * x) + (-2))",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 20,
+      "input": "((2 * x) + 24)",
+      "label": "wrong",
+      "mistake": "slopeSignInContext"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 41,
+      "input": "y = -3x + 36",
+      "label": "correct"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 41,
+      "input": "((36 * x) + (-3))",
+      "label": "wrong",
+      "mistake": "rateStartSwapped"
+    },
+    {
+      "skill": "readFunction",
+      "level": 3,
+      "seed": 41,
+      "input": "((3 * x) + 36)",
+      "label": "wrong",
+      "mistake": "slopeSignInContext"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 1,
+      "input": "57",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 1,
+      "input": "84",
+      "label": "wrong",
+      "mistake": "ruleOrderSwapped"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 1,
+      "input": "64",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 2,
+      "input": "28",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 2,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "ruleOrderSwapped"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 2,
+      "input": "35",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 3,
+      "input": "41",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 3,
+      "input": "44",
+      "label": "wrong",
+      "mistake": "ruleOrderSwapped"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 3,
+      "input": "48",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 5,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 5,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "patternGapAsRatio"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 5,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 17,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 17,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "ruleOrderSwapped"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 17,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 30,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 30,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "patternGapAsRatio"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 30,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 198,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 198,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 264,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 2,
+      "seed": 264,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 1,
+      "input": "(15, 30)",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 1,
+      "input": "(30, 15)",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 2,
+      "input": "(10, 20)",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 2,
+      "input": "(20, 10)",
+      "label": "wrong",
+      "mistake": "pointCoordsSwapped"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 5,
+      "input": "35",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 5,
+      "input": "115",
+      "label": "wrong",
+      "mistake": "termNumberForValue"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 5,
+      "input": "42",
+      "label": "wrong"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 30,
+      "input": "33",
+      "label": "correct"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 30,
+      "input": "77",
+      "label": "wrong",
+      "mistake": "termNumberForValue"
+    },
+    {
+      "skill": "findRule",
+      "level": 3,
+      "seed": 30,
+      "input": "40",
+      "label": "wrong"
     }
   ]
 }

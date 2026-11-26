@@ -472,6 +472,10 @@ export type PracticeWords = {
   plyP: Record<"collect" | "area" | "degree" | "leading", string>;
   fctP: Record<"gcf" | "mono" | "numbers" | "negative", string>;
   linP: Record<"isSolution" | "mistake" | "line" | "more" | "less" | "times" | "part" | "gave" | "boxes" | "tape" | "interpret" | "gymSay" | "taxiSay" | "gym" | "taxi" | "perMonth" | "joinFee" | "gymTotal" | "months" | "perKm" | "startFee" | "taxiTotal" | "kms" | "count" | "one" | "none" | "many" | "whyOne" | "whyNone" | "whyMany" | "findK" | "letters" | "consecSmall" | "consecLarge" | "consecEven", string>;
+  slpP: Record<"table" | "undefined" | "ofLine" | "flatStep" | "uprightStep" | "points" | "tank" | "savings" | "taxiSay" | "taxiAsk" | "taxiRate" | "taxiStart" | "taxiTotal" | "taxiKm" | "candleSay" | "candleAsk" | "candleRate" | "candleStart" | "candleEnd" | "candleNow" | "fSlope" | "fInt", string>;
+  lneP: Record<"graphEq" | "xInt" | "yInt" | "onLine" | "through" | "nextPt" | "pointSlope" | "standard" | "stdGraph" | "anyForm" | "plumber" | "phone" | "hour" | "gb" | "weeks" | "gel" | "tableAsk" | "graphAsk" | "grows" | "startTall" | "heightNow" | "weeksN" | "plant", string>;
+  rfnP: Record<"tableFn" | "fnRule" | "graphFn" | "vertical" | "dep1" | "dep1A" | "dep1B" | "dep2" | "dep2A" | "dep2B" | "dep3" | "dep3A" | "dep3B" | "indepQ" | "depQ" | "fromEq" | "isSol" | "missing" | "tYInt" | "tXInt" | "pool" | "candle" | "minute" | "hour", string>;
+  fndP: Record<"ruleMore" | "ruleLess" | "patterns" | "graphPts" | "termOf", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

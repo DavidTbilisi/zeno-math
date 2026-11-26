@@ -2017,6 +2017,23 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Slope, lines and functions, the whole unit (#722): the slope of a line from a table, from two points and of a
+    level or an upright line, then read from an equation in any form (y = mx + c with the number first, 5y = x + 2,
+    4x − y = 6), and in a story, a draining tank's rate as a negative slope and what a taxi's or a candle's slope and
+    y-intercept stand for. A line's equation read off its graph, its intercepts from ax + by = c, the point that lies
+    on it, the level or upright line through two points and the next point of a graph drawn from (0, c); point-slope
+    form, standard form both ways and any form made y = mx + c; and linear models in words: an equation from a
+    plumber's or a phone plan's charges, savings read on from a table, an empty tank read off its graph and what the
+    numbers of a plant's height stand for. A function or not from a table or a graph, the independent and the
+    dependent variable, y from an equation; whether a point solves a two-variable equation, the missing number of a
+    solution, intercepts from a table; and a function written from a pool or a candle story. Find the rule gained,
+    at its medium and hard levels, a rule in words, two patterns compared, two patterns as points of a graph and the
+    y that goes with a given x. One row's y over x, the flat and upright lines swapped, the intercept taken for the
+    slope, the slope read before y stands alone, the sign of −a/b lost, a falling rate given as positive, the slope
+    and the intercept swapped, x and y swapped, the line's letter swapped, a sign lost in point-slope or standard
+    form, the rate and the start swapped, a model taken as proportional, two outputs for one input missed, the
+    variables swapped, adding before multiplying, the gap of two patterns taken for their ratio and the value of x
+    taken for the number of steps are named
   - Linear equations, the whole unit (#721, grade 7): one-step equations with negatives, fractions and decimals,
     which value is a solution, the first wrong line of a worked one-step equation, a sentence or a story made into an
     equation and a tape diagram read as one; two-step equations, letters on both sides and brackets with decimals and

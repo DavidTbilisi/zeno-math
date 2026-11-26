@@ -74,7 +74,7 @@ test("in practice: the gradient typed, along over up named, the step drawn; the 
     }
   for (const level of LEVELS) {
     let found = 0;
-    for (let seed = 1; seed <= 40; seed++) {
+    for (let seed = 1; seed <= 80; seed++) {
       const ex = exercise("slope", level, seed, w);
       const trap = trapInputs(ex).find((x) => x.id === "runOverRise");
       if (!trap) continue;
