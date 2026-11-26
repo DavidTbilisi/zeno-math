@@ -243,7 +243,9 @@ test("practice: identities answers follow from the question", () => {
     for (const level of LEVELS) {
       const ex = exercise("identities", level, s, pw);
       assert.equal(check(ex, ex.plain, pw).ok, true, `${ex.q}: ${ex.plain}`);
-      const src = (ex.solution!.spec as { topic: IdTopic; src: string });
+      // The identity-at-a-time kinds (#716) have no worked solution; tests/mistakes.test.ts checks their slips.
+      if (!ex.solution) continue;
+      const src = (ex.solution.spec as { topic: IdTopic; src: string });
       const d = build(src.topic, src.src).data;
       const v = (ex.answer as { v: number }).v;
       if (level === 1) assert.ok(close(d.value!, v, 1e-9), ex.q);

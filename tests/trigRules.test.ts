@@ -102,7 +102,9 @@ test("practice: right to 2 dp, with a unit or without, and the worked solution d
       const ex = exercise("trigRules", level, seed, en.pracWords);
       assert.ok(!/\{\w+\}/.test(ex.prompt) && !/ {2}/.test(ex.prompt), ex.prompt);
       assert.equal(check(ex, ex.plain, en.pracWords).ok, true, `${level} #${seed}: ${ex.prompt} ${ex.plain}`);
-      const spec = ex.solution!.spec as Parameters<typeof renderRule>[0];
+      // The sine and cosine rule kinds from #716 have no worked solution; tests/mistakes.test.ts checks their slips.
+      if (!ex.solution) continue;
+      const spec = ex.solution.spec as Parameters<typeof renderRule>[0];
       assert.ok(renderRule(spec, null).svg.startsWith("<svg"));
     }
   // A length with its unit; an angle with its degree sign.
