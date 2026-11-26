@@ -2017,6 +2017,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Sinusoids with a phase shift (#733): in trigonometric graphs, where y = a·sin(bx) + d first peaks or
+    a·cos(bx) + d first dips after 0°, and the highest value a wave reaches (grade 10); then how a·sin(bx − k) + d is
+    moved from a·sin(bx) + d, where a shifted sine first peaks, the equation of a shifted wave read from its graph or
+    built from its amplitude, midline, period and the point where it rises through the midline, a harbour's depth
+    from the time of high water, and the warmest month of T = m + a·sin(30(t − c)) (grade 12). The peak not scaled
+    by b, the top taken as the amplitude alone, the shift taken the wrong way, k not divided by b, the shift left
+    outside the bracket, a sine's peak put at its shift, sine and cosine swapped and the amplitude and midline
+    swapped are named
   - Complex numbers and the complex plane (#732): the root of a negative number, a power of i, the real or imaginary
     part of a number, and whether it is real, purely imaginary or neither; a difference, the distance and the midpoint
     of two numbers on the plane, a conjugate and z times its conjugate; then x² + k² and x⁴ − k⁴ factorised over the

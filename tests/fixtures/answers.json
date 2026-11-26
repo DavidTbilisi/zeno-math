@@ -25013,14 +25013,14 @@
     {
       "skill": "trigGraphs",
       "level": 2,
-      "seed": 1,
+      "seed": 11,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "trigGraphs",
       "level": 2,
-      "seed": 1,
+      "seed": 11,
       "input": "3",
       "label": "wrong",
       "mistake": "midlineFromMax"
@@ -25028,21 +25028,21 @@
     {
       "skill": "trigGraphs",
       "level": 2,
-      "seed": 1,
+      "seed": 11,
       "input": "8",
       "label": "wrong"
     },
     {
       "skill": "trigGraphs",
       "level": 2,
-      "seed": 4,
+      "seed": 14,
       "input": "1",
       "label": "correct"
     },
     {
       "skill": "trigGraphs",
       "level": 2,
-      "seed": 4,
+      "seed": 14,
       "input": "2",
       "label": "wrong",
       "mistake": "amplitudeDoubled"
@@ -25050,7 +25050,7 @@
     {
       "skill": "trigGraphs",
       "level": 2,
-      "seed": 4,
+      "seed": 14,
       "input": "8",
       "label": "wrong"
     },
@@ -25071,14 +25071,14 @@
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 1,
+      "seed": 130,
       "input": "4",
       "label": "correct"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 1,
+      "seed": 130,
       "input": "90",
       "label": "wrong",
       "mistake": "bAsPeriod"
@@ -25086,21 +25086,21 @@
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 1,
+      "seed": 130,
       "input": "11",
       "label": "wrong"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 2,
+      "seed": 12,
       "input": "7",
       "label": "correct"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 2,
+      "seed": 12,
       "input": "4",
       "label": "wrong",
       "mistake": "highTideAsMidline"
@@ -25108,21 +25108,21 @@
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 2,
+      "seed": 12,
       "input": "14",
       "label": "wrong"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 3,
+      "seed": 148,
       "input": "3",
       "label": "correct"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 3,
+      "seed": 148,
       "input": "120",
       "label": "wrong",
       "mistake": "bAsPeriod"
@@ -25130,21 +25130,21 @@
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 3,
+      "seed": 148,
       "input": "10",
       "label": "wrong"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 5,
+      "seed": 171,
       "input": "12",
       "label": "correct"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 5,
+      "seed": 171,
       "input": "30",
       "label": "wrong",
       "mistake": "periodAsB"
@@ -25152,21 +25152,21 @@
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 5,
+      "seed": 171,
       "input": "19",
       "label": "wrong"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 15,
+      "seed": 155,
       "input": "3",
       "label": "correct"
     },
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 15,
+      "seed": 155,
       "input": "120",
       "label": "wrong",
       "mistake": "bAsPeriod"
@@ -25174,7 +25174,7 @@
     {
       "skill": "trigGraphs",
       "level": 3,
-      "seed": 15,
+      "seed": 155,
       "input": "10",
       "label": "wrong"
     },
@@ -66867,6 +66867,474 @@
       "input": "(x² − 4)(x² + 4)",
       "label": "wrong",
       "mistake": "notFullyFactored"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "maxWithoutMidline"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 9,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 9,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "maxWithoutMidline"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 9,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 15,
+      "input": "45",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 15,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "peakNotScaled"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 15,
+      "input": "52",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 21,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 21,
+      "input": "180",
+      "label": "wrong",
+      "mistake": "peakNotScaled"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 21,
+      "input": "67",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 22,
+      "input": "15",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 22,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "peakNotScaled"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 22,
+      "input": "22",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 33,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 33,
+      "input": "180",
+      "label": "wrong",
+      "mistake": "peakNotScaled"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 2,
+      "seed": 33,
+      "input": "67",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 2,
+      "input": "y = 2sin(x − 30°) + 1",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 2,
+      "input": "y = 2sin(x + 30°) + 1",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 2,
+      "input": "y = 2cos(x − 30°) + 1",
+      "label": "wrong",
+      "mistake": "sinCosStartSwapped"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 2,
+      "input": "y = sin(x − 30°) + 2",
+      "label": "wrong",
+      "mistake": "ampMidlineSwapped"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 4,
+      "input": "30° to the right",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 4,
+      "input": "30° to the left",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 4,
+      "input": "90° to the right",
+      "label": "wrong",
+      "mistake": "shiftNotDividedByB"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 5,
+      "input": "d = 8 + cos(30(t − 3))",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 5,
+      "input": "d = 8 + cos(30(t + 3))",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 5,
+      "input": "d = 8 + sin(30(t − 3))",
+      "label": "wrong",
+      "mistake": "sinCosStartSwapped"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 5,
+      "input": "d = 8 + cos(30t − 3)",
+      "label": "wrong",
+      "mistake": "bracketNotAroundShift"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 9,
+      "input": "150",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 9,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "sinPeakAtStart"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 9,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 9,
+      "input": "157",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 11,
+      "input": "30° to the right",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 11,
+      "input": "30° to the left",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 11,
+      "input": "90° to the right",
+      "label": "wrong",
+      "mistake": "shiftNotDividedByB"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 15,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 15,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "sinPeakAtStart"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 15,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 17,
+      "input": "120",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 17,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "sinPeakAtStart"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 17,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 17,
+      "input": "127",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 18,
+      "input": "d = 4 + 2cos(30(t − 2))",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 18,
+      "input": "d = 4 + 2cos(30(t + 2))",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 18,
+      "input": "d = 4 + 2sin(30(t − 2))",
+      "label": "wrong",
+      "mistake": "sinCosStartSwapped"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 18,
+      "input": "d = 4 + 2cos(30t − 2)",
+      "label": "wrong",
+      "mistake": "bracketNotAroundShift"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 21,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 21,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "sinPeakAtStart"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 21,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 22,
+      "input": "y = 3sin(x − 30°) + 2",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 22,
+      "input": "y = 3sin(x + 30°) + 2",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 22,
+      "input": "y = 3cos(x − 30°) + 2",
+      "label": "wrong",
+      "mistake": "sinCosStartSwapped"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 22,
+      "input": "y = 2sin(x − 30°) + 3",
+      "label": "wrong",
+      "mistake": "ampMidlineSwapped"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 36,
+      "input": "y = 2sin(4(x − 30°)) + 1",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 36,
+      "input": "y = 2sin(4(x + 30°)) + 1",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 36,
+      "input": "y = 2sin(4x − 30°) + 1",
+      "label": "wrong",
+      "mistake": "bracketNotAroundShift"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 36,
+      "input": "y = 2sin(90(x − 30°)) + 1",
+      "label": "wrong",
+      "mistake": "bAsPeriod"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 40,
+      "input": "y = 5sin(2(x − 10°)) − 2",
+      "label": "correct"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 40,
+      "input": "y = 5sin(2(x + 10°)) − 2",
+      "label": "wrong",
+      "mistake": "phaseShiftSign"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 40,
+      "input": "y = 5sin(2x − 10°) − 2",
+      "label": "wrong",
+      "mistake": "bracketNotAroundShift"
+    },
+    {
+      "skill": "trigGraphs",
+      "level": 3,
+      "seed": 40,
+      "input": "y = 5sin(180(x − 10°)) − 2",
+      "label": "wrong",
+      "mistake": "bAsPeriod"
     }
   ]
 }

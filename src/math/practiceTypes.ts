@@ -494,6 +494,7 @@ export type PracticeWords = {
   frmM: Record<"taxiQ" | "gymQ" | "taxiRate" | "taxiFee" | "taxiTotal" | "taxiKm" | "gymRate" | "gymFee" | "gymTotal" | "gymMonths" | "axesOpt" | "axesTank" | "axesBall" | "axesTickets" | "unitMin" | "unitLitres" | "unitSec" | "unitM" | "unitTickets" | "unitLari" | "yearQ" | "profitQ", string>;
   afrM: Record<"checkQ" | "yes" | "noTerms" | "noIs" | "noFactor" | "pipesQ" | "pipesXQ" | "mixQ", string>;
   cxM: Record<"rootQ" | "powerQ" | "reQ" | "imQ" | "kindQ" | "kindReal" | "kindImag" | "kindBoth" | "diffQ" | "distQ" | "midQ" | "conjQ" | "zzQ" | "factorQ" | "turnQ", string>;
+  tgP: Record<"firstMaxQ" | "firstMinQ" | "maxQ" | "moveQ" | "right" | "left" | "toRight" | "shiftMaxQ" | "graphQ" | "midSay" | "ampSay" | "riseSay" | "buildQ" | "tideQ" | "warmQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
