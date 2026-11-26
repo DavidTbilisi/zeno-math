@@ -142,6 +142,7 @@ export const MENUS: MenuGroup[] = [
         title: "secMatrices", items: [
           { kind: "matrix", icon: "[ ]", label: "matrices" },
           { kind: "complex", icon: "ℂ", label: "complex" },
+          { live: "cxPlane", icon: "i" },
         ],
       },
       {

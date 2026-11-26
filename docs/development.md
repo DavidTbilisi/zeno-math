@@ -253,6 +253,7 @@ src/math/vectorspace.ts   span, subspaces, coordinates, Gram–Schmidt, eigenval
 src/math/algebra.ts       equations & polynomials: linear, inequalities, expanding, factoring, quadratics (exact)
 src/math/svg.ts           SVG data URLs and the dark-board version of a picture
 src/math/complex.ts       complex numbers: forms, operations, powers, roots, quadratics, Euler's formula
+src/math/cxPlane.ts       the complex plane piece: plot, add, multiply by i, conjugate, by tapping points
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations
 src/math/functions.ts     functions: domain & range, composites, inverses, transformations, curve sketching + pictures
 src/math/identities.ts    trig identities: exact values, R-form, proofs, equations (exact surds) + pictures
