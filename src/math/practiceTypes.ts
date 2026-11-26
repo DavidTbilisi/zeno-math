@@ -498,6 +498,9 @@ export type PracticeWords = {
   matK: Record<"scalarQ" | "minusQ" | "entryQ" | "rowSay" | "colSay" | "takingsQ" | "pointQ" | "systemQ" | "vecQ" | "singularQ" | "solveQ", string>;
   lmK: Record<"reflectQ" | "lineX" | "lineY" | "lineYX" | "lineYmX" | "stretchXQ" | "stretchYQ" | "turnQ" | "rot3Q" | "projQ" | "pictureQ" | "composeQ" | "kernelQ" | "imageQ" | "imgLine" | "imgPlane" | "imgZero" | "ontoQ" | "yes" | "no" | "whyTall" | "whyRank1" | "whyRank2", string>;
   detK: Record<"rowQ" | "opSwap" | "opScale" | "opAdd" | "opWhole" | "areaQ" | "areaSay" | "scaleQ", string>;
+  rcK: Record<"buildQ" | "fruit" | "count" | "twoStepQ" | "pictoQ", string>;
+  dgK: Record<"buildQ" | "water" | "aboveQ" | "diffQ" | "totalQ" | "quantQ" | "quantWhy" | "discQ" | "discrete" | "continuous" | "discWhy" | "contWhy" | "s0" | "v00" | "v01" | "v02" | "v03" | "s1" | "v10" | "v11" | "v12" | "v13" | "s2" | "v20" | "v21" | "v22" | "v23" | "shareQ" | "red" | "blue" | "green" | "yellow" | "histQ" | "dotQ" | "dotWhy", string>;
+  twK: Record<"buildQ" | "margQ" | "condSay" | "margSay" | "kindQ" | "marginal" | "conditional" | "mosaicQ" | "mosaicWhy" | "trendQ" | "up" | "down", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

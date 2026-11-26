@@ -2017,6 +2017,17 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Building and reading displays (#735): in bar charts, a bar graph built from a table of counts (how many lines of a
+    scale in 2s, 5s or 10s a bar reaches) and two-step questions of a bar graph or a picture graph, two together
+    against a third (grade 3); in diagrams, line plots of fractions of a litre (how many above a value, the most less
+    the least, all of one amount together) and a line plot built from eighths where a half is also written 1/2
+    (grade 4), then whether a variable is categorical or quantitative, discrete or continuous, a relative frequency
+    from twenty answers, the bar of a histogram built from ages, and the tallest stack of a dot plot built from a list
+    (grade 6); in two-way tables, a table built from what is told, the marginal share of a row, whether two shares are
+    a marginal or a conditional distribution, a share read off a mosaic plot, and whether a share went up or down while
+    its count went the other way. Nineteen new slips are named, among them the count taken for the lines, stopping
+    after the first step, 4/8 missed as a half, a number code taken for a quantity, a count called continuous, a bar's
+    right end counted in, everyone taken for a row, and a mosaic column's width read for its height
   - Matrices as data, maps of the plane, systems and determinants (#734): in matrices, a matrix times a number, a
     difference, an entry of a data matrix, a shop's takings from its sales and the prices, a point moved by a matrix
     and the matrix equation of a system (grade 10), a 3 × 3 or 4 × 4 matrix times a vector, the k that leaves a
