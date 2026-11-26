@@ -2017,6 +2017,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Linear equations, the whole unit (#721, grade 7): one-step equations with negatives, fractions and decimals,
+    which value is a solution, the first wrong line of a worked one-step equation, a sentence or a story made into an
+    equation and a tape diagram read as one; two-step equations, letters on both sides and brackets with decimals and
+    fractions, the first wrong line of a two-step solution, and taxi and gym stories read (what each number stands
+    for) and solved; then how many solutions an equation has, the k that gives infinitely many, an equation solved
+    for x with letters for its numbers, and three consecutive integers (or even numbers) from their sum. The
+    operation used instead of undone, a lost sign, the number in front of x left out, a later line taken for the
+    first wrong one, the story's operation swapped, a tape misread, a number moved across with its sign, the x terms
+    added across the sides, a bracket multiplied on its first term only, the story's two numbers swapped, no
+    solution and infinitely many confused, and the middle number given for the smallest are named
   - Polynomials, adding and multiplying (#719, grade 8): a negative number times a bracket, one bracket taken from
     another, like terms with negative coefficients picked from four, and two monomials multiplied; polynomials added
     and taken away, and the degree or leading coefficient of a polynomial written out of order; a monomial times a

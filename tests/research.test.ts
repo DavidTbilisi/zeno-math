@@ -76,7 +76,9 @@ function typed(q: { skill: string; level: number; seed: number }, verdict: strin
   // A question that doesn't exist, or a verdict that doesn't, is for a request that is refused anyway.
   if (!ALL_SKILLS.includes(q.skill as SkillId) || ![1, 2, 3].includes(q.level) || !["correct", "close", "wrong", "form"].includes(verdict)) return "1";
   const ex = exercise(q.skill as SkillId, q.level as 1 | 2 | 3, q.seed, en.pracWords);
-  const input = verdict === "correct" ? ex.plain : verdict === "form" ? "((" : "12345";
+  // A question answered by picking is answered wrongly by another option, not by a number.
+  const wrong = ex.answer.k === "pick" ? ex.answer.options.find((_, i) => ex.answer.k === "pick" && i !== ex.answer.right)!.plain : "12345";
+  const input = verdict === "correct" ? ex.plain : verdict === "form" ? "((" : wrong;
   assert.equal(verdictOf(check(ex, input, en.pracWords)), verdict === "close" ? "wrong" : verdict, `${q.skill}: ${input}`);
   return input;
 }
@@ -89,7 +91,7 @@ function attempt(student: string, extra: Record<string, unknown> = {}) {
     student,
     skill: "linear",
     level: 2,
-    seed: 12345,
+    seed: 12367,
     review: false,
     outcome: "solved",
     solutionViewed: false,

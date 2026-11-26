@@ -178,7 +178,10 @@ test("a test written on paper is typed in on the teacher page, marked, and expor
   await expect(card.getByRole("combobox", { name: "Form on their sheet" })).toHaveValue(plan.tests.pre.form);
   // Right, wrong, left blank, right.
   await card.getByRole("textbox", { name: "Answer 1", exact: true }).fill(items[0].plain);
-  await card.getByRole("textbox", { name: "Answer 2", exact: true }).fill("12345");
+  // A question answered by picking is answered wrongly by another option, not by a number.
+  const second = items[1].answer;
+  const wrong = second.k === "pick" ? second.options.find((_, i) => i !== second.right)!.plain : "12345";
+  await card.getByRole("textbox", { name: "Answer 2", exact: true }).fill(wrong);
   await card.getByRole("textbox", { name: "Answer 4", exact: true }).fill(items[3].plain);
   await card.getByRole("button", { name: "Save the answers" }).click();
   await expect(card.getByRole("status")).toHaveText("Saved 4 answers, 2 right.");

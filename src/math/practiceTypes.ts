@@ -471,6 +471,7 @@ export type PracticeWords = {
   conP: Record<"circleFrom" | "circleGraph" | "centreOf" | "pointQ" | "inside" | "on" | "outside" | "ellipseCentre" | "radiusAcross" | "radiusUp" | "ellipseFrom" | "ellipseGraph" | "opens" | "leftRight" | "upDown" | "vertex" | "hyperFrom", string>;
   plyP: Record<"collect" | "area" | "degree" | "leading", string>;
   fctP: Record<"gcf" | "mono" | "numbers" | "negative", string>;
+  linP: Record<"isSolution" | "mistake" | "line" | "more" | "less" | "times" | "part" | "gave" | "boxes" | "tape" | "interpret" | "gymSay" | "taxiSay" | "gym" | "taxi" | "perMonth" | "joinFee" | "gymTotal" | "months" | "perKm" | "startFee" | "taxiTotal" | "kms" | "count" | "one" | "none" | "many" | "whyOne" | "whyNone" | "whyMany" | "findK" | "letters" | "consecSmall" | "consecLarge" | "consecEven", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
