@@ -256,7 +256,9 @@ test("practice: polynomial answers follow from the question", () => {
     for (const level of LEVELS) {
       const ex = exercise("polynomials", level, s, pw);
       assert.equal(check(ex, ex.plain, pw).ok, true, `${ex.q}: ${ex.plain}`);
-      const spec = ex.solution!.spec as { topic: PolyTopic; src: string };
+      // The division, identity and structure kinds (#728) are checked in tests/polyMore.test.ts.
+      if (!ex.solution) continue;
+      const spec = ex.solution.spec as { topic: PolyTopic; src: string };
       const d = build(spec.topic, spec.src).data;
       const v = (ex.answer as { v: number }).v;
       if (level === 1) assert.deepEqual(d.r!.length ? d.r : [0], [v], spec.src);

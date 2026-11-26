@@ -2017,6 +2017,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Polynomials: division, the remainder theorem, factoring by structure (#728): a polynomial divided by x or 2x, a
+    quadratic divided by x with its remainder over x and by x + p, a cubic divided by a factor x − a, and k found so
+    that x − a is a factor; a sum or difference of cubes and (x + k)³ picked, x⁴ − (p² + q²)x² + p²q² and x⁴ − p⁴
+    factorised completely, and a quadratic in (x + a) factorised by putting u = x + a; and, in factorising, whether a
+    quadratic is a difference of squares, a perfect square or neither. Substitution, structure and higher-degree
+    factoring sit in polynomials (grade 10) rather than factorising (grade 8), as Khan asks them in Algebra 2. The
+    powers kept, the numbers not divided, the remainder dropped, the divisor's sign kept, f(−a) for f(a), the
+    cube's middle sign wrong, the cube of a bracket taken for a sum of cubes, the middle terms dropped, stopping
+    before the factors are fully factorised, the substitution not undone, a sum of squares taken for a difference and
+    a middle term that is not double taken for a perfect square are named
   - Quadratics by square roots and in stories (#727): x² = n² (also 3x² = 75 and x² + 9 = 58), √x = n, x³ = n³ and
     ∛x = n; a(x − h)² = k by taking square roots, which equation square roots solve straight away, and the other
     solution someone missed; and, in new settings, when a stone thrown from a cliff reaches the sea, a scarf's best

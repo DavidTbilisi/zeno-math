@@ -1,11 +1,14 @@
 // Practice: Factorising. #719 added, at the easy level: the greatest common factor of two monomials, a monomial
 // divided by a factor given, a sum of two numbers written as the greatest common factor times a sum, and a negative
 // factor taken out. The higher powers taken, the power not reduced, a common factor that is not the greatest and the
-// signs inside not changed are slips.
+// signs inside not changed are slips. #728 added, three times in ten at the medium and hard levels, which pattern a
+// quadratic fits: a difference of squares, a perfect square or neither. A sum of squares taken for a difference and
+// a middle term that is not double the product taken for a perfect square are slips.
 import { fill } from "../chart";
 import { parseE, tex } from "../expr";
 import { bracket, gcd, num, pmul, polyStr, T } from "../practiceKit";
 import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+import { pickPart } from "../tTails";
 
 const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 const sup = (k: number) => (k === 1 ? "" : [...String(k)].map((c) => SUP[Number(c)]).join(""));
@@ -65,11 +68,32 @@ function more(r: Rng, kind: number, w: PracticeWords): Part {
     [`${T(whole)} = -${g}x(${T(right)})`]);
 }
 
+/** Which pattern p²x² … q² fits: a difference of squares, a perfect square, or neither (#728). */
+function pattern(r: Rng, w: PracticeWords): Part {
+  const W = w.fctS;
+  const [p, q] = [r.int(1, 4), r.int(1, 9)];
+  const px = `${p === 1 ? "" : p * p}x²`;
+  const kind = r.pick(["diff", "square", "sum", "middle"] as const);
+  const opts = [W.diff, W.square, W.neither];
+  if (kind === "diff") return pickPart(r, opts, 0, [], fill(W.patternQ, { e: `${px} − ${q * q}` }), [`(${p === 1 ? "" : p}x)^2 - ${q}^2 = (${p === 1 ? "" : p}x - ${q})(${p === 1 ? "" : p}x + ${q})`]);
+  const sign = r.next() < 0.5 ? "+" : "−";
+  if (kind === "square") return pickPart(r, opts, 1, [], fill(W.patternQ, { e: `${px} ${sign} ${2 * p * q}x + ${q * q}` }), [`(${p === 1 ? "" : p}x ${sign === "+" ? "+" : "-"} ${q})^2`]);
+  if (kind === "sum") {
+    const e = `${px} + ${q * q}`;
+    return pickPart(r, opts, 2, [{ id: "sumOfSquaresFactored", at: 0, vars: { e } }], fill(W.patternQ, { e }), [`\\text{${fill(W.sumWhy, { e })}}`]);
+  }
+  let m = 2 * p * q + r.pick([-2, -1, 1, 2, 3]);
+  if (m <= 0) m = 2 * p * q + 1;
+  const e = `${px} ${sign} ${m}x + ${q * q}`;
+  return pickPart(r, opts, 2, [{ id: "middleNotDouble", at: 1, vars: { e, a: p === 1 ? "x" : `${p}x`, b: q, d: 2 * p * q, m } }], fill(W.patternQ, { e }), [`2 \\times ${p === 1 ? "" : p}x \\times ${q} = ${2 * p * q}x \\ne ${m}x`]);
+}
+
 const gen: Gen = (r, L, w) => {
   if (L === 1) {
     const extra = r.int(0, 9);
     if (extra >= 5) return more(r, extra, w);
   }
+  if (L > 1 && r.int(0, 9) >= 7) return pattern(r, w);
   let fac: string;
   let cs: number[];
   if (L === 1) {
