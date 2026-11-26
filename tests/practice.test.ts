@@ -158,7 +158,7 @@ test("answers in other forms", () => {
   const line = find("line", 1, () => true);
   assert.equal(check(line, line.plain.replace(/^y = /, ""), w).ok, true, "without y =");
 
-  const surd = find("surds", 1, () => true);
+  const surd = find("surds", 1, (ex) => /^\d+sqrt\(\d+\)$/.test(ex.plain));
   const [, kk, m] = surd.plain.match(/^(\d+)sqrt\((\d+)\)$/)!;
   assert.equal(check(surd, `${kk}√${m}`, w).ok, true, "√ sign");
   assert.equal(check(surd, `sqrt(${Number(kk) ** 2 * Number(m)})`, w).why, w.reasons.notSimplified, "not simplified");

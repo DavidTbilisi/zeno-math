@@ -2026,6 +2026,20 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     greatest common factor of two monomials, a monomial divided by a factor given, 36 + 48 written as 12(3 + 4), and
     −6x² + 9x = −3x( … ); the higher powers taken, the power kept, a common factor that is not the greatest and the
     signs inside unchanged are named
+  - Powers and their laws (#720, grades 7–8): a power worked out, the product a power stands for picked, and a
+    fraction squared then added or multiplied; the exponent of a product, a quotient or a power of a power, and a
+    monomial raised to a power; then negative exponents multiplied, divided and raised, a computer's memory in
+    bytes and bacteria that double. The exponent multiplied, a power read as a product of base and exponent, only
+    the top squared, the exponents multiplied in a product, divided in a quotient or added in a power of a power,
+    the coefficient left unraised and a negative exponent read as positive are named. Squares and roots gained at
+    its hard level x² = k (both roots, the minus one named when left out), x³ = k (the root not taken as a third)
+    and the root of a small decimal (its places not halved); real numbers gained a fraction picked as a repeating
+    decimal (cut off or rounded named); surds gained roots of powers of x and y, (a√b)², a fractional exponent read
+    as a root, and exponential equations with one base or a common base (the exponent left unsolved and the bases
+    divided named). The piece *Powers: find the laws by building the rows* (Insert → Algebra → expressions,
+    grades 7–10): two rows of 2s are lengthened by dragging their ends or by the arrow keys; joined they count
+    2ᵐ⁺ⁿ, cancelled top against bottom 2ᵐ⁻ⁿ (down to 1 = 2⁰ and below to 2⁻ᵏ), copied n times 2ᵐⁿ, and each law is
+    said only after the rows have changed and the right tile is tapped
   - Negative numbers (with temperatures), order of operations, rounding, significant figures, standard form, estimation
     and bounds, and inequalities (typed as x >= 4, 4 ≤ x, −1 < x ≤ 3 or [4, ∞)) are among the skills
   - Negative numbers also (#706) ask the sign of a sum without working it out, the missing number in −1 + □ = 8, the

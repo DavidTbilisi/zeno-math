@@ -2294,6 +2294,19 @@ function trigFindPreview(): Piece[] {
   ];
 }
 
+function powerFindPreview(): Piece[] {
+  // Two rows of squares, three over two, the first two of each crossed out: a quotient of powers cancelling.
+  const k = 14;
+  const out: Piece[] = [];
+  for (const [y, n, color] of [[0, 4, "#1971c2"], [2.2 * k, 2, "#2f9e44"]] as const)
+    for (let i = 0; i < n; i++) {
+      const x = i * 1.3 * k;
+      out.push(seg([x, y], [x + k, y], { color }), seg([x + k, y], [x + k, y + k], { color }), seg([x + k, y + k], [x, y + k], { color }), seg([x, y + k], [x, y], { color }));
+      if (i < 2) out.push(seg([x + 2, y + k - 2], [x + k - 2, y + 2], { color: "#e8590c", width: 2 }));
+    }
+  return [...out, seg([-4, 1.6 * k], [5.4 * k, 1.6 * k], { color: "#1e1e1e", width: 2 })];
+}
+
 function vecFindPreview(): Piece[] {
   // Two vectors tip to tail on a grid and their sum from the start of the first to the end of the second.
   const k = 12;
@@ -2707,6 +2720,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCircleHand", build: circleHandPreview, live: "circleHand" },
   { id: "liveTrigFind", build: trigFindPreview, live: "trigFind" },
   { id: "liveVecFind", build: vecFindPreview, live: "vecFind" },
+  { id: "livePowerFind", build: powerFindPreview, live: "powerFind" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
