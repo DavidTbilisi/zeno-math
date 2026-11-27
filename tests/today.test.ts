@@ -25,7 +25,7 @@ test("a student with reviews due only: the reviews, oldest first, at most three,
     "fractions.1": { step: 0, due: NOW - 5 * DAY },
     "fractions.2": { step: 0, due: NOW - 4 * DAY }, // fractions again: once is enough
     "integers.1": { step: 0, due: NOW - DAY },
-    "percent.1": { step: 0, due: NOW - 2 * DAY },
+    "quadratic.1": { step: 0, due: NOW - 2 * DAY },
     "decimals.1": { step: 0, due: NOW + DAY }, // not due yet
     "rounding.1": { step: 0, due: NOW - 9 * DAY, again: true }, // being practised again, not a review
   };
@@ -35,7 +35,7 @@ test("a student with reviews due only: the reviews, oldest first, at most three,
   const parts = buildToday(input({ spacing, standing: done }));
   assert.deepEqual(parts.map((p) => p.part), ["review", "review", "review"]);
   assert.equal(parts.length, TODAY_REVIEWS);
-  assert.deepEqual(parts.map((p) => [p.skill, (p as { level: number }).level]), [["fractions", 1], ["times", 2], ["percent", 1]]);
+  assert.deepEqual(parts.map((p) => [p.skill, (p as { level: number }).level]), [["fractions", 1], ["times", 2], ["quadratic", 1]]);
   assert.deepEqual(parts.map((p) => (p as { card: boolean }).card), [true, true, false]);
 });
 
