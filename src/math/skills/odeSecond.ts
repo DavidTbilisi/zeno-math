@@ -5,6 +5,8 @@
 // qy term matched, named).
 import { F, minusA } from "../calculusTwo";
 import { coef, eTex, ex, fnOf, linTex, sumOf, T } from "../odes";
+import { fill } from "../chart";
+import type { MistakeId } from "../mistakes";
 import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
 
 const lhs = (p: number, q: number) => linTex([[1, "y''"], [p, "y'"], [q, "y"]]);
@@ -108,6 +110,120 @@ function particularPart(r: Rng, w: PracticeWords): Part {
   };
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? distinctPart(r, w) : L === 2 ? repeatedOrComplexPart(r, w) : particularPart(r, w));
+// ---------- since #752: forcing by sines and cosines, a quadratic, or a sum; and a forced spring ----------
+
+/** Two whole roots, neither zero nor opposite, as p and q of r² + pr + q. */
+function roots(r: Rng): [number, number, number, number] {
+  const r1 = r.nz(-3, 3);
+  let r2 = r.nz(-3, 3);
+  while (r2 === r1 || r2 === -r1) r2 = r.nz(-3, 3);
+  return [r1, r2, -(r1 + r2), r1 * r2];
+}
+
+/** yₚ = A cos mx + B sin mx for g = c₁ cos mx + c₂ sin mx. */
+function trigForcing(r: Rng, w: PracticeWords): Part {
+  const [, , p, q] = roots(r);
+  const m = r.int(1, 2);
+  const [A, B] = [r.nz(-3, 3), r.nz(-3, 3)];
+  const Q = q - m * m;
+  const c1 = Q * A + p * m * B;
+  const c2 = Q * B - p * m * A;
+  const [cos, sin] = [`cos(${coef(m, "x")})`, `sin(${coef(m, "x")})`];
+  const y = sumOf([[A, cos], [B, sin]]);
+  // y″ taken as +m²y: (q + m²) in place of (q − m²).
+  const Q2 = q + m * m;
+  const det = Q2 * Q2 + p * p * m * m;
+  const slip = sumOf([[F(c1 * Q2 - p * m * c2, det), cos], [F(Q2 * c2 + p * m * c1, det), sin]]);
+  const mx = m === 1 ? "x" : `${m}x`;
+  return {
+    prompt: w.ode.prompt.particular,
+    q: `${lhs(p, q)} = ${T(sumOf([[c1, cos], [c2, sin]]))}`,
+    ...fnOf(y, [["undeterminedNoDerivatives", sumOf([[F(c1, q), cos], [F(c2, q), sin]])], ["trigDerivativeSignSlip", slip]]),
+    steps: [
+      `y_p = A\\cos ${mx} + B\\sin ${mx}, \\quad y_p'' = -${m * m === 1 ? "" : m * m}y_p`,
+      `\\cos ${mx}: \\; ${linTex([[Q, "A"], [p * m, "B"]])} = ${c1}, \\quad \\sin ${mx}: \\; ${linTex([[Q, "B"], [-p * m, "A"]])} = ${c2}`,
+      `A = ${A}, \\; B = ${B}: \\quad y_p = ${T(y)}`,
+    ],
+  };
+}
+
+/** yₚ = ux² + vx + w for a quadratic g. */
+function polyForcing(r: Rng, w: PracticeWords): Part {
+  const [, , p, q] = roots(r);
+  const u = r.nz(-2, 2);
+  const [v, c] = [r.int(-3, 3), r.int(-3, 3)];
+  const [a2, a1, a0] = [q * u, 2 * p * u + q * v, 2 * u + p * v + q * c];
+  const g = sumOf([[a2, "x^2"], [a1, "x"], [a0, ""]]);
+  const y = sumOf([[u, "x^2"], [v, "x"], [c, ""]]);
+  return {
+    prompt: w.ode.prompt.particular,
+    q: `${lhs(p, q)} = ${T(g)}`,
+    ...fnOf(y, [
+      ["undeterminedNoDerivatives", sumOf([[F(a2, q), "x^2"], [F(a1, q), "x"], [F(a0, q), ""]])],
+      ["secondDerivativeLeftOut", sumOf([[u, "x^2"], [v, "x"], [F(c).add(F(2 * u, q)), ""]])],
+    ]),
+    steps: [
+      `y_p = Ax^{2} + Bx + C, \\quad y_p' = 2Ax + B, \\quad y_p'' = 2A`,
+      `x^{2}: \\; ${q}A = ${a2}, \\quad x: \\; ${linTex([[2 * p, "A"], [q, "B"]])} = ${a1}, \\quad 1: \\; ${linTex([[2, "A"], [p, "B"], [q, "C"]])} = ${a0}`,
+      `A = ${u}, \\; B = ${v}, \\; C = ${c}: \\quad y_p = ${T(y)}`,
+    ],
+  };
+}
+
+/** yₚ = ke^(mx) + ux + v for g = Ke^(mx) + ax + d. */
+function sumForcing(r: Rng, w: PracticeWords): Part {
+  const [r1, r2, p, q] = roots(r);
+  let m = r.nz(-2, 2);
+  while (m === r1 || m === r2) m = r.nz(-2, 2);
+  const Pm = m * m + p * m + q;
+  const k = r.nz(-3, 3);
+  const [u, v] = [r.nz(-3, 3), r.int(-3, 3)];
+  const [a, d] = [q * u, p * u + q * v];
+  const g = sumOf([[k * Pm, ex(m)], [a, "x"], [d, ""]]);
+  const y = sumOf([[k, ex(m)], [u, "x"], [v, ""]]);
+  return {
+    prompt: w.ode.prompt.particular,
+    q: `${lhs(p, q)} = ${T(g)}`,
+    ...fnOf(y, [
+      ["forcingPartLeftOut", coef(k, ex(m))],
+      ["undeterminedNoDerivatives", sumOf([[F(k * Pm, q), ex(m)], [F(a, q), "x"], [F(d, q), ""]])],
+    ]),
+    steps: [
+      `y_p = A${eTex(m)} + Bx + C`,
+      `${eTex(m)}: \\; ${Pm}A = ${k * Pm}, \\quad x: \\; ${q}B = ${a}, \\quad 1: \\; ${linTex([[p, "B"], [q, "C"]])} = ${d}`,
+      `A = ${k}, \\; B = ${u}, \\; C = ${v}: \\quad y_p = ${T(y)}`,
+    ],
+  };
+}
+
+/** L3, a new setting: a mass M on a spring of stiffness k pushed by F cos ωt; the steady motion A cos ωt, A = F/(k − Mω²). */
+function springPart(r: Rng, w: PracticeWords): Part {
+  const M = r.pick([1, 2]);
+  const om = r.int(1, 3);
+  let D = r.nz(-4, 6);
+  while (M * om * om + D <= 0) D = r.nz(-4, 6);
+  const kS = M * om * om + D;
+  const Amp = r.int(1, 3) * Math.sign(D);
+  const Fo = D * Amp;
+  const cos = `cos(${coef(om, "t")})`;
+  const slips: [MistakeId, string][] = [["naturalFrequencySign", coef(F(Fo, kS + M * om * om), cos)]];
+  if (M !== 1 && kS !== om * om) slips.push(["massLeftOut", coef(F(Fo, kS - om * om), cos)]);
+  const wt = om === 1 ? "t" : `${om}t`;
+  return {
+    prompt: fill(w.osK.springQ, { M, k: kS, F: Fo, wt }),
+    q: `${M === 1 ? "" : M}x'' + ${kS === 1 ? "" : kS}x = ${Fo === 1 ? "" : Fo}\\cos ${wt}`,
+    ...fnOf(coef(Amp, cos), slips, ["t"], "exprT"),
+    steps: [
+      `x_p = A\\cos ${wt}, \\quad x_p'' = -${om * om === 1 ? "" : om * om}A\\cos ${wt}`,
+      `(${kS} - ${M * om * om})A = ${Fo}: \\quad A = ${Amp}`,
+      `x_p(t) = ${T(coef(Amp, cos), ["t"])}`,
+    ],
+  };
+}
+
+const gen: Gen = (r, L, w) => {
+  if (L === 3 && r.int(0, 9) >= 5) return [trigForcing, polyForcing, sumForcing, springPart][r.int(0, 3)](r, w);
+  return L === 1 ? distinctPart(r, w) : L === 2 ? repeatedOrComplexPart(r, w) : particularPart(r, w);
+};
 
 export default gen;

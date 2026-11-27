@@ -1627,7 +1627,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     undetermined coefficients), linear systems x′ = Ax (the eigenvalues, node, saddle, spiral or centre from the
     trace and determinant, x₁(t) of an initial value problem), the Laplace transform (a transform, an inverse by
     partial fractions, an initial value problem through Y(s)) and equilibria (every equilibrium of y′ = f(y), stable,
-    unstable or semi-stable, the Jacobian of a competition system). Answers are typed in x, t or s and compared by
+    unstable or semi-stable, the Jacobian of a competition system). Since #752 also the equation a story says
+    (growth, cooling, a rumour), which equation separates, an implicit solution y² = x² + C, where a solution blows
+    up, the wrong line in a worked solution, homogeneous equations by y = vx, Newton's law of cooling for a cup of
+    tea, forcing by sines and cosines, a quadratic or a sum, a forced spring's steady motion, the e^(at) shift, the
+    unit step and the Dirac delta, convolution and its transform, and equations with a step, an impulse or the
+    convolution theorem. Answers are typed in x, t or s and compared by
     value. The named slips: the constant added after taking e^, e^(−ax) as the integrating factor, the shared terms
     of ψ counted twice, the roots with the wrong sign, the x·e^(rx) solution or the e^(αx) left out, only the qy term
     matched, the diagonal taken for the eigenvalues, stability the wrong way round, a saddle or a spiral called a
