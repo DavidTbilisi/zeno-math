@@ -2833,6 +2833,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     sends the signal from the bus to each link in turn: green where it gets through, red where it stops at the first
     missing or misplaced device. Stars count the runs and the spare devices. Notices: plugs by kind, a moved device,
     the display on the card.
+  - *Disks and RAID* (#854; Discrete → Computer, and the Computer stage of the Software engineer goal): drives in a
+    rack in 3D, each drive's front showing the blocks it holds, as RAID 0 (striped), 1 (mirrored) or 5 (striped, with a
+    rotating parity block that is the XOR of its stripe). Tap a drive's handle to pull it out: it slides forward, its
+    blocks go grey, and the lab says whether the file still reads. Drag the new drive into the empty bay, then tap each
+    blank cell to rebuild it: a copy from the mirror, or the XOR of the rest of its row, the working written out bit by
+    bit. Five puzzles: rebuild a mirror; a dead RAID 5 drive worked out by hand with four bit switches; rebuild RAID 5
+    on four drives; and two design puzzles, where the file must live through losing any one drive with as few drives as
+    can hold it (RAID 5 on three when a drive holds half the file, a two-drive mirror when it holds all of it).
   - *A tiny computer* (#844; Discrete → Computer, and the Computer stage of the Software engineer goal): the
     hypothetical machine of Stallings, Fig. 3.4 to 3.5, worked by hand. Memory holds the program from 300 and the data
     from 940, the system bus has address, data and control lines, and the CPU shows PC, MAR, MBR, IR, AC, the ALU and

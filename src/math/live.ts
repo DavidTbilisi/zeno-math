@@ -143,6 +143,7 @@ import { cruxStart, type LiveCrux } from "./crux";
 import { CIRCUIT_START, type LiveCircuit } from "./circuitLab";
 import { CPU_START_STATE, type LiveCpu } from "./cpuLab";
 import { SYSTEM_START, type LiveSystem } from "./systemLab";
+import { RAID_START, type LiveRaid } from "./raidLab";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
@@ -753,6 +754,7 @@ export type LiveStates = {
   circuitLab: LiveCircuit;
   cpuLab: LiveCpu;
   systemLab: LiveSystem;
+  raidLab: LiveRaid;
   surface: LiveSurface;
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
@@ -943,6 +945,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   circuitLab: [660, 600],
   cpuLab: [700, 790],
   systemLab: [720, 790],
+  raidLab: [720, 700],
   surface: [680, 790],
   pcaLab: [660, 720],
   softmaxLab: [660, 780],
@@ -1135,6 +1138,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     circuitLab: CIRCUIT_START,
     cpuLab: CPU_START_STATE,
     systemLab: SYSTEM_START,
+    raidLab: RAID_START,
     surface: SURFACE_START,
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,

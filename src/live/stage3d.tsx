@@ -39,6 +39,20 @@ export function screenWays(view: View): { right: V3; up: V3 } {
   return { right: [e[0][0], e[1][0], e[2][0]], up: [e[0][1], e[1][1], e[2][1]] };
 }
 
+export type Face = { pts: V3[]; n: V3; color: string };
+/** An upright box from (x, y, z), dx across, dy back and dz up: its six faces. */
+export function box(x: number, y: number, z: number, dx: number, dy: number, dz: number, color: string): Face[] {
+  const p = (i: number, j: number, k: number): V3 => [x + i * dx, y + j * dy, z + k * dz];
+  return [
+    { pts: [p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)], n: [0, 0, 1], color },
+    { pts: [p(0, 0, 0), p(0, 1, 0), p(1, 1, 0), p(1, 0, 0)], n: [0, 0, -1], color },
+    { pts: [p(0, 0, 0), p(1, 0, 0), p(1, 0, 1), p(0, 0, 1)], n: [0, -1, 0], color },
+    { pts: [p(0, 1, 0), p(0, 1, 1), p(1, 1, 1), p(1, 1, 0)], n: [0, 1, 0], color },
+    { pts: [p(0, 0, 0), p(0, 0, 1), p(0, 1, 1), p(0, 1, 0)], n: [-1, 0, 0], color },
+    { pts: [p(1, 0, 0), p(1, 1, 0), p(1, 1, 1), p(1, 0, 1)], n: [1, 0, 0], color },
+  ];
+}
+
 export type Flat = { pts: [number, number][]; depth: number; fill: string; key: string; stroke: string; width: number; opacity: number };
 
 /** Faces lit and sorted, nearest last, ready to draw. `color` and the rest come from each face. */
