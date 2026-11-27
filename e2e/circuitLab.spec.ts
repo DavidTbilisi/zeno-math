@@ -94,3 +94,26 @@ test("memory by hand: an S–R latch from two NOR gates keeps Q once both switch
   await pic.getByRole("button", { name: /^Run the rows to step 4,/ }).click();
   await expect(lamp).toHaveAccessibleName("Q = 1");
 });
+
+test("chips by hand: a 3-bit counter from counter-bit chips counts up in decimal", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("zeno.circuitlab.v1", JSON.stringify({ stars: Array.from({ length: 17 }, (_, k) => (k < 16 ? 3 : 0)) })));
+  const piece = await boardWith(page, "Circuit lab: gates and wires", ".live-circuitLab");
+  const pic = piece.locator("svg.hand-pic");
+  // The 4-bit ALU puzzle first, for its ten small switches and the decimal table.
+  await piece.getByRole("button", { name: /^Puzzle 15/ }).click();
+  await expect(pic.getByRole("switch")).toHaveCount(10);
+  await pic.getByRole("button", { name: "Add a ALU gate" }).press("Enter");
+  await expect(pic.locator("g[data-gate='g1'] circle[data-in]")).toHaveCount(5);
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/circuit-alu.png` });
+
+  await piece.getByRole("button", { name: /^Puzzle 17/ }).click();
+  await expect(piece).toContainText("Count to seven");
+  for (const name of ["T FF", "NOT", "T FF", "NOT", "T FF"]) await pic.getByRole("button", { name: `Add a ${name} gate` }).press("Enter");
+  await expect(pic.locator("g[data-gate]")).toHaveCount(5);
+  const out = (id: string) => pic.locator(`circle[data-out='${id}']`);
+  const pin = (id: string) => pic.locator(`circle[data-in='${id}']`);
+  for (const [a, b] of [["i0", "g1.0"], ["g1", "g2.0"], ["g2", "g3.0"], ["g3", "g4.0"], ["g4", "g5.0"], ["g1", "o2.0"], ["g3", "o1.0"], ["g5", "o0.0"]])
+    await dragTo(page, out(a), pin(b));
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/circuit-counter.png` });
+  await expect(piece).toContainText("Every row right! Gates used: 5.");
+});

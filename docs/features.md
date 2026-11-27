@@ -2817,6 +2817,11 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     last settled to, so a loop that settles remembers; four more puzzles (an S–R latch from two NORs, a D latch, a D
     flip-flop that changes only as Clk goes from 0 to 1, a counter bit that flips each time) are timing strips, their
     rows run in turn from power-on, "–" where either value will do, a row tapped replaying the rows before it
+    Chips (#843): a solved puzzle's circuit comes back as one part with named pins (full adder, selector, D flip-flop,
+    counter bit, 4-bit adder, ALU slice), and a constant 1 feeds a carry in. Six more puzzles: a 4-bit adder from full
+    adders, subtracting by adding the opposite plus one, an ALU slice (AND, OR, +, −), a 4-bit ALU with a zero flag, a
+    4-bit register with Load, a 3-bit counter. Numbers of several switches are read in decimal in the table, which
+    shows a few chosen rows while every row (up to 1024) is checked; free play offers each chip once its puzzle is passed
   - *Be the sort*: the player is the algorithm, making each of its decisions in turn: bubble sort's next swap (tap ⇄
     between two neighbours; the compares that swap nothing play themselves from the ▲, and a pass with no swap ends
     the sort), the gap insertion sort's key drops into, the smallest of the rest for selection sort (the first of two
