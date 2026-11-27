@@ -1582,6 +1582,15 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function pagingLabPreview(): Piece[] {
+  // A page table beside three frames of memory, each holding a coloured page.
+  const fills = ["#d0ebff", "#d3f9d8", "#fff3bf"];
+  return [
+    ...[0, 1, 2, 3, 4].map((r) => rect(6, 8 + r * 17, 40, 14, { fill: "#f8f9fa", color: "#ced4da", width: 1 })),
+    ...fills.map((f, r) => rect(60, 10 + r * 28, 120, 22, { fill: f, color: "#868e96", width: 1 })),
+  ];
+}
+
 function pipelineLabPreview(): Piece[] {
   // Three instructions, each five stages, staggered a tick apart.
   const fills = ["#d0ebff", "#e5dbff", "#ffd8a8", "#c3fae8", "#d3f9d8"];
@@ -3025,6 +3034,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveIoLab", build: ioLabPreview, live: "ioLab" },
   { id: "liveHammingLab", build: hammingLabPreview, live: "hammingLab" },
   { id: "livePipelineLab", build: pipelineLabPreview, live: "pipelineLab" },
+  { id: "livePagingLab", build: pagingLabPreview, live: "pagingLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
