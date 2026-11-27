@@ -1,7 +1,8 @@
 // The circuit lab (#841), worked by hand: a gate dragged from the tray onto the board, a wire dragged from an output
 // (a switch's, a gate's) to an input pin, a wire tapped to cut it, a gate dropped in the bin to take it away, a switch
 // tapped to flip it and a row of the truth table tapped to set every switch to it. Wires and lamps that carry a 1 light
-// up. A puzzle is won the moment every row of its table is right; stars for doing it in few gates.
+// up. A puzzle is won the moment every row of its table is right; stars for doing it in few gates. The board keeps what
+// its gates last settled to, so a latch remembers (#842); a memory puzzle's rows run in turn, a row tapped replays them.
 import { type KeyboardEvent } from "react";
 import {
   CIRCUIT_LADDER,
@@ -42,7 +43,7 @@ const OFF = "#adb5bd";
 const LIT = "#ffd43b";
 const BIN = { x: W - 106, y: 4, w: 98, h: 58 };
 
-const FRESH: Partial<LiveCircuit> = { gates: [], wires: [], on: 0, done: false, said: null };
+const FRESH: Partial<LiveCircuit> = { gates: [], wires: [], on: 0, done: false, said: null, mem: {}, step: 0 };
 
 const clampGate = (x: number, y: number): [number, number] =>
   [Math.round(Math.min(BW - GW - 70, Math.max(78, x))), Math.round(Math.min(H - GH - 8, Math.max(TRAY + 8, y)))];
@@ -96,16 +97,19 @@ export function CircuitLab({ state, set, w: words, svgRef }: PieceProps<"circuit
   const game = useGame({ key: "zeno.circuitlab.v1", size: CIRCUIT_LADDER.length, notices: CIRCUIT_NOTICES, modes: ["puzzle", "free"], state: d, set, fresh: FRESH });
 
   const ins = bitsOf(d.on, n);
-  const { val, steady } = settle(d, ins, m);
+  const mem = d.mem ?? {};
+  const { val, steady } = settle(d, ins, m, mem);
   const table = tableOf(d, io, p);
   const stars = p ? circuitStars(p, d.gates.length) : 0;
 
   /** A change to the circuit: the puzzle won once every row is right, a loop that won't settle noticed. */
-  const change = (c: Circuit & Partial<LiveCircuit>) => {
+  const change = (c0: Circuit) => {
+    const now = settle(c0, ins, m, mem);
+    const c = { ...c0, mem: now.val };
     const rows = tableOf(c, io, p);
     if (p && !d.done && c.gates.length && rows.every((r) => r.ok))
       return game.win({ stars: circuitStars(p, c.gates.length), patch: { ...c, done: true } });
-    if (steady && !settle(c, ins, m).steady) return game.spot(c, "loop");
+    if (steady && !now.steady) return game.spot(c, "loop");
     game.tap(c);
   };
 
@@ -161,7 +165,11 @@ export function CircuitLab({ state, set, w: words, svgRef }: PieceProps<"circuit
     return o ? gateIn(o, pin) : null;
   };
 
-  const flip = (k: number) => game.tap({ on: d.on ^ (1 << (n - 1 - k)) });
+  /** The switches set to `on`, the gates settling from what they held. */
+  const setTo = (on: number) => game.tap({ on, mem: settle(d, bitsOf(on, n), m, mem).val });
+  const flip = (k: number) => setTo(d.on ^ (1 << (n - 1 - k)));
+  /** A row tapped: a truth table's row set at once; a memory strip run from power-on to that row. */
+  const toRow = (i: number) => (p?.steps ? game.tap({ on: p.steps[i], step: i, mem: table[i].val }) : setTo(i));
   const right = table.filter((r) => r.ok).length;
   const line: Line =
     d.done && p ? { tone: "ok", text: `${fill(w.right, { n: d.gates.length, stars: starText(stars) })}${stars < 3 ? ` ${fill(w.fewer, { best: p.best })}` : ""}` }
@@ -291,17 +299,17 @@ export function CircuitLab({ state, set, w: words, svgRef }: PieceProps<"circuit
           ))}
           {table.map((r, i) => {
             const y = TRAY + 40 + i * 28;
-            const here = i === d.on;
+            const here = p?.steps ? i === (d.step ?? 0) && d.on === p.steps[i] : i === d.on;
             return (
-              <g key={i} role="button" tabIndex={0} aria-label={fill(w.row, { bits: r.ins.map(bit).join("") })} style={{ cursor: "pointer" }} data-row={i}
-                aria-pressed={here} onPointerDown={(e) => e.stopPropagation()} onClick={() => game.tap({ on: i })} onKeyDown={(e: KeyboardEvent) => keyTap(e, () => game.tap({ on: i }))}>
+              <g key={i} role="button" tabIndex={0} aria-label={fill(p?.steps ? w.step : w.row, { bits: r.ins.map(bit).join(""), k: i + 1 })} style={{ cursor: "pointer" }} data-row={i}
+                aria-pressed={here} onPointerDown={(e) => e.stopPropagation()} onClick={() => toRow(i)} onKeyDown={(e: KeyboardEvent) => keyTap(e, () => toRow(i))}>
                 <rect x={tx - 8} y={y} width={W - tx} height={26} rx={6} fill={here ? "#e7f5ff" : "transparent"} stroke={here ? "#74c0fc" : "none"} />
                 {r.ins.map((b, k) => <text key={`i${k}`} x={tx + k * COL + 4} y={y + 18} fontSize={14} textAnchor="middle" fill={INK}>{bit(b)}</text>)}
                 {r.got.map((b, k) => (
                   <text key={`g${k}`} x={gotX + k * COL + 4} y={y + 18} fontSize={14} fontWeight={700} textAnchor="middle"
-                    fill={!r.steady ? RED : r.want ? (b === r.want[k] ? GREEN : RED) : INK}>{r.steady ? bit(b) : "?"}</text>
+                    fill={!r.steady ? RED : r.want && r.want[k] !== null ? (b === r.want[k] ? GREEN : RED) : INK}>{r.steady ? bit(b) : "?"}</text>
                 ))}
-                {r.want?.map((b, k) => <text key={`w${k}`} x={wantX + k * COL + 4} y={y + 18} fontSize={14} textAnchor="middle" fill={MUTED}>{bit(b)}</text>)}
+                {r.want?.map((b, k) => <text key={`w${k}`} x={wantX + k * COL + 4} y={y + 18} fontSize={14} textAnchor="middle" fill={MUTED}>{b === null ? "–" : bit(b)}</text>)}
               </g>
             );
           })}

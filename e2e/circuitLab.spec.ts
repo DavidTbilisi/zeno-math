@@ -59,3 +59,38 @@ test("circuit lab by hand: NOT from NAND, switches, the table, a cut wire and th
   await expect(pic.locator("g[data-gate]")).toHaveCount(0);
   await expect(pic.locator("g[data-wire]")).toHaveCount(0);
 });
+
+test("memory by hand: an S–R latch from two NOR gates keeps Q once both switches are off", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("zeno.circuitlab.v1", JSON.stringify({ stars: [3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0] })));
+  const piece = await boardWith(page, "Circuit lab: gates and wires", ".live-circuitLab");
+  await piece.getByRole("button", { name: /^Puzzle 8/ }).click();
+  await expect(piece).toContainText("Make it remember");
+  const pic = piece.locator("svg.hand-pic");
+  const nor = pic.getByRole("button", { name: "Add a NOR gate" });
+  await nor.focus();
+  await nor.press("Enter");
+  await nor.press("Enter");
+  await expect(pic.locator("g[data-gate]")).toHaveCount(2);
+
+  // Q = NOR(R, Q̄) and Q̄ = NOR(S, Q): each gate fed by the other.
+  const out = (id: string) => pic.locator(`circle[data-out='${id}']`);
+  const pin = (id: string) => pic.locator(`circle[data-in='${id}']`);
+  for (const [a, b] of [["i1", "g1.0"], ["g2", "g1.1"], ["i0", "g2.0"], ["g1", "g2.1"]]) await dragTo(page, out(a), pin(b));
+  await dragTo(page, out("g1"), pin("o0.0"));
+  await expect(piece).toContainText("Every row right! Gates used: 2.");
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/circuit-latch.png` });
+
+  // By hand: S on and off again leaves Q at 1; R on and off leaves it at 0.
+  const lamp = pic.getByRole("img", { name: /^Q = / });
+  const s = pic.getByRole("switch", { name: "Switch S" });
+  const r = pic.getByRole("switch", { name: "Switch R" });
+  await s.click();
+  await s.click();
+  await expect(lamp).toHaveAccessibleName("Q = 1");
+  await r.click();
+  await r.click();
+  await expect(lamp).toHaveAccessibleName("Q = 0");
+  // A row of the strip replays the rows before it: step 4 is after a set, so Q is 1.
+  await pic.getByRole("button", { name: /^Run the rows to step 4,/ }).click();
+  await expect(lamp).toHaveAccessibleName("Q = 1");
+});
