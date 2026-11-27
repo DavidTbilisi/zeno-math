@@ -253,6 +253,8 @@ test("practice: sequence and series answers follow from the question", () => {
     for (const level of LEVELS) {
       for (const skill of ["sequences", "series"] as const) {
         const ex = exercise(skill, level, s, pw);
+        // The rule, domain and story kinds (#729) are checked in tests/seqMore.test.ts.
+        if (!ex.solution) continue;
         let want: number | null = null;
         const list = /((?:-?\d+, )+…)/.exec(ex.prompt.replace(/−/g, "-"));
         const two = /(u[₀-₉]+) = (-?\d+) and (u[₀-₉]+) = (-?\d+)\. Find u([₀-₉]+)/.exec(ex.prompt.replace(/−/g, "-"));

@@ -487,6 +487,8 @@ export type PracticeWords = {
   qgrP: Record<"up" | "down" | "eqQ" | "vertexIs" | "landQ" | "topQ" | "whenQ" | "time" | "height" | "topAt" | "f" | "g" | "same" | "compareQ" | "compareWhy", string>;
   polyD: Record<"divide" | "withRem" | "factorDiv" | "findK" | "equalTo" | "fully" | "substitute", string>;
   fctS: Record<"patternQ" | "diff" | "square" | "neither" | "sumWhy", string>;
+  seqP: Record<"evalQ" | "convertQ" | "explicitQ" | "recursiveQ" | "nextQ" | "seatsQ" | "viewsQ" | "double" | "triple" | "domainQ" | "wholeFromTo" | "allFromTo" | "wholeUp", string>;
+  serP: Record<"storyQ" | "double" | "triple", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
