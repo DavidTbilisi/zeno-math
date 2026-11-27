@@ -184,6 +184,7 @@ import extremaMulti from "./extremaMulti";
 import multipleIntegrals from "./multipleIntegrals";
 import changeVariables from "./changeVariables";
 import lineIntegrals from "./lineIntegrals";
+import divCurl from "./divCurl";
 import vectorTheorems from "./vectorTheorems";
 import odeFirst from "./odeFirst";
 import odeSecond from "./odeSecond";
@@ -475,6 +476,7 @@ export const GENS: Record<SkillId, Gen> = {
   multipleIntegrals,
   changeVariables,
   lineIntegrals,
+  divCurl,
   vectorTheorems,
   odeFirst,
   odeSecond,

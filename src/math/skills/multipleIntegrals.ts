@@ -1,8 +1,12 @@
 // Practice: Double integrals. Easy integrates px + qy over a rectangle (each term integrated in its own letter only,
-// the other side's length left out, named); medium over a triangle, the inner limit depending on x (the limit taken
-// as the far side, so the whole square, named); hard an integral that can only be done with the order reversed
-// (the number from the inside's derivative not divided out, named).
-import { exact, F, numTraps } from "../calculusTwo";
+// the other side's length left out, named), or px + qy + sz over a box (the same, named); medium over a triangle, the
+// inner limit depending on x (the limit taken as the far side, so the whole square, named), or picks the integral
+// that covers the region between a parabola and a line (the curves swapped, the outer limit taken from y, or the
+// order of dx and dy, named); hard an integral that can only be done with the order reversed (the number from the
+// inside's derivative not divided out, named), or the area of a plane above a rectangle (the 1 under the root left
+// out, or the rectangle's own area, named).
+import { exact, F, numTraps, shuffled, sym } from "../calculusTwo";
+import { fill } from "../text";
 import { gcd, num } from "../practiceKit";
 import { polyTex, term } from "../vectorCalculus";
 import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
@@ -72,6 +76,67 @@ function swapPart(r: Rng, w: PracticeWords): Part {
   };
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? rectanglePart(r, w) : L === 2 ? trianglePart(r, w) : swapPart(r, w));
+/** ∫₀ᵃ∫₀ᵇ∫₀ᶜ (px + qy + sz) dz dy dx = abc(pa + qb + sc)/2. */
+function boxPart(r: Rng, w: PracticeWords): Part {
+  const [p, q, s, a, b, c] = [r.int(1, 4), r.int(1, 4), r.int(1, 4), r.int(1, 3), r.int(1, 3), r.int(2, 3)];
+  const f = polyTex([term(p, 1), term(q, 0, 1), term(s, 0, 0, 1)]);
+  const v = F(a * b * c * (p * a + q * b + s * c), 2);
+  return {
+    prompt: w.vcalc.prompt.integral,
+    q: `\\int_{0}^{${a}} \\int_{0}^{${b}} \\int_{0}^{${c}} \\left(${f}\\right) dz \\, dy \\, dx`,
+    ...exact(v, [["tripleWidthsLeftOut", F(p * a * a + q * b * b + s * c * c, 2)]]),
+    steps: [
+      `\\int_{0}^{${c}} \\left(${f}\\right) dz = ${polyTex([term(p * c, 1), term(q * c, 0, 1)])} + \\frac{${s * c * c}}{2}`,
+      `\\text{each term over the box: } \\frac{${p} \\cdot ${a * a} \\cdot ${b * c} + ${q} \\cdot ${b * b} \\cdot ${a * c} + ${s} \\cdot ${c * c} \\cdot ${a * b}}{2} = ${v.tex()}`,
+    ],
+  };
+}
+
+/** Which integral covers the region between y = x² and y = kx? */
+function boundsPart(r: Rng, w: PracticeWords): Part {
+  const k = r.int(2, 4);
+  const opt = (top: number, lo: string, hi: string, loP: string, hiP: string, inner: "y" | "x") =>
+    sym(`\\int_{0}^{${top}} \\int_{${lo}}^{${hi}} f(x, y) \\, d${inner} \\, d${inner === "y" ? "x" : "y"}`, `int 0..${top} int ${loP}..${hiP} f d${inner} d${inner === "y" ? "x" : "y"}`);
+  const options = [
+    opt(k, "x^{2}", `${k}x`, "x^2", `${k}x`, "y"),
+    opt(k, `${k}x`, "x^{2}", `${k}x`, "x^2", "y"),
+    opt(k * k, "x^{2}", `${k}x`, "x^2", `${k}x`, "y"),
+    opt(k, "x^{2}", `${k}x`, "x^2", `${k}x`, "x"),
+  ];
+  return {
+    prompt: fill(w.mvK.boundsQ, { k }),
+    q: `y = x^{2}, \\quad y = ${k}x`,
+    ...shuffled(r, options, 0, [["boundsCurvesSwapped", 1], ["outerLimitAsHeight", 2], ["innerVariableMismatch", 3]]),
+    steps: [
+      `x^{2} = ${k}x \\Rightarrow x = 0, \\; x = ${k}; \\quad 0 \\le x \\le ${k}: \\; x^{2} \\le y \\le ${k}x`,
+      options[0].tex,
+    ],
+  };
+}
+
+const ROOTED = [[2, 2, 3], [4, 8, 9], [8, 4, 9]] as const;
+
+/** The area of z = ax + by + c above [0, p] × [0, q]: √(1 + a² + b²)·pq. */
+function surfacePart(r: Rng, w: PracticeWords): Part {
+  const [a0, b0, root] = r.pick(ROOTED);
+  const [a, b] = [a0 * r.sign(), b0 * r.sign()];
+  const [p, q, c] = [r.int(1, 3), r.int(1, 3), r.int(-3, 3)];
+  return {
+    prompt: w.mvK.surfaceQ,
+    q: `z = ${polyTex([term(a, 1), term(b, 0, 1), term(c, 0)])}, \\quad D = [0, ${p}] \\times [0, ${q}]`,
+    ...exact(F(root * p * q), [["surfaceOneLeftOut", Math.sqrt(a * a + b * b) * p * q], ["surfaceAsShadow", p * q]]),
+    steps: [
+      `dS = \\sqrt{1 + z_{x}^{2} + z_{y}^{2}} \\, dA = \\sqrt{1 + ${a * a} + ${b * b}} \\, dA = ${root} \\, dA`,
+      `S = ${root} \\cdot ${p * q} = ${root * p * q}`,
+    ],
+  };
+}
+
+const gen: Gen = (r, L, w) => {
+  const more = r.int(0, 9) >= 5;
+  if (L === 1) return more ? boxPart(r, w) : rectanglePart(r, w);
+  if (L === 2) return more ? boundsPart(r, w) : trianglePart(r, w);
+  return more ? surfacePart(r, w) : swapPart(r, w);
+};
 
 export default gen;

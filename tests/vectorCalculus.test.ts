@@ -20,7 +20,7 @@ test("a polynomial in x, y and z is differentiated, evaluated and written", () =
   assert.equal(polyTex([term(-1, 1, 1)], ["s", "t"]), "-st");
 });
 
-const SKILLS: SkillId[] = ["partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems"];
+const SKILLS: SkillId[] = ["partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "divCurl", "vectorTheorems"];
 
 test("every vector-calculus question accepts its own answer and names its slips", () => {
   for (const skill of SKILLS)

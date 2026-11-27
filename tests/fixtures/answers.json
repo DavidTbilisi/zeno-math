@@ -9759,14 +9759,14 @@
     {
       "skill": "partials",
       "level": 1,
-      "seed": 7,
+      "seed": 43955,
       "input": "(0; -5)",
       "label": "correct"
     },
     {
       "skill": "partials",
       "level": 1,
-      "seed": 7,
+      "seed": 43955,
       "input": "(0, -2)",
       "label": "wrong",
       "mistake": "otherVariableZero"
@@ -9774,7 +9774,7 @@
     {
       "skill": "partials",
       "level": 1,
-      "seed": 7,
+      "seed": 43955,
       "input": "(-5, 0)",
       "label": "wrong",
       "mistake": "partialsSwapped"
@@ -9782,21 +9782,21 @@
     {
       "skill": "partials",
       "level": 1,
-      "seed": 7,
+      "seed": 43955,
       "input": "5; -5",
       "label": "wrong"
     },
     {
       "skill": "partials",
       "level": 2,
-      "seed": 7,
+      "seed": 131,
       "input": "24/5",
       "label": "correct"
     },
     {
       "skill": "partials",
       "level": 2,
-      "seed": 7,
+      "seed": 131,
       "input": "24",
       "label": "wrong",
       "mistake": "directionNotUnit"
@@ -9804,7 +9804,7 @@
     {
       "skill": "partials",
       "level": 2,
-      "seed": 7,
+      "seed": 131,
       "input": "12",
       "label": "wrong"
     },
@@ -9855,14 +9855,14 @@
     {
       "skill": "chainMulti",
       "level": 2,
-      "seed": 7,
+      "seed": 115348,
       "input": "-3, -3; 4, -3",
       "label": "correct"
     },
     {
       "skill": "chainMulti",
       "level": 2,
-      "seed": 7,
+      "seed": 115348,
       "input": "-3, 4; -3, -3",
       "label": "wrong",
       "mistake": "jacobianTransposed"
@@ -9870,7 +9870,7 @@
     {
       "skill": "chainMulti",
       "level": 2,
-      "seed": 7,
+      "seed": 115348,
       "input": "2, -3; 4, -3",
       "label": "wrong"
     },
@@ -9929,14 +9929,14 @@
     {
       "skill": "extremaMulti",
       "level": 2,
-      "seed": 7,
+      "seed": 11938,
       "input": "a local minimum",
       "label": "correct"
     },
     {
       "skill": "extremaMulti",
       "level": 2,
-      "seed": 7,
+      "seed": 11938,
       "input": "a local maximum",
       "label": "wrong",
       "mistake": "hessianSignsSwapped"
@@ -9944,7 +9944,7 @@
     {
       "skill": "extremaMulti",
       "level": 2,
-      "seed": 7,
+      "seed": 11938,
       "input": "a saddle point",
       "label": "wrong"
     },
@@ -9981,14 +9981,14 @@
     {
       "skill": "multipleIntegrals",
       "level": 1,
-      "seed": 7,
+      "seed": 146,
       "input": "64",
       "label": "correct"
     },
     {
       "skill": "multipleIntegrals",
       "level": 1,
-      "seed": 7,
+      "seed": 146,
       "input": "16",
       "label": "wrong",
       "mistake": "forgotOtherWidth"
@@ -9996,21 +9996,21 @@
     {
       "skill": "multipleIntegrals",
       "level": 1,
-      "seed": 7,
+      "seed": 146,
       "input": "71",
       "label": "wrong"
     },
     {
       "skill": "multipleIntegrals",
       "level": 2,
-      "seed": 7,
+      "seed": 146,
       "input": "32",
       "label": "correct"
     },
     {
       "skill": "multipleIntegrals",
       "level": 2,
-      "seed": 7,
+      "seed": 146,
       "input": "64",
       "label": "wrong",
       "mistake": "limitsAsConstants"
@@ -10018,21 +10018,21 @@
     {
       "skill": "multipleIntegrals",
       "level": 2,
-      "seed": 7,
+      "seed": 146,
       "input": "39",
       "label": "wrong"
     },
     {
       "skill": "multipleIntegrals",
       "level": 3,
-      "seed": 7,
+      "seed": 19,
       "input": "3(e^1 - 1)/2",
       "label": "correct"
     },
     {
       "skill": "multipleIntegrals",
       "level": 3,
-      "seed": 7,
+      "seed": 19,
       "input": "5.154845485377136",
       "label": "wrong",
       "mistake": "forgotInnerFactor"
@@ -10040,21 +10040,21 @@
     {
       "skill": "multipleIntegrals",
       "level": 3,
-      "seed": 7,
+      "seed": 19,
       "input": "10",
       "label": "wrong"
     },
     {
       "skill": "changeVariables",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "2pi/3",
       "label": "correct"
     },
     {
       "skill": "changeVariables",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "3.141592653589793",
       "label": "wrong",
       "mistake": "forgotJacobianR"
@@ -10062,21 +10062,21 @@
     {
       "skill": "changeVariables",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "9",
       "label": "wrong"
     },
     {
       "skill": "changeVariables",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "pi/2",
       "label": "correct"
     },
     {
       "skill": "changeVariables",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "4.1887902047863905",
       "label": "wrong",
       "mistake": "forgotJacobianR"
@@ -10084,7 +10084,7 @@
     {
       "skill": "changeVariables",
       "level": 2,
-      "seed": 7,
+      "seed": 27,
       "input": "9",
       "label": "wrong"
     },
@@ -10202,14 +10202,14 @@
     {
       "skill": "vectorTheorems",
       "level": 2,
-      "seed": 7,
+      "seed": 21,
       "input": "-18",
       "label": "correct"
     },
     {
       "skill": "vectorTheorems",
       "level": 2,
-      "seed": 7,
+      "seed": 21,
       "input": "-66",
       "label": "wrong",
       "mistake": "areaForVolume"
@@ -10217,7 +10217,7 @@
     {
       "skill": "vectorTheorems",
       "level": 2,
-      "seed": 7,
+      "seed": 21,
       "input": "-11",
       "label": "wrong"
     },
@@ -89763,6 +89763,1621 @@
       "input": "((10 * (7)^((-1))) * cos(t))",
       "label": "wrong",
       "mistake": "naturalFrequencySign"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 1,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 1,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "gradientDownhill"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 1,
+      "input": "D",
+      "label": "wrong",
+      "mistake": "gradientAlongLevel"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 1,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "gradientAlongLevel"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 2,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 2,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "gradientDownhill"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 2,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "gradientAlongLevel"
+    },
+    {
+      "skill": "partials",
+      "level": 1,
+      "seed": 2,
+      "input": "D",
+      "label": "wrong",
+      "mistake": "gradientAlongLevel"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 1,
+      "input": "-24",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 1,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 1,
+      "input": "-1728",
+      "label": "wrong",
+      "mistake": "mixedPartialAsProduct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 1,
+      "input": "-17",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 2,
+      "input": "-12",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 2,
+      "input": "100",
+      "label": "wrong",
+      "mistake": "mixedPartialAsProduct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 6,
+      "input": "-8",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 6,
+      "input": "-42",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 6,
+      "input": "152",
+      "label": "wrong",
+      "mistake": "mixedPartialAsProduct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 6,
+      "input": "-1",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 11,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 11,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 11,
+      "input": "120",
+      "label": "wrong",
+      "mistake": "mixedPartialAsProduct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 11,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 17,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 17,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 17,
+      "input": "-12",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 17,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 25,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 25,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 25,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 25,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 44,
+      "input": "-6",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 44,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 44,
+      "input": "1",
+      "label": "wrong"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 48,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 48,
+      "input": "-18",
+      "label": "wrong",
+      "mistake": "mixedPartialSameLetter"
+    },
+    {
+      "skill": "partials",
+      "level": 2,
+      "seed": 48,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 1,
+      "input": "-15",
+      "label": "correct"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 1,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "detPlusUsed"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 1,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "detDiagonalOnly"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 1,
+      "input": "-8",
+      "label": "wrong"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 2,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 2,
+      "input": "-20",
+      "label": "wrong",
+      "mistake": "detPlusUsed"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 2,
+      "input": "-10",
+      "label": "wrong",
+      "mistake": "detDiagonalOnly"
+    },
+    {
+      "skill": "chainMulti",
+      "level": 2,
+      "seed": 2,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 1,
+      "input": "-6, 4; 4, 8",
+      "label": "correct"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 1,
+      "input": "-6, 8; 8, 8",
+      "label": "wrong",
+      "mistake": "hessianMixedDoubled"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 1,
+      "input": "6, 4; 4, -4",
+      "label": "wrong",
+      "mistake": "hessianAtOrigin"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 2,
+      "input": "-10, 3; 3, 14",
+      "label": "correct"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 2,
+      "input": "-10, 6; 6, 14",
+      "label": "wrong",
+      "mistake": "hessianMixedDoubled"
+    },
+    {
+      "skill": "extremaMulti",
+      "level": 2,
+      "seed": 2,
+      "input": "-4, 3; 3, 2",
+      "label": "wrong",
+      "mistake": "hessianAtOrigin"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 1,
+      "input": "81",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 1,
+      "input": "24",
+      "label": "wrong",
+      "mistake": "tripleWidthsLeftOut"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 1,
+      "input": "88",
+      "label": "wrong"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 2,
+      "input": "96",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 2,
+      "input": "19",
+      "label": "wrong",
+      "mistake": "tripleWidthsLeftOut"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 2,
+      "input": "103",
+      "label": "wrong"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 36,
+      "input": "567/2",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 36,
+      "input": "63/2",
+      "label": "wrong",
+      "mistake": "tripleWidthsLeftOut"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 64,
+      "input": "567/2",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 1,
+      "seed": 64,
+      "input": "63/2",
+      "label": "wrong",
+      "mistake": "tripleWidthsLeftOut"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 1,
+      "input": "int 0..2 int x^2..2x f dy dx",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 1,
+      "input": "int 0..2 int 2x..x^2 f dy dx",
+      "label": "wrong",
+      "mistake": "boundsCurvesSwapped"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 1,
+      "input": "int 0..4 int x^2..2x f dy dx",
+      "label": "wrong",
+      "mistake": "outerLimitAsHeight"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 1,
+      "input": "int 0..2 int x^2..2x f dx dy",
+      "label": "wrong",
+      "mistake": "innerVariableMismatch"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 2,
+      "input": "int 0..2 int x^2..2x f dy dx",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 2,
+      "input": "int 0..2 int 2x..x^2 f dy dx",
+      "label": "wrong",
+      "mistake": "boundsCurvesSwapped"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 2,
+      "input": "int 0..4 int x^2..2x f dy dx",
+      "label": "wrong",
+      "mistake": "outerLimitAsHeight"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 2,
+      "seed": 2,
+      "input": "int 0..2 int x^2..2x f dx dy",
+      "label": "wrong",
+      "mistake": "innerVariableMismatch"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 1,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 1,
+      "input": "8.485281374238571",
+      "label": "wrong",
+      "mistake": "surfaceOneLeftOut"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "surfaceAsShadow"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 1,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 2,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 2,
+      "input": "16.970562748477143",
+      "label": "wrong",
+      "mistake": "surfaceOneLeftOut"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "surfaceAsShadow"
+    },
+    {
+      "skill": "multipleIntegrals",
+      "level": 3,
+      "seed": 2,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 1,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 1,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "areaSignKept"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 1,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "detPlusUsed"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 2,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "detPlusUsed"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 3,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 3,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "detPlusUsed"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 3,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 4,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 4,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "areaSignKept"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 4,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "detPlusUsed"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 1,
+      "seed": 4,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 1,
+      "input": "9/4",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 1,
+      "input": "9/2",
+      "label": "wrong",
+      "mistake": "jacobianFactorLeftOut"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong",
+      "mistake": "jacobianInverted"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 2,
+      "input": "3/2",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 2,
+      "input": "9/2",
+      "label": "wrong",
+      "mistake": "jacobianFactorLeftOut"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 2,
+      "input": "27/2",
+      "label": "wrong",
+      "mistake": "jacobianInverted"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 5,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 5,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "jacobianFactorLeftOut"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 5,
+      "input": "-16",
+      "label": "wrong",
+      "mistake": "jacobianInverted"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 5,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 16,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 16,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "jacobianFactorLeftOut"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 16,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "jacobianInverted"
+    },
+    {
+      "skill": "changeVariables",
+      "level": 2,
+      "seed": 16,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 1,
+      "input": "-25/2",
+      "label": "correct"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 1,
+      "input": "-5/2",
+      "label": "wrong",
+      "mistake": "dsLeftOut"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 1,
+      "input": "-125/2",
+      "label": "wrong",
+      "mistake": "speedNotRooted"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 2,
+      "input": "-5/2",
+      "label": "correct"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 2,
+      "input": "-1/2",
+      "label": "wrong",
+      "mistake": "dsLeftOut"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 2,
+      "input": "-25/2",
+      "label": "wrong",
+      "mistake": "speedNotRooted"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 3,
+      "input": "-5",
+      "label": "correct"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 3,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "dsLeftOut"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 3,
+      "input": "-25",
+      "label": "wrong",
+      "mistake": "speedNotRooted"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 3,
+      "input": "2",
+      "label": "wrong"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 11,
+      "input": "-90",
+      "label": "correct"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 11,
+      "input": "-9",
+      "label": "wrong",
+      "mistake": "dsLeftOut"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 11,
+      "input": "-900",
+      "label": "wrong",
+      "mistake": "speedNotRooted"
+    },
+    {
+      "skill": "lineIntegrals",
+      "level": 2,
+      "seed": 11,
+      "input": "-83",
+      "label": "wrong"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 1,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "greenCirculationForFlux"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 1,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 2,
+      "input": "-12",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 2,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "greenCirculationForFlux"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 2,
+      "input": "-5",
+      "label": "wrong"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 4,
+      "input": "Simple and closed",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 30,
+      "input": "Not closed",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 30,
+      "input": "Simple and closed",
+      "label": "wrong",
+      "mistake": "openCurveCalledClosed"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 36,
+      "input": "Not closed",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 36,
+      "input": "Simple and closed",
+      "label": "wrong",
+      "mistake": "openCurveCalledClosed"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 41,
+      "input": "Closed, but not simple",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 41,
+      "input": "Simple and closed",
+      "label": "wrong",
+      "mistake": "selfCrossingCalledSimple"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 43,
+      "input": "Simple and closed",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 44,
+      "input": "Simple and closed",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 44,
+      "input": "Not closed",
+      "label": "wrong",
+      "mistake": "cornersBreakCurve"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 48,
+      "input": "Closed, but not simple",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 48,
+      "input": "Simple and closed",
+      "label": "wrong",
+      "mistake": "selfCrossingCalledSimple"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 89,
+      "input": "Simple and closed",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 1,
+      "seed": 89,
+      "input": "Not closed",
+      "label": "wrong",
+      "mistake": "cornersBreakCurve"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 1,
+      "input": "-48",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 1,
+      "input": "48",
+      "label": "wrong",
+      "mistake": "orientationIgnored"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 1,
+      "input": "-41",
+      "label": "wrong"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 2,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 2,
+      "input": "-12",
+      "label": "wrong",
+      "mistake": "orientationIgnored"
+    },
+    {
+      "skill": "vectorTheorems",
+      "level": 2,
+      "seed": 2,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 1,
+      "input": "-6*x + 6*y*z + y",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 1,
+      "input": "((3 * (y)^(2)) + (4 * x))",
+      "label": "wrong",
+      "mistake": "divergenceWrongLetters"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 1,
+      "input": "((((-1) * 6) * x) + ((6 * y) * z))",
+      "label": "wrong",
+      "mistake": "divergencePartLeftOut"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 2,
+      "input": "-2*x + 6*y*z - y",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 2,
+      "input": "((3 * (y)^(2)) + (4 * x))",
+      "label": "wrong",
+      "mistake": "divergenceWrongLetters"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 2,
+      "input": "((((-1) * 2) * x) + ((6 * y) * z))",
+      "label": "wrong",
+      "mistake": "divergencePartLeftOut"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 7,
+      "input": "Positive",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 7,
+      "input": "Negative",
+      "label": "wrong",
+      "mistake": "inflowOutflowSwapped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 8,
+      "input": "Zero",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 8,
+      "input": "Positive",
+      "label": "wrong",
+      "mistake": "flowCalledDivergence"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 9,
+      "input": "Positive",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 9,
+      "input": "Negative",
+      "label": "wrong",
+      "mistake": "inflowOutflowSwapped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 14,
+      "input": "Zero",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 1,
+      "seed": 14,
+      "input": "Positive",
+      "label": "wrong",
+      "mistake": "flowCalledDivergence"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 1,
+      "input": "-28",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 1,
+      "input": "28",
+      "label": "wrong",
+      "mistake": "curlSignSlip"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 1,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "divergenceForCurl"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 1,
+      "input": "-21",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 2,
+      "input": "-7",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 2,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "curlSignSlip"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 2,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "divergenceForCurl"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 2,
+      "input": "0",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 7,
+      "input": "It does not turn",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 7,
+      "input": "Anticlockwise",
+      "label": "wrong",
+      "mistake": "spreadCalledSpin"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 8,
+      "input": "Anticlockwise",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 8,
+      "input": "Clockwise",
+      "label": "wrong",
+      "mistake": "spinDirectionSwapped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 8,
+      "input": "It does not turn",
+      "label": "wrong",
+      "mistake": "shearCalledCurlFree"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 9,
+      "input": "Anticlockwise",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 9,
+      "input": "Clockwise",
+      "label": "wrong",
+      "mistake": "spinDirectionSwapped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 12,
+      "input": "It does not turn",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 12,
+      "input": "Anticlockwise",
+      "label": "wrong",
+      "mistake": "spreadCalledSpin"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 14,
+      "input": "Clockwise",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 14,
+      "input": "Anticlockwise",
+      "label": "wrong",
+      "mistake": "spinDirectionSwapped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 18,
+      "input": "Clockwise",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 18,
+      "input": "Anticlockwise",
+      "label": "wrong",
+      "mistake": "spinDirectionSwapped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 18,
+      "input": "It does not turn",
+      "label": "wrong",
+      "mistake": "shearCalledCurlFree"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 142,
+      "input": "-8",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 142,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "curlSignSlip"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 142,
+      "input": "-1",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 288,
+      "input": "-8",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 288,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "curlSignSlip"
+    },
+    {
+      "skill": "divCurl",
+      "level": 2,
+      "seed": 288,
+      "input": "-1",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 1,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 1,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "laplacianFirstDerivatives"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "laplacianPartLeftOut"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 1,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 2,
+      "input": "-18",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 2,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "laplacianFirstDerivatives"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "laplacianPartLeftOut"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 2,
+      "input": "-11",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 7,
+      "input": "(-6; -9; -12)",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 7,
+      "input": "(-6, 9, -12)",
+      "label": "wrong",
+      "mistake": "curlMiddleSignFlipped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 7,
+      "input": "(6, 9, 12)",
+      "label": "wrong",
+      "mistake": "curlOrderReversed"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 8,
+      "input": "(14; -11; -2)",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 8,
+      "input": "(14, 11, -2)",
+      "label": "wrong",
+      "mistake": "curlMiddleSignFlipped"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 8,
+      "input": "(-14, 11, 2)",
+      "label": "wrong",
+      "mistake": "curlOrderReversed"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 17,
+      "input": "-12",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 17,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "laplacianPartLeftOut"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 17,
+      "input": "-5",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 42,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 42,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "laplacianFirstDerivatives"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 42,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 67,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 67,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "laplacianFirstDerivatives"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 67,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 254,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 254,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "laplacianPartLeftOut"
+    },
+    {
+      "skill": "divCurl",
+      "level": 3,
+      "seed": 254,
+      "input": "13",
+      "label": "wrong"
     }
   ]
 }

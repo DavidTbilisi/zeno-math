@@ -533,6 +533,8 @@ export type PracticeWords = {
   ofK: Record<"growthQ" | "coolQ" | "rumourQ" | "separableQ" | "implicitQ" | "domainQ" | "errorQ" | "homogeneousQ" | "coolingQ", string>;
   lpK: Record<"stepQ" | "deltaQ" | "convQ" | "convLQ" | "stepIvpQ" | "convIvpQ", string>;
   osK: Record<"springQ", string>;
+  mvK: Record<"areaElQ" | "boundQ" | "boundsQ" | "surfaceQ" | "scalarLineQ" | "fluxQ" | "orientQ" | "curveQ" | "simpleClosed" | "closedNotSimple" | "notClosed" | "squareWhy" | "circleWhy" | "eightWhy" | "arcWhy" | "gradPicQ" | "gradWhy" | "secondQ" | "hessianQ" | "jacDetQ", string>;
+  dcK: Record<"divPicQ" | "curlPicQ" | "divQ" | "curl2Q" | "curl3Q" | "lapQ" | "positive" | "negative" | "zero" | "ccw" | "cw" | "none", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

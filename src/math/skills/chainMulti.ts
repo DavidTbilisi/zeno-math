@@ -1,5 +1,6 @@
 // Practice: The multivariable chain rule. Easy is dz/dt when x and y both depend on t (the term through y left out,
-// named); medium the Jacobian matrix of a map of the plane at a point (its transpose, named); hard ∂z/∂s when x and y
+// named); medium the Jacobian matrix of a map of the plane at a point (its transpose, named), or its determinant
+// (the minus read as plus, or the diagonal alone, named); hard ∂z/∂s when x and y
 // depend on s and t (the t-derivatives used, or a term left out, named).
 import { exact, F } from "../calculusTwo";
 import { matOf } from "../linearAlgebra";
@@ -82,6 +83,27 @@ function sPart(r: Rng, w: PracticeWords): Part {
   };
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? tPart(r, w) : L === 2 ? jacobianPart(r, w) : sPart(r, w));
+/** The Jacobian determinant of (u, v) = (f(x, y), g(x, y)) at a point. */
+function jacobianDetPart(r: Rng, w: PracticeWords): Part {
+  for (;;) {
+    const u: Poly = [term(r.nz(-3, 3), 2, 0), term(r.nz(-3, 3), 1, 1)];
+    const v: Poly = [term(r.nz(-3, 3), 1, 0), term(r.nz(-3, 3), 0, 2), term(r.nz(-2, 2), 1, 1)];
+    const [x, y] = [r.nz(-2, 2), r.nz(-2, 2)];
+    const [a, b, c, e] = [at(d(u, 0), x, y), at(d(u, 1), x, y), at(d(v, 0), x, y), at(d(v, 1), x, y)];
+    if (b * c === 0) continue;
+    const det = a * e - b * c;
+    return {
+      prompt: fill(w.mvK.jacDetQ, { x, y }),
+      q: `\\mathbf{F}(x, y) = \\left(${polyTex(u)}, \\; ${polyTex(v)}\\right)`,
+      ...exact(F(det), [["detPlusUsed", a * e + b * c, { b, c, v: det }], ["detDiagonalOnly", a * e]]),
+      steps: [
+        `J(${x}, ${y}) = \\begin{pmatrix} ${a} & ${b} \\\\ ${c} & ${e} \\end{pmatrix}`,
+        `\\det J = ${a} \\cdot ${par(e)} - ${par(b)} \\cdot ${par(c)} = ${det}`,
+      ],
+    };
+  }
+}
+
+const gen: Gen = (r, L, w) => (L === 1 ? tPart(r, w) : L === 2 ? (r.int(0, 9) >= 5 ? jacobianDetPart(r, w) : jacobianPart(r, w)) : sPart(r, w));
 
 export default gen;

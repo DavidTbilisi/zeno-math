@@ -1619,7 +1619,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     transposed, the t-derivatives for the s-derivatives, the sign of fₓₓ read before D, max and min swapped, λ for the
     value, the smallest value, the other width left out, the inner limit taken as constant, the r of dA, the sin φ or
     ρ² of dV, the wrong partials compared, only φ at the end, r′(t) left out, Green's order swapped, the surface area
-    for the volume, a sign in the curl
+    for the volume, a sign in the curl. Since #753 also the arrow along ∇f picked from a picture of level lines, a
+    mixed second partial, the Hessian matrix and the Jacobian determinant at a point, a triple integral over a box,
+    the bounds of the region between a parabola and a line, the area of a plane above a rectangle, the area element
+    of a linear change of variables, an integral over a parallelogram that becomes a rectangle in u and v, the
+    integral of a function along a segment by arc length, the normal (flux) form of Green's theorem, Green's theorem
+    round a clockwise boundary, and a curve to call simple and closed, closed but not simple, or not closed; and an
+    eighth skill, divergence and curl: the sign of the divergence and the turn of a paddle wheel read off a picture of
+    a plane field, ∇ · F as an expression, the curl in 2D and 3D at a point and the Laplacian at a point
   - Ordinary differential equations (Boyce and DiPrima; Lebl, Notes on Diffy Qs; Trench; Strogatz), five skills in
     calculus: first-order equations (a separable y′ = kxⁿy with an initial value, a linear y′ + ay = g(x) by an
     integrating factor, the potential ψ of an exact equation), second-order equations with constant coefficients

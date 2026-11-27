@@ -58,7 +58,7 @@ export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   // calculus
   differentiate: "d/dx", stationary: "f′=0", integrate: "∫dx", partials: "∂f", tangent: "y′", definite: "∫ₐᵇ", limits: "lim", implicit: "dy/dx",
   intTechniques: "∫u dv", parametric: "x(t)", continuity: "x→a±", derivContext: "f′(a)", accumulation: "Σf·Δx", slopeFields: "↗↗↗", improper: "∫∞", intApplications: "∫πy²", taylor: "Tₙ(x)", powerSeries: "Σaₙxⁿ", convergence: "Σ<∞",
-  chainMulti: "∂z/∂t", extremaMulti: "∇f=λ", multipleIntegrals: "∬", changeVariables: "∬r", lineIntegrals: "∫F·dr", vectorTheorems: "∮=∬",
+  chainMulti: "∂z/∂t", extremaMulti: "∇f=λ", multipleIntegrals: "∬", changeVariables: "∬r", lineIntegrals: "∫F·dr", divCurl: "∇×F", vectorTheorems: "∮=∬",
   odeFirst: "y′=ky", odeSecond: "y″", odeSystems: "x′=Ax", laplace: "ℒ", stability: "Re<0", bifurcations: "⑂", iteratedMaps: "f∘f",
   lyapunov: "λ>0", fourier: "∿", pdeClassify: "uₜₜ", separation: "XT",
   // analysis
