@@ -2841,6 +2841,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     bit. Five puzzles: rebuild a mirror; a dead RAID 5 drive worked out by hand with four bit switches; rebuild RAID 5
     on four drives; and two design puzzles, where the file must live through losing any one drive with as few drives as
     can hold it (RAID 5 on three when a drive holds half the file, a two-drive mirror when it holds all of it).
+  - *The cache* (#855; Discrete → Computer, and the Computer stage of the Software engineer goal): the CPU's requests
+    in a row, a cache of four lines, and main memory's sixteen blocks coloured by the line or set each may go in. Each
+    request is answered by tapping a cache line (or dragging the block from memory onto it): the line that holds it, a
+    hit, or the line it goes in, a miss. A wrong line is explained: its only line (block mod 4), its set, a line still
+    free, or the least recently used that must go. The block's address is split into tag and line or set. Hits,
+    misses, the hit rate and the average access time (Stallings 4.1's two-level memory) are counted. Five puzzles:
+    direct mapped, two-way set associative and fully associative by hand, hit or miss predicted for a loop over an
+    array, and a sequence built to thrash a direct-mapped cache but not a two-way one. Free play switches the mapping.
   - *A tiny computer* (#844; Discrete → Computer, and the Computer stage of the Software engineer goal): the
     hypothetical machine of Stallings, Fig. 3.4 to 3.5, worked by hand. Memory holds the program from 300 and the data
     from 940, the system bus has address, data and control lines, and the CPU shows PC, MAR, MBR, IR, AC, the ALU and
