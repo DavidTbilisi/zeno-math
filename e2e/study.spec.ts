@@ -502,24 +502,24 @@ test("in a class testing step-down, two early misses bring a question on the wea
 test("a skill mastered, then kept by a right review days later: the student's panel and the teacher's mastery view show both", async ({ browser, request }) => {
   const headers = { "X-Teacher-Password": TEACHER };
   const name = `Kept ${Date.now()}`;
-  const { code } = await (await request.post("/api/classes", { data: { name, skills: ["linear", "quadratic"] }, headers })).json();
+  const { code } = await (await request.post("/api/classes", { data: { name, skills: ["average", "quadratic"] }, headers })).json();
   const joined = await (await request.post("/api/students", { data: { class: code } })).json();
   const plan = async () => (await (await request.get(`/api/students/${joined.code}/plan`)).json()) as { spacing: Record<string, unknown> };
   const DAY = 86_400_000;
   let at = Date.now() - 30 * DAY, n = 0;
-  // Right answers until each skill is mastered; then linear's review a day later goes right, and quadratic waits.
+  // Right answers until each skill is mastered; then average's review a day later goes right, and quadratic waits.
   const right = async (skill: string, shownAt: number, policy = joined.condition) => {
-    const ex = exercise(skill as "linear", 3, 7, en.pracWords);
+    const ex = exercise(skill as "average", 3, 7, en.pracWords);
     const data = {
       clientId: `e2e-kept-${n++}-${Date.now()}`, student: joined.code, skill, level: 3, seed: 7, review: false, outcome: "solved", policy,
       predicted: 0.7, solutionViewed: false, msTotal: 9000, shownAt, answers: [{ input: ex.plain, verdict: "correct", ms: 9000 }],
     };
     expect((await request.post("/api/attempts", { data })).status()).toBe(201);
   };
-  for (const skill of ["linear", "quadratic"])
+  for (const skill of ["average", "quadratic"])
     for (let i = 0; i < 80 && !(await plan()).spacing[skill]; i++) await right(skill, (at += 60_000));
-  await right("linear", at + DAY + 5000, "spaced");
-  expect(Object.keys((await plan()).spacing).sort()).toEqual(["linear", "quadratic"]);
+  await right("average", at + DAY + 5000, "spaced");
+  expect(Object.keys((await plan()).spacing).sort()).toEqual(["average", "quadratic"]);
 
   const student = await (await browser.newContext()).newPage();
   const board = await (await request.post("/api/boards", { data: { title: "Student" } })).json();
@@ -527,7 +527,7 @@ test("a skill mastered, then kept by a right review days later: the student's pa
   await student.goto(`/#/b/${board.id}`);
   await openPractice(student);
   const holds = student.locator(".practice-holds");
-  await expect(holds).toContainText(`Kept, right days later: ${en.pracWords.skills.linear}`);
+  await expect(holds).toContainText(`Kept, right days later: ${en.pracWords.skills.average}`);
   await expect(holds).toContainText(`Mastered, a review will check it: ${en.pracWords.skills.quadratic}`);
 
   const teacher = await (await browser.newContext()).newPage();
