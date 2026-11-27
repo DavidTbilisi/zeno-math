@@ -52,6 +52,7 @@ import { CX_PLANE_START, type LiveCxPlane } from "./cxPlane";
 import { MAT_PLANE_START, type LiveMatPlane } from "./matPlane";
 import { MEAN_BALANCE_START, type LiveMeanBalance } from "./meanBalance";
 import { COUNT_TREE_START, type LiveCountTree } from "./countTree";
+import { FAIR_GAME_START, type LiveFairGame } from "./fairGame";
 import { SIM_HAND_START, type LiveSimHand } from "./simHand";
 import { AREA_START, type LiveAreaBlocks } from "./areaBlocks";
 import { COUNTERS_START, type LiveCounters } from "./counters";
@@ -649,6 +650,7 @@ export type LiveStates = {
   matPlane: LiveMatPlane;
   meanBalance: LiveMeanBalance;
   countTree: LiveCountTree;
+  fairGame: LiveFairGame;
   areaBlocks: LiveAreaBlocks;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
@@ -831,6 +833,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   matPlane: [740, 700],
   meanBalance: [740, 640],
   countTree: [740, 660],
+  fairGame: [740, 660],
   areaBlocks: [780, 730],
   counters: [680, 600],
   signArrow: [680, 720],
@@ -1015,6 +1018,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     matPlane: MAT_PLANE_START,
     meanBalance: MEAN_BALANCE_START,
     countTree: COUNT_TREE_START,
+    fairGame: FAIR_GAME_START,
     areaBlocks: AREA_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,

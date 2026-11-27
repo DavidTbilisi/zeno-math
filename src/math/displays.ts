@@ -117,3 +117,21 @@ export function mosaicSvg(groups: readonly [string, string], parts: readonly [st
   parts.forEach((p, i) => out.push(`<rect x="${x0 + i * 150}" y="6" width="16" height="16" fill="${colours[i]}"/>`, text(x0 + 22 + i * 150, 19, p, 13, C.ink, "start")));
   return { body: out.join(""), w: x0 + pw + 20, h: y0 + ph + 50 };
 }
+
+/** A probability distribution as bars (#739): one bar a value of X, its height P(X = x) on a scale from 0 to `top`. */
+export function probBarsSvg(xs: readonly number[], ps: readonly number[], top: number): Pic {
+  const [x0, y0, bw, gap, h] = [48, 34, 44, 18, 180];
+  const Y = (p: number) => y0 + h - (p / top) * h;
+  const out: string[] = [];
+  for (let k = 0; k <= Math.round(top * 10); k++) {
+    const p = k / 10;
+    out.push(`<line x1="${x0}" y1="${r2(Y(p))}" x2="${x0 + xs.length * (bw + gap) + gap}" y2="${r2(Y(p))}" stroke="#dee2e6"/>`, text(x0 - 8, Y(p) + 4, p ? p.toFixed(1) : "0", 12, C.grey, "end"));
+  }
+  xs.forEach((x, i) => {
+    const left = x0 + gap + i * (bw + gap);
+    out.push(`<rect x="${left}" y="${r2(Y(ps[i]))}" width="${bw}" height="${r2(y0 + h - Y(ps[i]))}" fill="#a5d8ff" stroke="${C.ink}" stroke-width="1.2"/>`, text(left + bw / 2, y0 + h + 18, x, 14));
+  });
+  out.push(`<line x1="${x0}" y1="${y0 + h}" x2="${x0 + xs.length * (bw + gap) + gap}" y2="${y0 + h}" stroke="${C.ink}" stroke-width="1.4"/>`, `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y0 + h}" stroke="${C.ink}" stroke-width="1.4"/>`);
+  out.push(text(x0 + (xs.length * (bw + gap) + gap) / 2, y0 + h + 38, "x", 13, C.grey), text(8, 16, "P(X = x)", 12, C.grey, "start"));
+  return { body: out.join(""), w: x0 + xs.length * (bw + gap) + gap + 8, h: y0 + h + 46 };
+}

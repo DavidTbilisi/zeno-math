@@ -2354,6 +2354,18 @@ function countTreePreview(): Piece[] {
   ];
 }
 
+function fairGamePreview(): Piece[] {
+  // A beam level on its fulcrum at the fair price 2, with three weights at 0 and one at 8.
+  const k = 12;
+  const X = (v: number) => k + v * k;
+  return [
+    seg([X(0), 5 * k], [X(10), 5 * k], { color: "#1e1e1e", width: 3 }),
+    seg([X(2), 5 * k], [X(1), 7 * k], { color: "#2f9e44", width: 2 }), seg([X(1), 7 * k], [X(3), 7 * k], { color: "#2f9e44", width: 2 }), seg([X(3), 7 * k], [X(2), 5 * k], { color: "#2f9e44", width: 2 }),
+    ...[0, 1, 2].map((j) => seg([X(0), 5 * k - 3 - j * 10], [X(0), 5 * k - 11 - j * 10], { color: "#868e96", width: 10 })),
+    seg([X(8), 5 * k - 3], [X(8), 5 * k - 11], { color: "#f06595", width: 10 }),
+  ];
+}
+
 function cxPlanePreview(): Piece[] {
   // Axes, z as an arrow from 0 and i·z a quarter turn on from it, with the corner of the turn.
   const k = 12;
@@ -2786,6 +2798,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveMatPlane", build: matPlanePreview, live: "matPlane" },
   { id: "liveMeanBalance", build: meanBalancePreview, live: "meanBalance" },
   { id: "liveCountTree", build: countTreePreview, live: "countTree" },
+  { id: "liveFairGame", build: fairGamePreview, live: "fairGame" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

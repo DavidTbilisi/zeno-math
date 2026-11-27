@@ -91,6 +91,7 @@ import { CxPlane } from "./CxPlane";
 import { MatPlane } from "./MatPlane";
 import { MeanBalance } from "./MeanBalance";
 import { CountTree } from "./CountTree";
+import { FairGame } from "./FairGame";
 import { VecFind } from "./VecFind";
 import { SimHand } from "./SimHand";
 import { AreaBlocks } from "./AreaBlocks";
@@ -248,6 +249,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   matPlane: MatPlane,
   meanBalance: MeanBalance,
   countTree: CountTree,
+  fairGame: FairGame,
   areaBlocks: AreaBlocks,
   counters: Counters,
   signArrow: SignArrow,

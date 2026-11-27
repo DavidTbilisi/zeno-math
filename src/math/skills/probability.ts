@@ -6,44 +6,12 @@
 // bulbs and the general multiplication rule.
 import { fill } from "../chart";
 import { dataGridSvg, vennSvg } from "../displays";
+import { fracPart, fp, ft, inOrder, numPart, place, tf } from "../partKit";
 import { dp, fr, num, plainFrac } from "../practiceKit";
-import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
+import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
 import { pickPart } from "../tTails";
 
-const place = (p: { body: string; w: number; h: number }): Part["pic"] => ({ svg: (x: number, y: number) => `<g transform="translate(${x} ${y})">${p.body}</g>`, h: p.h, w: p.w });
 const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
-/** A fraction in lowest terms, as TeX and as typed. */
-const ft = (n: number, d: number) => fr(n, d).tex();
-const fp = (n: number, d: number) => plainFrac(fr(n, d));
-/** Slips equal to the answer, or to a slip before them, are dropped. */
-const keep = (v: number, traps: Trap[], tol: number) => {
-  const val = (t: Trap) => (t.a.k === "num" ? t.a.v : NaN);
-  const far = (a: number, b: number) => Math.abs(a - b) > tol;
-  return traps.filter((t, i) => far(val(t), v) && traps.findIndex((u) => !far(val(u), val(t))) === i);
-};
-const tf = (id: Trap["id"], v: number, vars: Record<string, string | number>, tol = 1e-9): Trap => ({ id, a: num(v, tol), vars });
-const fracPart = (prompt: string, n: number, d: number, traps: Trap[], steps: string[], pic?: Part["pic"]): Part => {
-  const p = fr(n, d);
-  return {
-    prompt, q: "", ...(pic ? { pic } : {}),
-    answer: { ...num(p.toNumber(), 1e-9, { lowest: true }), traps: keep(p.toNumber(), traps, 1e-9) },
-    show: p.tex(), plain: plainFrac(p), format: "fraction", steps,
-  };
-};
-const numPart = (prompt: string, v: number, traps: Trap[], steps: string[], tol = 1e-9): Part => ({
-  prompt, q: "",
-  answer: { ...num(v, tol), traps: keep(v, traps, Math.max(tol, 1e-9) * 2) },
-  show: tol > 1e-6 ? dp(v, 2) : String(v), plain: tol > 1e-6 ? dp(v, 2) : String(v), format: tol > 1e-6 ? "dp2" : "number", steps,
-});
-/** Options in the order given (a scale, or A then B). */
-const inOrder = (options: string[], right: number, traps: { id: Trap["id"]; at: number; vars?: Record<string, string | number> }[], prompt: string, steps: string[], pic?: Part["pic"]): Part => {
-  const opts = options.map((t) => ({ text: t, plain: t, tex: `\\text{${t}}` }));
-  return {
-    prompt, q: "", ...(pic ? { pic } : {}),
-    answer: { k: "pick", options: opts, right, traps: traps.filter((t) => t.at !== right).map((t) => ({ id: t.id, a: { k: "pick", options: opts, right: t.at }, vars: t.vars })) },
-    show: opts[right].tex, plain: options[right], format: "pick", steps,
-  };
-};
 
 function more(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
   const K = w.pbK;
