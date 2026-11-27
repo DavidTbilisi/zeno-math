@@ -2017,6 +2017,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Graph families: step, piecewise, absolute value, roots, logs, even and odd (#726): the equation of a square or
+    cube root graph and of an exponential graph through (0, a) and (1, ab), even, odd or neither from a table or a
+    graph, and h read off the graph of y = log₂(x − h) beside its dashed asymptote. A parking fee read off its step
+    graph, open dots on the left of each step, a two-piece graph read at its jump, y = ±|x − h| + k picked from its V,
+    and a in y = a|x|. The shift the wrong way, the two shifts swapped, the square and cube root confused, the start
+    and the base swapped, growth taken for decay, parity misread, the x-intercept taken for the asymptote, the step's
+    open end read, the wrong piece used, the V opening the wrong way and the stretch read upside down are named
   - Functions: notation, domain, extrema, composite and inverse (#725): k·f(a) worked out and a tank's depth h(t)
     read at a time or for a depth; which x is in a graph's domain (an open end left out) and what C(5) = 18 means in a
     story; the domain of √(x − a) and of 1/(x − a), a relative maximum or the absolute minimum read off a graph, where

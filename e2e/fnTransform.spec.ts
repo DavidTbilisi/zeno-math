@@ -29,7 +29,8 @@ test("transformations in practice: a shift the wrong way is named", async ({ pag
   let r = 0.01;
   for (let k = 1; k < 100; k++) {
     const ex = exercise("fnTransform", 1, seedOf(k / 100), w);
-    if (ex.answer.traps?.some((t) => t.id === "shiftWrongWay")) {
+    // A typed question: the root graphs (#726) name the same slip on a tile.
+    if (ex.answer.k === "num" && ex.answer.traps?.some((t) => t.id === "shiftWrongWay")) {
       r = k / 100;
       break;
     }
