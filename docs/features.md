@@ -2813,7 +2813,10 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     the bin; switches tapped to flip, lit wires and lamps carry a 1. A truth table beside the board marks each row right
     or wrong, and a row tapped sets the switches. Seven puzzles (NOT, AND and OR from NAND only, XOR, a half adder, a full
     adder, a selector) are won the moment every row is right, three stars for the fewest gates; free play has every
-    gate. A loop that never settles shows ? on the lamps (a discovery)
+    gate. A loop that never settles shows ? on the lamps (a discovery). Memory (#842): the board keeps what its gates
+    last settled to, so a loop that settles remembers; four more puzzles (an S–R latch from two NORs, a D latch, a D
+    flip-flop that changes only as Clk goes from 0 to 1, a counter bit that flips each time) are timing strips, their
+    rows run in turn from power-on, "–" where either value will do, a row tapped replaying the rows before it
   - *Be the sort*: the player is the algorithm, making each of its decisions in turn: bubble sort's next swap (tap ⇄
     between two neighbours; the compares that swap nothing play themselves from the ▲, and a pass with no swap ends
     the sort), the gap insertion sort's key drops into, the smallest of the rest for selection sort (the first of two

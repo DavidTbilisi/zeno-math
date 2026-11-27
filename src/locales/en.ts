@@ -9928,6 +9928,10 @@ export const en = {
         p5: "A half adder: add the bits A and B. S is the sum bit and C the carry, since 1 + 1 = 10 in binary.",
         p6: "A full adder: add A, B and the carry in. S is the sum bit, Cₒᵤₜ the carry out. A row of these adds whole numbers.",
         p7: "A selector: Y shows A while Sel is off and B while Sel is on. This is how a computer picks which value goes on.",
+        p8: "Make it remember. Two NOR gates, each fed by the other: S on sets Q to 1, R on sets it to 0, and with both off Q keeps what it had. The rows run top to bottom in turn, each from the one before.",
+        p9: "A D latch: while En is on, Q follows D; once En is off, Q keeps the last D, whatever D does. Build an S–R latch whose S is D and whose R is not D, both let through only while En is on.",
+        p10: "A D flip-flop: Q takes D only at the moment Clk goes from 0 to 1, and never in between. Join two D latches: the first open while Clk is 0, the second open while Clk is 1, copying the first.",
+        p11: "Count: every time Clk goes from 0 to 1, Q flips. A flip-flop fed its own opposite does it: the first latch's S and R come from the second latch's two sides. Two of these in a row count to four.",
       },
       freeAsk: "Free play: every gate, three switches and two lamps. Build anything.",
       hint: "Drag a gate from the tray onto the board. Drag from a round pin on the right of a switch or gate to a pin on the left of a gate or lamp to wire it. Tap a wire to cut it, drop a gate in the bin to take it away, tap a switch to flip it.",
@@ -9942,6 +9946,7 @@ export const en = {
       add: "Add a {g} gate",
       switchName: "Switch {s}",
       row: "Set the switches to {bits}",
+      step: "Run the rows to step {k}, switches {bits}",
       cut: "Tap to cut this wire",
       notices: {
         loop: "A loop that never settles: a gate feeding itself flips for ever. Loops that do settle are how a computer remembers.",
