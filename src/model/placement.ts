@@ -7,7 +7,11 @@ import type { Level } from "./elo.ts";
 
 export type Cell = { skill: SkillId; level: Level };
 /** A level's record in free practice: answers, right at the first try, and right at the first try in a row. */
-export type CellStat = { seen: number; right: number; run: number };
+export type CellStat = {
+  seen: number; right: number; run: number;
+  /** Made secure by a claim the learner proved (claim.ts, #823), not by three right in a row. */
+  proved?: true;
+};
 export type Cells = Partial<Record<string, CellStat>>;
 export const cellKey = (c: Cell) => `${c.skill}.${c.level}`;
 
@@ -25,6 +29,7 @@ export const recordCell = (s: CellStat | undefined, firstTry: boolean): CellStat
   seen: (s?.seen ?? 0) + 1,
   right: (s?.right ?? 0) + (firstTry ? 1 : 0),
   run: firstTry ? (s?.run ?? 0) + 1 : 0,
+  ...(s?.proved && firstTry ? { proved: true as const } : {}),
 });
 
 export function gradeProgress(grade: Grade, cells: Cells) {

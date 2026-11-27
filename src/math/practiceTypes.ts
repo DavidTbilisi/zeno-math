@@ -1058,7 +1058,8 @@ export type PracticeWords = {
     backIn: string;
   };
   /** Where the learner is in the course (GradeCard). */
-  grades: Record<"title" | "intro" | "place" | "placeAgain" | "placing" | "between" | "found" | "here" | "secure" | "practise" | "grade" | "pair" | "uni" | "uniShort" | "topics", string>;
+  grades: Record<"title" | "intro" | "place" | "placeAgain" | "placing" | "between" | "found" | "here" | "secure" | "practise" | "grade" | "pair" | "uni" | "uniShort" | "topics"
+    | "claim" | "claimAsk" | "claimRule" | "claimNone" | "prove" | "cancel" | "proving" | "proved" | "claimLeft" | "claimResult" | "provedOne" | "missedOne", string>;
 };
 
 export type Rng = { next: () => number; int: (lo: number, hi: number) => number; nz: (lo: number, hi: number) => number; pick: <T>(a: readonly T[]) => T; sign: () => 1 | -1 };

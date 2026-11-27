@@ -521,6 +521,12 @@ input.invalid { border-color: var(--danger); }
 /* Where the learner is in the course: the grades as a ladder, the way covered filled, theirs marked; during a
    placement the grades ruled out fade, so each answer visibly takes away half. */
 .grade-card p { margin: 0; }
+.claim-pick { display: grid; gap: 6px; margin: 0; padding: 10px 12px; border: 1px solid var(--line, #dee2e6); border-radius: 10px; }
+.claim-pick legend { font-weight: 600; padding: 0 4px; }
+.claim-pick label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.claim-result { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.claim-result li::before { content: "✓ "; color: var(--ok); font-weight: 700; }
+.claim-result li.missed::before { content: "○ "; color: var(--muted, #868e96); }
 .grade-ladder { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .grade-ladder li {
   min-width: 28px; height: 28px; padding: 0 5px; display: grid; place-items: center;
