@@ -525,6 +525,7 @@ export type PracticeWords = {
   diK: Record<"areaQ" | "sigmaQ" | "netQ" | "propsQ" | "propsRevQ" | "adjQ" | "pieceQ" | "riemannQ" | "limitQ", string>;
   acK: Record<"given" | "gMaxQ" | "gMinQ" | "gDecQ" | "gIncQ" | "gUpQ" | "gDownQ", string>;
   itK: Record<"defineUQ" | "uDefQ" | "divideQ" | "partsDefQ" | "squareQ" | "trigSubQ", string>;
+  iaK: Record<"horizQ" | "compositeQ" | "loopsQ" | "squareQ" | "semiQ" | "triangleQ" | "washerQ" | "axisQ" | "meaningQ" | "leakQ" | "waterGiven" | "waterRight" | "waterRate" | "waterAmount" | "waterAverage" | "carGiven" | "carRight" | "carRate" | "carAmount" | "carAverage" | "townGiven" | "townRight" | "townRate" | "townAmount" | "townAverage", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
