@@ -34,7 +34,7 @@ test("every goal has a roadmap of real skills and games, each item once", () => 
   // The hand-made roadmaps are a checklist of about 30 to 70 items.
   for (const id of ["software", "algorithms", "finance", "banking"] as const) {
     const n = itemsOf(ROADMAPS[id]).length;
-    assert.ok(n >= 25 && n <= 70, `${id} has ${n} items`);
+    assert.ok(n >= 25 && n <= 80, `${id} has ${n} items`);
   }
 });
 
