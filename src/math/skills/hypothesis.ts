@@ -27,21 +27,29 @@ export function conclusion(r: Rng, w: PracticeWords, setup: string, claim: strin
 /** P-values from a statistic rounded to 2 places, to 3 places; a slip within CLEAR (21 × TOL) would read as rounding. */
 const TOL = 0.0006;
 const CLEAR = 21 * TOL;
+/** Hypotheses as options for a parameter and its statistic: right, swapped, the wrong sidedness, about the statistic. */
+export function hypotheses(r: Rng, prompt: string, par: string, stat: string, v: string | number, rel: "<" | ">" | "≠"): Part {
+  const hyp = (h0: string, h1: string) => `H₀: ${h0}, H₁: ${h1}`;
+  const other = rel === "≠" ? ">" : "≠";
+  const h0 = `${par} = ${v}`;
+  const h1 = `${par} ${rel} ${v}`;
+  const vars = { h0: `H₀: ${h0}`, h1: `H₁: ${h1}`, par, stat };
+  return shuffled(r, [hyp(h0, h1), hyp(h1, h0), hyp(h0, `${par} ${other} ${v}`), hyp(`${stat} = ${v}`, `${stat} ${rel} ${v}`)], 0,
+    [{ id: "hypothesesSwapped", at: 1, vars }, { id: rel === "≠" ? "oneSidedForTwo" : "twoSidedForOne", at: 2, vars }, { id: "statisticInHypothesis", at: 3, vars }], prompt, [textTex(`${vars.h0}, ${vars.h1}`)]);
+}
+
+/** Which condition fails, if any: `names` ends with "all met"; `k` is the right one, `why` says why. */
+export function conditions(r: Rng, names: string[], k: number, why: string, prompt: string): Part {
+  const last = names.length - 1;
+  const traps: Slip[] = names.map((_, i) => i).filter((i) => i !== k).map((i): Slip => (i === last ? { id: "conditionsMissed", at: i, vars: { why } } : { id: "conditionMixed", at: i, vars: { got: names[i], why } }));
+  return shuffled(r, names, k, traps, prompt, [textTex(why)]);
+}
+
 /** A P-value from a statistic: one-sided in the given direction or two-sided (the statistic is rounded to 2 places first). */
 const tailP = (sf: (x: number) => number, x: number, alt: Alt) => (alt === "ne" ? 2 * sf(Math.abs(x)) : alt === "gt" ? sf(x) : sf(-x));
 
 function more(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
   const K = w.htK;
-  const hyp = (h0: string, h1: string) => `H₀: ${h0}, H₁: ${h1}`;
-  /** Hypotheses as options: right, swapped, the wrong sidedness, about the statistic. */
-  const write = (prompt: string, par: string, stat: string, v: string | number, rel: "<" | ">" | "≠") => {
-    const other = rel === "≠" ? ">" : "≠";
-    const h0 = `${par} = ${v}`;
-    const h1 = `${par} ${rel} ${v}`;
-    const vars = { h0: `H₀: ${h0}`, h1: `H₁: ${h1}`, par, stat };
-    return shuffled(r, [hyp(h0, h1), hyp(h1, h0), hyp(h0, `${par} ${other} ${v}`), hyp(`${stat} = ${v}`, `${stat} ${rel} ${v}`)], 0,
-      [{ id: "hypothesesSwapped", at: 1, vars }, { id: rel === "≠" ? "oneSidedForTwo" : "twoSidedForOne", at: 2, vars }, { id: "statisticInHypothesis", at: 3, vars }], prompt, [textTex(`${vars.h0}, ${vars.h1}`)]);
-  };
   if (L === 1) {
     const t = r.pick(["simple", "write", "sim"] as const);
     if (t === "simple") {
@@ -56,10 +64,10 @@ function more(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
     if (t === "write") {
       if (r.next() < 0.5) {
         const m = r.pick([20, 30, 40, 50, 60]);
-        return write(fill(K.writeMean, { m }), "μ", "x̄", m, "<");
+        return hypotheses(r, fill(K.writeMean, { m }), "μ", "x̄", m, "<");
       }
       const p = r.pick([20, 25, 30, 40]);
-      return write(fill(K.writeProp, { p }), "p", "p̂", p / 100, ">");
+      return hypotheses(r, fill(K.writeProp, { p }), "p", "p̂", p / 100, ">");
     }
     const k = r.int(2, 24);
     const v = k / 200;
@@ -68,13 +76,11 @@ function more(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
   }
   if (L === 2) {
     const t = r.pick(["writeDiff", "cond", "zProp", "tMean", "concl"] as const);
-    if (t === "writeDiff") return r.next() < 0.5 ? write(K.diffSleep, "μ₁ − μ₂", "x̄₁ − x̄₂", 0, ">") : write(K.diffFood, "μ₁ − μ₂", "x̄₁ − x̄₂", 0, "≠");
+    if (t === "writeDiff") return r.next() < 0.5 ? hypotheses(r, K.diffSleep, "μ₁ − μ₂", "x̄₁ − x̄₂", 0, ">") : hypotheses(r, K.diffFood, "μ₁ − μ₂", "x̄₁ − x̄₂", 0, "≠");
     if (t === "cond") {
       const names = [K.cRandom, K.cTen, K.cNormal, K.cAll];
       const k = r.int(0, 3);
-      const why = [K.whyRandom, K.whyTen, K.whyNormal, K.whyAll][k];
-      const traps: Slip[] = [0, 1, 2, 3].filter((i) => i !== k).map((i): Slip => (i === 3 ? { id: "conditionsMissed", at: 3, vars: { why } } : { id: "conditionMixed", at: i, vars: { got: names[i], why } }));
-      return shuffled(r, names, k, traps, fill(K.condQ, { s: [K.sRandom, K.sTen, K.sNormal, K.sAll][k] }), [`\\text{${why}}`]);
+      return conditions(r, names, k, [K.whyRandom, K.whyTen, K.whyNormal, K.whyAll][k], fill(K.condQ, { s: [K.sRandom, K.sTen, K.sNormal, K.sAll][k] }));
     }
     if (t === "zProp") {
       for (;;) {
