@@ -14,7 +14,7 @@ import { C, fill, FONT, r2 } from "../chart";
 import { parseE } from "../expr";
 import type { ExprOption } from "../exprMatch";
 import type { Frac } from "../fraction";
-import { bracket, fr, num, plainFrac, polyStr, T } from "../practiceKit";
+import { bracket, fr, num, plainFrac, polyStr, T, withIdeas } from "../practiceKit";
 import type { Gen, Part, PracticeWords as Words, Rng, Trap } from "../practiceTypes";
 
 /** The equations from before #721. src/math/whichTool.ts draws its equations here. */
@@ -46,7 +46,7 @@ export function old(r: Rng, L: number, w: Words): Part {
     eq = `${a}${bracket(1, b)} = ${polyStr([d, c])}`;
     x = fr(d - a * b, a - c);
   }
-  return { prompt: w.prompts.linear, q: T(eq.split("=")[0]) + " = " + T(eq.split("=")[1]), answer: num(x.toNumber()), show: `x = ${x.tex()}`, plain: plainFrac(x), format: "exact", solution: { kind: "algebra", spec: { topic: "linear", eq, method: "factor" } } };
+  return withIdeas(L === 1 ? ["undoOp"] : L === 2 ? ["balance", "undoOp"] : ["distribute", "balance", "undoOp"], { prompt: w.prompts.linear, q: T(eq.split("=")[0]) + " = " + T(eq.split("=")[1]), answer: num(x.toNumber()), show: `x = ${x.tex()}`, plain: plainFrac(x), format: "exact", solution: { kind: "algebra", spec: { topic: "linear", eq, method: "factor" } } });
 }
 
 const gen: Gen = (r, L, w) => {
@@ -117,7 +117,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const plus = form === 0;
         const c = plus ? v + b : v - b;
         const work = plus ? `${say(c)} − ${b} = ${say(v)}` : `${say(c)} + ${b} = ${say(v)}`;
-        return solvePart(solve, eqTex(`x ${plus ? "+" : "-"} ${b} = ${c}`), fr(v), [["inverseNotUsed", fr(plus ? c + b : c - b), { w: work }]], [`x = ${c} ${plus ? "-" : "+"} ${b} = ${v}`]);
+        return withIdeas(["undoOp"], solvePart(solve, eqTex(`x ${plus ? "+" : "-"} ${b} = ${c}`), fr(v), [["inverseNotUsed", fr(plus ? c + b : c - b), { w: work }]], [`x = ${c} ${plus ? "-" : "+"} ${b} = ${v}`]));
       }
       if (form === 2) {
         const a = r.pick([-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -125,13 +125,13 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const c = a * v;
         const work = `${say(c)} ÷ ${say(a)} = ${say(v)}`;
         const slips: Slip[] = a < 0 || c < 0 ? [["divideSignLost", fr(-v), { w: work }]] : [];
-        return solvePart(solve, eqTex(`${a}x = ${c}`), fr(v), [...slips, ["inverseNotUsed", fr(c * a), { w: work }]], [`x = \\frac{${c}}{${a}} = ${v}`]);
+        return withIdeas(["undoOp", ...(a < 0 || c < 0 ? ["signTimes"] : [])], solvePart(solve, eqTex(`${a}x = ${c}`), fr(v), [...slips, ["inverseNotUsed", fr(c * a), { w: work }]], [`x = \\frac{${c}}{${a}} = ${v}`]));
       }
       const a = r.pick([2, 3, 4, 5, 6, -2, -3, -4]);
       const c = r.nz(-9, 9);
       const v = a * c;
       const work = `${say(c)} × ${say(a)} = ${say(v)}`;
-      return solvePart(solve, `\\frac{x}{${a}} = ${c}`, fr(v), [["inverseNotUsed", fr(c, a), { w: work }], ...(a < 0 ? ([["divideSignLost", fr(-v), { w: work }]] as Slip[]) : [])], [`x = ${c} \\times ${a < 0 ? `(${a})` : a} = ${v}`]);
+      return withIdeas(["undoOp", ...(a < 0 ? ["signTimes"] : [])], solvePart(solve, `\\frac{x}{${a}} = ${c}`, fr(v), [["inverseNotUsed", fr(c, a), { w: work }], ...(a < 0 ? ([["divideSignLost", fr(-v), { w: work }]] as Slip[]) : [])], [`x = ${c} \\times ${a < 0 ? `(${a})` : a} = ${v}`]));
     }
     if (kind === 5) {
       // One step with fractions or decimals.
@@ -140,7 +140,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const b = fr(r.int(11, 49), 10);
         const v = fr(r.nz(-60, 60), 10);
         const c = v.add(b);
-        return solvePart(solve, `x + ${decStr(b)} = ${decStr(c)}`, v, [["inverseNotUsed", c.add(b), { w: `${say(c.toNumber())} − ${decStr(b)} = ${say(v.toNumber())}` }]], [`x = ${decStr(c)} - ${decStr(b)} = ${decStr(v)}`], true);
+        return withIdeas(["undoOp"], solvePart(solve, `x + ${decStr(b)} = ${decStr(c)}`, v, [["inverseNotUsed", c.add(b), { w: `${say(c.toNumber())} − ${decStr(b)} = ${say(v.toNumber())}` }]], [`x = ${decStr(c)} - ${decStr(b)} = ${decStr(v)}`], true));
       }
       if (form === 1) {
         const [p, q] = r.pick([[1, 4], [3, 4], [1, 3], [2, 3], [1, 2], [2, 5], [5, 6]] as const);
@@ -148,18 +148,18 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const b = fr(p, q);
         const c = fr(s, t);
         const v = c.add(b);
-        return solvePart(solve, `x - ${b.tex()} = ${c.tex()}`, v, [["inverseNotUsed", c.sub(b), { w: `${say(c)} + ${say(b)} = ${say(v)}` }]], [`x = ${c.tex()} + ${b.tex()} = ${v.tex()}`]);
+        return withIdeas(["undoOp"], solvePart(solve, `x - ${b.tex()} = ${c.tex()}`, v, [["inverseNotUsed", c.sub(b), { w: `${say(c)} + ${say(b)} = ${say(v)}` }]], [`x = ${c.tex()} + ${b.tex()} = ${v.tex()}`]));
       }
       if (form === 2) {
         const [p, q] = r.pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [5, 6], [3, 8]] as const);
         const c = p * r.int(1, 6);
         const v = fr(c * q, p);
-        return solvePart(solve, `\\frac{${p}}{${q}}x = ${c}`, v, [["inverseNotUsed", fr(c * p, q), { w: `${c} × ${q}/${p} = ${say(v)}` }]], [`x = ${c} \\times \\frac{${q}}{${p}} = ${v.tex()}`]);
+        return withIdeas(["undoOp"], solvePart(solve, `\\frac{${p}}{${q}}x = ${c}`, v, [["inverseNotUsed", fr(c * p, q), { w: `${c} × ${q}/${p} = ${say(v)}` }]], [`x = ${c} \\times \\frac{${q}}{${p}} = ${v.tex()}`]));
       }
       const d = fr(r.pick([2, 4, 5, 8]), 10);
       const v = fr(r.int(2, 15));
       const c = d.mul(v);
-      return solvePart(solve, `${decStr(d)}x = ${decStr(c)}`, v, [["inverseNotUsed", c.mul(d), { w: `${decStr(c)} ÷ ${decStr(d)} = ${say(v)}` }]], [`x = \\frac{${decStr(c)}}{${decStr(d)}} = ${v.n}`], true);
+      return withIdeas(["undoOp"], solvePart(solve, `${decStr(d)}x = ${decStr(c)}`, v, [["inverseNotUsed", c.mul(d), { w: `${decStr(c)} ÷ ${decStr(d)} = ${say(v)}` }]], [`x = \\frac{${decStr(c)}}{${decStr(d)}} = ${v.n}`], true));
     }
     if (kind === 6) {
       // Which value is a solution: each tried in the equation.
@@ -173,7 +173,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
       const pool = [v, slip, ...cands.slice(2, 4)];
       const eqs = `${polyStr([b, a])} = ${c}`;
       const check = `${a} × ${say(v)} ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${say(c)}`;
-      return pickPart(r, W.isSolution, eqTex(eqs), String(v), pool.slice(1).map(String), ["coefficientIgnored", String(slip), { a, w: check }], [`${a}(${v}) ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c}`]);
+      return withIdeas(["checkRoot"], pickPart(r, W.isSolution, eqTex(eqs), String(v), pool.slice(1).map(String), ["coefficientIgnored", String(slip), { a, w: check }], [`${a}(${v}) ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c}`]));
     }
     if (kind === 7) {
       // The first wrong line of a worked one-step equation.
@@ -186,7 +186,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
       const lines = early
         ? [eqTex(eq), `x = ${c} ${plus ? "+" : "-"} ${b}`, `x = ${plus ? c + b : c - b}`]
         : [eqTex(eq), `x = ${c} ${plus ? "-" : "+"} ${b}`, `x = ${right + r.pick([-2, -1, 1, 2, 10])}`];
-      return mistakePart(r, W, lines, early ? 2 : 3, early ? 3 : null, `x = ${c} ${plus ? "-" : "+"} ${b} = ${right}`);
+      return withIdeas(["eqSteps", "undoOp"], mistakePart(r, W, lines, early ? 2 : 3, early ? 3 : null, `x = ${c} ${plus ? "-" : "+"} ${b} = ${right}`));
     }
     if (kind === 8) {
       // A sentence or a story made into an equation (picked), or a sentence solved.
@@ -198,7 +198,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const slip = op === "more" ? c + b : op === "less" ? c - b : op === "times" ? c * b : c / b;
         const eq = op === "more" ? `x + ${b} = ${c}` : op === "less" ? `x - ${b} = ${c}` : op === "times" ? `${b}x = ${c}` : `x/${b} = ${c}`;
         const back = op === "more" ? `${c} − ${b}` : op === "less" ? `${c} + ${b}` : op === "times" ? `${c} ÷ ${b}` : `${c} × ${b}`;
-        return solvePart(fill(W[op], { b, c }), "", fr(v), [["inverseNotUsed", fr(slip), { w: `${back} = ${v}` }]], [`${eqTex(eq.replace(`x/${b}`, `x / ${b}`))}`, `x = ${v}`]);
+        return withIdeas(["writeEquation", "undoOp"], solvePart(fill(W[op], { b, c }), "", fr(v), [["inverseNotUsed", fr(slip), { w: `${back} = ${v}` }]], [`${eqTex(eq.replace(`x/${b}`, `x / ${b}`))}`, `x = ${v}`]));
       }
       const gave = r.next() < 0.5;
       const b = r.int(3, 12);
@@ -206,7 +206,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
       const right = gave ? `x - ${b} = ${c}` : `${b}x = ${c}`;
       const slip = `x + ${b} = ${c}`;
       const others = gave ? [slip, `${b} - x = ${c}`, `x = ${b} - ${c}`] : [slip, `x/${b} = ${c}`, `${c}x = ${b}`];
-      return pickPart(r, fill(gave ? W.gave : W.boxes, { b, c }), "", right, others, ["storyOpSwapped", slip, {}], [`x = ${gave ? c + b : c / b}`]);
+      return withIdeas(["writeEquation"], pickPart(r, fill(gave ? W.gave : W.boxes, { b, c }), "", right, others, ["storyOpSwapped", slip, {}], [`x = ${gave ? c + b : c / b}`]));
     }
     // A tape diagram: n equal parts of x and one part b make c.
     const n = r.int(2, 4);
@@ -215,7 +215,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
     const c = n * v + b;
     const right = `${n}x + ${b} = ${c}`;
     const slip = `${n}(x + ${b}) = ${c}`;
-    return pickPart(r, W.tape, "", right, [slip, `x + ${b} = ${c}`, `${n}x = ${c} + ${b}`], ["tapeMisread", slip, { n, b, c }], [`${n}x + ${b} = ${c}`, `x = ${v}`], false, tapePic(n, v, b, c));
+    return withIdeas(["writeEquation"], pickPart(r, W.tape, "", right, [slip, `x + ${b} = ${c}`, `${n}x = ${c} + ${b}`], ["tapeMisread", slip, { n, b, c }], [`${n}x + ${b} = ${c}`, `x = ${v}`], false, tapePic(n, v, b, c)));
   }
   if (L === 2) {
     if (kind === 4) {
@@ -225,15 +225,15 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const b = r.nz(-9, 9);
         const c = r.int(-6, 9);
         const v = a * (c - b);
-        return solvePart(solve, `\\frac{x}{${a}} ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c}`, fr(v), [["constantSignKept", fr(a * (c + b)), { b: say(b), w: `x ÷ ${a} = ${say(c)} ${b < 0 ? "+" : "−"} ${Math.abs(b)} = ${say(c - b)}` }]],
-          [`\\frac{x}{${a}} = ${c} ${b < 0 ? "+" : "-"} ${Math.abs(b)} = ${c - b}`, `x = ${c - b} \\times ${a} = ${v}`]);
+        return withIdeas(["undoOp"], solvePart(solve, `\\frac{x}{${a}} ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c}`, fr(v), [["constantSignKept", fr(a * (c + b)), { b: say(b), w: `x ÷ ${a} = ${say(c)} ${b < 0 ? "+" : "−"} ${Math.abs(b)} = ${say(c - b)}` }]],
+          [`\\frac{x}{${a}} = ${c} ${b < 0 ? "+" : "-"} ${Math.abs(b)} = ${c - b}`, `x = ${c - b} \\times ${a} = ${v}`]));
       }
       const d = fr(r.pick([2, 4, 5, 6, 8, 12, 15, 25]), 10);
       const v = r.int(2, 12);
       const e = fr(r.int(3, 40), 10);
       const f = d.mul(fr(v)).sub(e);
-      return solvePart(solve, `${decStr(d)}x - ${decStr(e)} = ${decStr(f)}`, fr(v), [["constantSignKept", f.sub(e).div(d), { b: `−${decStr(e)}`, w: `${decStr(d)}x = ${decStr(f)} + ${decStr(e)} = ${decStr(f.add(e))}` }]],
-        [`${decStr(d)}x = ${decStr(f)} + ${decStr(e)} = ${decStr(f.add(e))}`, `x = \\frac{${decStr(f.add(e))}}{${decStr(d)}} = ${v}`], true);
+      return withIdeas(["undoOp"], solvePart(solve, `${decStr(d)}x - ${decStr(e)} = ${decStr(f)}`, fr(v), [["constantSignKept", f.sub(e).div(d), { b: `−${decStr(e)}`, w: `${decStr(d)}x = ${decStr(f)} + ${decStr(e)} = ${decStr(f.add(e))}` }]],
+        [`${decStr(d)}x = ${decStr(f)} + ${decStr(e)} = ${decStr(f.add(e))}`, `x = \\frac{${decStr(f.add(e))}}{${decStr(d)}} = ${v}`], true));
     }
     if (kind === 5) {
       // Letters on both sides, with decimals or fractions.
@@ -248,8 +248,8 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const c = P.sub(Q).mul(fr(v)).add(fr(b));
         const lhs = `${decStr(P)}x ${b < 0 ? "-" : "+"} ${Math.abs(b)}`;
         const rhs = `${decStr(Q)}x + ${decStr(c)}`.replace("+ -", "- ");
-        return solvePart(solve, `${lhs} = ${rhs}`.replace(/ \+ 0 =/, " ="), fr(v), [["xTermsAdded", c.sub(fr(b)).div(P.add(Q)), { q: `${decStr(Q)}x`, w: `${decStr(P.sub(Q))}x = ${say(c.sub(fr(b)).toNumber())}` }]],
-          [`${decStr(P.sub(Q))}x = ${decStr(c)} ${b < 0 ? "+" : "-"} ${Math.abs(b)} = ${decStr(c.sub(fr(b)))}`, `x = ${v}`], true);
+        return withIdeas(["balance", "undoOp"], solvePart(solve, `${lhs} = ${rhs}`.replace(/ \+ 0 =/, " ="), fr(v), [["xTermsAdded", c.sub(fr(b)).div(P.add(Q)), { q: `${decStr(Q)}x`, w: `${decStr(P.sub(Q))}x = ${say(c.sub(fr(b)).toNumber())}` }]],
+          [`${decStr(P.sub(Q))}x = ${decStr(c)} ${b < 0 ? "+" : "-"} ${Math.abs(b)} = ${decStr(c.sub(fr(b)))}`, `x = ${v}`], true));
       }
       const [p, q] = r.pick([[2, 3], [2, 4], [3, 4], [2, 5], [3, 6], [4, 6]] as const);
       const t = r.int(1, 4);
@@ -257,9 +257,9 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
       const b = r.int(-6, 6);
       const c = q * t - p * t + b;
       const diff = fr(1, p).sub(fr(1, q));
-      return solvePart(solve, `\\frac{x}{${p}} ${b < 0 ? "-" : "+"} ${Math.abs(b)} = \\frac{x}{${q}} ${c < 0 ? "-" : "+"} ${Math.abs(c)}`.replace(/ \+ 0( |$)/g, "$1"), fr(v),
+      return withIdeas(["balance", "undoOp"], solvePart(solve, `\\frac{x}{${p}} ${b < 0 ? "-" : "+"} ${Math.abs(b)} = \\frac{x}{${q}} ${c < 0 ? "-" : "+"} ${Math.abs(c)}`.replace(/ \+ 0( |$)/g, "$1"), fr(v),
         [["xTermsAdded", fr(c - b).div(fr(1, p).add(fr(1, q))), { q: `x/${q}`, w: `${say(diff)} x = ${c - b}` }]],
-        [`\\frac{x}{${p}} - \\frac{x}{${q}} = ${c} ${b < 0 ? "+" : "-"} ${Math.abs(b)}`, `${diff.tex()}x = ${c - b}`, `x = ${v}`]);
+        [`\\frac{x}{${p}} - \\frac{x}{${q}} = ${c} ${b < 0 ? "+" : "-"} ${Math.abs(b)}`, `${diff.tex()}x = ${c - b}`, `x = ${v}`]));
     }
     if (kind === 6) {
       // A bracket with a fraction or a decimal in front.
@@ -269,16 +269,16 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
         const t = r.int(1, 6);
         const v = q * t - b;
         const c = p * t;
-        return solvePart(solve, `\\frac{${p}}{${q}}${brTex(b)} = ${c}`, fr(v), [["bracketFirstTermOnly", fr(c - b).mul(fr(q, p)), { a: `${p}/${q}`, w: `x ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${c} × ${q}/${p} = ${q * t}` }]],
-          [`x ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c} \\times \\frac{${q}}{${p}} = ${q * t}`, `x = ${v}`]);
+        return withIdeas(["distribute", "undoOp"], solvePart(solve, `\\frac{${p}}{${q}}${brTex(b)} = ${c}`, fr(v), [["bracketFirstTermOnly", fr(c - b).mul(fr(q, p)), { a: `${p}/${q}`, w: `x ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${c} × ${q}/${p} = ${q * t}` }]],
+          [`x ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${c} \\times \\frac{${q}}{${p}} = ${q * t}`, `x = ${v}`]));
       }
       const d = fr(r.pick([2, 4, 5, 6, 8]), 10);
       const s = r.int(2, 15);
       const b = r.int(2, 9);
       const v = s + b;
       const c = d.mul(fr(s));
-      return solvePart(solve, `${decStr(d)}(x - ${b}) = ${decStr(c)}`, fr(v), [["bracketFirstTermOnly", c.add(fr(b)).div(d), { a: decStr(d), w: `x − ${b} = ${decStr(c)} ÷ ${decStr(d)} = ${s}` }]],
-        [`x - ${b} = \\frac{${decStr(c)}}{${decStr(d)}} = ${s}`, `x = ${v}`], true);
+      return withIdeas(["distribute", "undoOp"], solvePart(solve, `${decStr(d)}(x - ${b}) = ${decStr(c)}`, fr(v), [["bracketFirstTermOnly", c.add(fr(b)).div(d), { a: decStr(d), w: `x − ${b} = ${decStr(c)} ÷ ${decStr(d)} = ${s}` }]],
+        [`x - ${b} = \\frac{${decStr(c)}}{${decStr(d)}} = ${s}`, `x = ${v}`], true));
     }
     if (kind === 7) {
       // The first wrong line of a worked two-step equation.
@@ -292,7 +292,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
       const l3 = at === 3 ? `x = ${top} \\times ${a}` : `x = \\frac{${top}}{${a}}`;
       const shown = at === 3 ? top * a : top / a;
       const l4 = `x = ${at === 4 ? v + r.pick([-2, -1, 1, 2]) : Number.isInteger(shown) ? shown : fr(top, a).tex()}`;
-      return mistakePart(r, W, [eqTex(`${polyStr([b, a])} = ${c}`), l2, l3, l4], at, at < 4 ? 4 : null, `${a}x = ${c - b}, x = ${v}`);
+      return withIdeas(["eqSteps", "undoOp"], mistakePart(r, W, [eqTex(`${polyStr([b, a])} = ${c}`), l2, l3, l4], at, at < 4 ? 4 : null, `${a}x = ${c - b}, x = ${v}`));
     }
     const story = r.pick(["gym", "taxi"] as const);
     const a = story === "gym" ? r.pick([10, 12, 15, 20, 25]) : r.pick([2, 3, 4, 5]);
@@ -306,11 +306,11 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
       const meaning = story === "gym" ? [W.perMonth, W.joinFee, W.gymTotal, W.months] : [W.perKm, W.startFee, W.taxiTotal, W.kms];
       const right = coef ? meaning[0] : meaning[1];
       const slip = coef ? meaning[1] : meaning[0];
-      return pickPart(r, fill(W.interpret, { s: fill(W[`${story}Say`], { a, b, c }), e: `${a}${letter} + ${b} = ${c}`, t: coef ? a : b }), "", right, meaning.filter((m) => m !== right), ["termsMeaningSwapped", slip, { u: letter, a, b, p: meaning[0], f: meaning[1] }], [`${a}${letter} + ${b} = ${c}`], true);
+      return withIdeas(["writeEquation"], pickPart(r, fill(W.interpret, { s: fill(W[`${story}Say`], { a, b, c }), e: `${a}${letter} + ${b} = ${c}`, t: coef ? a : b }), "", right, meaning.filter((m) => m !== right), ["termsMeaningSwapped", slip, { u: letter, a, b, p: meaning[0], f: meaning[1] }], [`${a}${letter} + ${b} = ${c}`], true));
     }
     // A story solved: the charge to start taken away first, then the rest shared by the charge for each unit.
-    return solvePart(fill(W[story], { a, b, c }), "", fr(u), [["constantSignKept", fr(c + b, a), { b, w: `${a}${letter} = ${c} − ${b} = ${c - b}` }]],
-      [`${a}${letter} + ${b} = ${c}`, `${a}${letter} = ${c - b}`, `${letter} = ${u}`]);
+    return withIdeas(["writeEquation", "undoOp"], solvePart(fill(W[story], { a, b, c }), "", fr(u), [["constantSignKept", fr(c + b, a), { b, w: `${a}${letter} = ${c} − ${b} = ${c - b}` }]],
+      [`${a}${letter} + ${b} = ${c}`, `${a}${letter} = ${c - b}`, `${letter} = ${u}`]));
   }
   if (kind <= 5) {
     // How many solutions: both sides collected, then the x terms and the numbers compared.
@@ -326,8 +326,8 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
     const names = { one: W.one, none: W.none, many: W.many };
     const why = { one: W.whyOne, none: W.whyNone, many: W.whyMany };
     const slip = which === "many" ? "none" : which === "none" ? "many" : null;
-    return pickPart(r, W.count, `${tx(left)} = ${tx(right)}`, names[which], (["one", "none", "many"] as const).filter((x) => x !== which).map((x) => names[x]),
-      slip ? ["solutionCountSwapped", names[slip], { L: plainSay(collected), R: plainSay(right), why: why[which] }] : null, [`${tx(collected)} = ${tx(right)}`], true);
+    return withIdeas(["solutionCount", "distribute", "balance"], pickPart(r, W.count, `${tx(left)} = ${tx(right)}`, names[which], (["one", "none", "many"] as const).filter((x) => x !== which).map((x) => names[x]),
+      slip ? ["solutionCountSwapped", names[slip], { L: plainSay(collected), R: plainSay(right), why: why[which] }] : null, [`${tx(collected)} = ${tx(right)}`], true));
   }
   if (kind === 6) {
     // The number that makes both sides the same: the bracket multiplied out on every term.
@@ -336,7 +336,7 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
     const k = a * b;
     const work = `${a}(x ${b < 0 ? "−" : "+"} ${Math.abs(b)}) = ${a}x ${k < 0 ? "−" : "+"} ${Math.abs(k)}`;
     const part = solvePart(W.findK, `${a}${brTex(b)} = ${a}x + k`, fr(k), [["bracketFirstTermOnly", fr(b), { a, w: work }]], [`${a}${brTex(b)} = ${tx(polyStr([k, a]))}`, `k = ${k}`]);
-    return { ...part, show: `k = ${k}` };
+    return withIdeas(["distribute"], { ...part, show: `k = ${k}` });
   }
   if (kind === 7) {
     // An equation solved for x with letters for its numbers.
@@ -347,12 +347,12 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
       form === 0 ? ["ax + b = c", "(c - b)/a", "(c + b)/a", "constantSignKept", "ax = c − b"]
       : form === 1 ? ["ax - b = c", "(c + b)/a", "(c - b)/a", "constantSignKept", "ax = c + b"]
       : ["a(x + b) = c", "c/a - b", "(c - b)/a", "bracketFirstTermOnly", "x + b = c/a"];
-    return {
+    return withIdeas(form === 2 ? ["distribute", "undoOp"] : ["undoOp"], {
       prompt: W.letters, q,
       answer: { k: "expr", e: E(right), vars: V, traps: [{ id, a: { k: "expr", e: E(slip), vars: V }, vars: { x: plainSay(slip), v: plainSay(right), b: form === 1 ? "−b" : "b", a: "a", w: w2 } }] },
       show: `x = ${right === "c/a - b" ? "\\frac{c}{a} - b" : `\\frac{${right.slice(1, 6)}}{a}`}`, plain: right, format: "formula",
       steps: [w2.replace("−", "-"), `x = ${right === "c/a - b" ? "\\frac{c}{a} - b" : `\\frac{${right.slice(1, 6)}}{a}`}`],
-    };
+    });
   }
   // Consecutive integers: the middle one is the sum shared by three.
   const even = kind === 9 && r.next() < 0.5;
@@ -363,8 +363,8 @@ function more(r: Rng, L: number, kind: number, w: Words): Part {
   const largest = !even && kind === 9;
   const v = largest ? n + 2 * gap : n;
   const prompt = fill(even ? W.consecEven : largest ? W.consecLarge : W.consecSmall, { s: say(s) });
-  return solvePart(prompt, "", fr(v), [["middleForSmallest", fr(mid), { s: say(s), p: say(n), q: say(mid), t: say(n + 2 * gap) }]],
-    [`x + (x + ${gap}) + (x + ${2 * gap}) = ${s}`, `3x + ${3 * gap} = ${s}`, `x = ${n}`, ...(largest ? [`x + 2 = ${v}`] : [])]);
+  return withIdeas(["writeEquation", "undoOp"], solvePart(prompt, "", fr(v), [["middleForSmallest", fr(mid), { s: say(s), p: say(n), q: say(mid), t: say(n + 2 * gap) }]],
+    [`x + (x + ${gap}) + (x + ${2 * gap}) = ${s}`, `3x + ${3 * gap} = ${s}`, `x = ${n}`, ...(largest ? [`x + 2 = ${v}`] : [])]));
 }
 
 /** Lines of working, one of them the first wrong one; the line where the slip first shows is the slip. */

@@ -8,7 +8,7 @@
 // percent taken of the part, and the discount taken of the sale price are named.
 import { fill } from "../chart";
 import { hundredGrid, partsBar, type PercentSolution, percentSteps, progressBar } from "../percentPics";
-import { gcd, num } from "../practiceKit";
+import { gcd, num, withIdeas } from "../practiceKit";
 import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 import { opt, pickOf } from "../signedKit";
 
@@ -45,7 +45,7 @@ function easy(r: Rng, kind: number, w: PracticeWords): Part {
     if (r.next() < 0.5) {
       // A hundred grid: each square is 1 %.
       const n = r.int(3, 97);
-      return pct(W.grid, n, slips(n, [["percentUnshaded", 100 - n, { v: n }]]), [`${n} \\text{ of } 100 = ${n}\\%`], { pic: hundredGrid(n) });
+      return withIdeas(["perHundred"], pct(W.grid, n, slips(n, [["percentUnshaded", 100 - n, { v: n }]]), [`${n} \\text{ of } 100 = ${n}\\%`], { pic: hundredGrid(n) }));
     }
     // A bar of d equal parts: each part is 100 ÷ d %.
     const d = r.pick([2, 4, 5, 10, 20, 25]);
@@ -53,7 +53,7 @@ function easy(r: Rng, kind: number, w: PracticeWords): Part {
     const each = 100 / d;
     const v = k * each;
     const traps = slips(v, [["partsAsPercent", k, { k, d, each, v }], ["percentUnshaded", 100 - v, { v }]]);
-    return pct(W.bar, v, traps, [`100\\% \\div ${d} = ${each}\\%`, `${k} \\times ${each}\\% = ${v}\\%`], { pic: partsBar(d, k) });
+    return withIdeas(["perHundred"], pct(W.bar, v, traps, [`100\\% \\div ${d} = ${each}\\%`, `${k} \\times ${each}\\% = ${v}\\%`], { pic: partsBar(d, k) }));
   }
   if (kind === 2) {
     // Benchmarks: 1 % is a hundredth; over 100 % is the whole and some more.
@@ -61,13 +61,13 @@ function easy(r: Rng, kind: number, w: PracticeWords): Part {
     if (p === 1) {
       const a = 100 * r.int(2, 15);
       const v = a / 100;
-      return plainNum(fill(w.prompts.percentOf, { p, a }), v, slips(v, [["onePercentTenth", a / 10, { a, v }]]), [`1\\% = ${a} \\div 100 = ${v}`]);
+      return withIdeas(["percentOf"], plainNum(fill(w.prompts.percentOf, { p, a }), v, slips(v, [["onePercentTenth", a / 10, { a, v }]]), [`1\\% = ${a} \\div 100 = ${v}`]));
     }
     const a = p === 125 ? 4 * r.int(3, 30) : p === 150 ? 2 * r.int(5, 45) : r.int(6, 90);
     const e = p - 100;
     const extra = (a * e) / 100;
     const v = a + extra;
-    return plainNum(fill(w.prompts.percentOf, { p, a }), v, slips(v, [["overHundredExtra", extra, { e, p, a, v }]]), [`${p}\\% = 100\\% + ${e}\\%`, `= ${a} + ${extra} = ${v}`]);
+    return withIdeas(["percentOf"], plainNum(fill(w.prompts.percentOf, { p, a }), v, slips(v, [["overHundredExtra", extra, { e, p, a, v }]]), [`${p}\\% = 100\\% + ${e}\\%`, `= ${a} + ${extra} = ${v}`]));
   }
   // Which calculation gives p % of a: p hundredths of it.
   const p = r.pick([10, 20, 30, 40, 60, 70, 80, 90, 25, 75]);
@@ -77,10 +77,10 @@ function easy(r: Rng, kind: number, w: PracticeWords): Part {
   const times = opt(`${p} \\times ${a}`);
   const divide = opt(`${a} \\div ${p}`);
   const other = opt(`${p / 1000} \\times ${a}`);
-  return pickOf(r, fill(w.pct.whichWay, { p, a }), right, [
+  return withIdeas(["percentOf"], pickOf(r, fill(w.pct.whichWay, { p, a }), right, [
     { o: times, id: "percentTimesWhole", vars: { p, a, d } },
     { o: divide, id: "divideByPercent", vars: { p, a, d } },
-  ], [other], { steps: [`${p}\\% = \\frac{${p}}{100} = ${d}`, `${d} \\times ${a} = ${n6((p * a) / 100)}`] });
+  ], [other], { steps: [`${p}\\% = \\frac{${p}}{100} = ${d}`, `${d} \\times ${a} = ${n6((p * a) / 100)}`] }));
 }
 
 /** What percent a is of b: the count, and the two the wrong way round, are slips. */
@@ -88,14 +88,14 @@ function whatPercent(prompt: string, a: number, b: number, more: Partial<Part> =
   const v = n6((a / b) * 100);
   const flipped = (b / a) * 100;
   const traps = slips(v, [["countAsPercent", a, { a, b, v }], ...(Number.isInteger(n6(flipped)) ? [["percentFlipped", flipped, { a, b, v }] as [Trap["id"], number, Record<string, number>]] : [])]);
-  return pct(prompt, v, traps, [`${a} \\div ${b} = ${n6(a / b)}`, `${n6(a / b)} \\times 100\\% = ${v}\\%`], more);
+  return withIdeas(["asPercent"], pct(prompt, v, traps, [`${a} \\div ${b} = ${n6(a / b)}`, `${n6(a / b)} \\times 100\\% = ${v}\\%`], more));
 }
 /** The whole when p % of it is a: the percent taken of the part is the slip. */
 function wholeFrom(prompt: string, p: number, a: number, more: Partial<Part> = {}): Part {
   const v = n6((a * 100) / p);
   const step = gcd(p, 100);
   const lines = [`${p}\\% = ${a}`, ...(p === step ? [] : [`${step}\\% = ${a} \\div ${p / step} = ${n6((a * step) / p)}`]), `100\\% = ${100 / step} \\times ${n6((a * step) / p)} = ${v}`];
-  return plainNum(prompt, v, slips(v, [["percentOfPart", (a * p) / 100, { p, a, v }]]), lines, more);
+  return withIdeas(["reversePercent"], plainNum(prompt, v, slips(v, [["percentOfPart", (a * p) / 100, { p, a, v }]]), lines, more));
 }
 
 function medium(r: Rng, kind: number, w: PracticeWords): Part {
@@ -122,7 +122,7 @@ function hard(r: Rng, kind: number, w: PracticeWords): Part {
     const a = (before * k) / 100;
     const spec: PercentSolution = { pic: "reverse", p, now: a, up: false };
     const { steps: _, ...part } = plainNum(fill(W.before, { p, a }), before, slips(before, [["percentOfAfter", a + (a * p) / 100, { p, a, k, v: before }]]), []);
-    return { ...part, solution: { kind: "percent", spec: { ...spec, steps: percentSteps(spec) } } };
+    return withIdeas(["reversePercent"], { ...part, solution: { kind: "percent", spec: { ...spec, steps: percentSteps(spec) } } });
   }
   // Progress bars: a download, a battery, a memory filled to p %.
   const t = r.pick(["download", "battery", "storage", "downloadPct"] as const);
@@ -148,7 +148,7 @@ const gen: Gen = (r, L, w) => {
     const p = r.pick([5, 10, 15, 20, 25, 30, 40, 60, 75]);
     const a = 20 * r.int(2, 30);
     const v = (p * a) / 100;
-    return { prompt: fill(w.prompts.percentOf, { p, a }), q: "", answer: num(v), show: String(v), plain: String(v), format: "number", solution: P({ pic: "of", p, a }) };
+    return withIdeas(["percentOf"], { prompt: fill(w.prompts.percentOf, { p, a }), q: "", answer: num(v), show: String(v), plain: String(v), format: "number", solution: P({ pic: "of", p, a }) });
   }
   const p = r.pick([5, 10, 15, 20, 25, 30, 40, 50]);
   const a = 20 * r.int(2, 30);
@@ -156,10 +156,10 @@ const gen: Gen = (r, L, w) => {
     const up = r.next() < 0.5;
     const b = (a * (100 + (up ? p : -p))) / 100;
     const v = up ? p : -p;
-    return { prompt: fill(w.prompts.percentChange, { a, b }), q: "", answer: num(v), show: `${v}\\%`, plain: `${v}%`, format: "number", solution: P({ pic: "change", a, b }) };
+    return withIdeas(["percentChange"], { prompt: fill(w.prompts.percentChange, { a, b }), q: "", answer: num(v), show: `${v}\\%`, plain: `${v}%`, format: "number", solution: P({ pic: "change", a, b }) });
   }
   const now = (a * (100 + p)) / 100;
-  return { prompt: fill(w.prompts.percentReverse, { p, a: now }), q: "", answer: num(a), show: String(a), plain: String(a), format: "number", solution: P({ pic: "reverse", p, now, up: true }) };
+  return withIdeas(["reversePercent"], { prompt: fill(w.prompts.percentReverse, { p, a: now }), q: "", answer: num(a), show: String(a), plain: String(a), format: "number", solution: P({ pic: "reverse", p, now, up: true }) });
 };
 
 export default gen;

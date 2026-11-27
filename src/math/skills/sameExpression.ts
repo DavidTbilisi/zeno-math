@@ -8,7 +8,7 @@ import { fill } from "../chart";
 import { parseE } from "../expr";
 import { exprQuestion, exprSteps, exprTex, type ExprOption } from "../exprMatch";
 import type { Frac } from "../fraction";
-import { fr, num, plainFrac } from "../practiceKit";
+import { fr, num, plainFrac, withIdeas } from "../practiceKit";
 import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 
 const MINUS = "−";
@@ -79,7 +79,7 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const e = sum(r.next() < 0.5 ? [[a, "x"], [cy, "y"], [cb, ""]] : [[a, "x"], [cb, ""], [cy, "y"]]);
     const v = constant ? cb : cy;
     const prompt = constant ? fill(W.constant, { e }) : fill(W.coefficient, { e, l: "y" });
-    return numPart(prompt, v, v < 0 ? [{ id: "termSignLost", a: num(-v), vars: { x: -v, v: signed(v) } }] : [], [texed(e), constant ? `\\text{constant: } ${v}` : `${v}y`]);
+    return withIdeas(["termSigns"], numPart(prompt, v, v < 0 ? [{ id: "termSignLost", a: num(-v), vars: { x: -v, v: signed(v) } }] : [], [texed(e), constant ? `\\text{constant: } ${v}` : `${v}y`]));
   }
   if (L === 1 && kind === 6) {
     // an + b for a number n: 3n is 3 × n, not the digits 3 and n side by side.
@@ -88,13 +88,13 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const e = minus ? `${a}n ${MINUS} ${b}` : `${a}n + ${b}`;
     const v = minus ? a * n - b : a * n + b;
     const digits = Number(`${a}${n}`) + (minus ? -b : b);
-    return numPart(fill(W.evalOne, { e, n }), v, [{ id: "letterAsDigit", a: num(digits), vars: { x: digits, a, n, v } }], [`${a} \\times ${n} ${minus ? "-" : "+"} ${b} = ${v}`]);
+    return withIdeas(["letterTimes"], numPart(fill(W.evalOne, { e, n }), v, [{ id: "letterAsDigit", a: num(digits), vars: { x: digits, a, n, v } }], [`${a} \\times ${n} ${minus ? "-" : "+"} ${b} = ${v}`]));
   }
   if (L === 1 && kind === 8) {
     // A story's total: only the boxes (or the pens) come a times; the loose ones are added once.
     const [a, b] = [r.int(2, 9), r.int(2, 15)];
     const pens = r.next() < 0.5;
-    return exprPart(fill(pens ? W.wordPens : W.wordBoxes, { a, b }), `${a}n + ${b}`, ["n"], [["allMultiplied", `${a}(n + ${b})`, { a, b }]], [`${a} \\times n + ${b} = ${a}n + ${b}`]);
+    return withIdeas(["wordsToExpr"], exprPart(fill(pens ? W.wordPens : W.wordBoxes, { a, b }), `${a}n + ${b}`, ["n"], [["allMultiplied", `${a}(n + ${b})`, { a, b }]], [`${a} \\times n + ${b} = ${a}n + ${b}`]));
   }
   if (L === 1) {
     // Words to an expression in n.
@@ -103,16 +103,16 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const right = { more: `n + ${k}`, less: `n ${MINUS} ${k}`, from: `${k} ${MINUS} n`, times: `${k}n`, over: `n ÷ ${k}` }[how];
     const traps: [Trap["id"], string, Record<string, string | number>][] =
       how === "less" ? [["lessThanReversed", `${k} ${MINUS} n`, { k }]] : how === "from" ? [["lessThanReversed", `n ${MINUS} ${k}`, { k }]] : how === "over" ? [["quotientReversed", `${k} ÷ n`, { k }]] : [];
-    return exprPart(fill(W.write, { p: fill(W[how], { k }) }), right, ["n"], traps, [texed(right)]);
+    return withIdeas(["wordsToExpr"], exprPart(fill(W.write, { p: fill(W[how], { k }) }), right, ["n"], traps, [texed(right)]));
   }
   if (L === 2 && kind === 5) {
     // Several letters, one of them negative: −q × b with b < 0 is added.
     const [p, q, a, b, c] = [r.int(2, 6), r.int(2, 6), r.int(1, 8), -r.int(1, 6), r.int(1, 9)];
     const v = p * a - q * b + c;
     const lost = p * a - q * -b + c;
-    return numPart(fill(W.evalMulti, { e: `${p}a ${MINUS} ${q}b + c`, a, b: signed(b), c }), v,
+    return withIdeas(["letterTimes", "signTimes"], numPart(fill(W.evalMulti, { e: `${p}a ${MINUS} ${q}b + c`, a, b: signed(b), c }), v,
       [{ id: "negSubSignLost", a: num(lost), vars: { x: lost, q, b: signed(b), m: q * -b, v } }],
-      [`${p} \\times ${a} - ${q} \\times (${b}) + ${c}`, `= ${p * a} + ${-q * b} + ${c} = ${v}`]);
+      [`${p} \\times ${a} - ${q} \\times (${b}) + ${c}`, `= ${p * a} + ${-q * b} + ${c} = ${v}`]));
   }
   if (L === 2 && kind === 6) {
     // A squared letter: kx² squares x only.
@@ -120,25 +120,25 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const v = k * x * x + m;
     const both = (k * x) ** 2 + m;
     const e = `${k}x² ${m < 0 ? MINUS : "+"} ${Math.abs(m)}`;
-    return numPart(fill(W.evalSquare, { e, x: signed(x) }), v, [{ id: "coefficientSquared", a: num(both), vars: { x: both, k, n: signed(x), v } }],
-      [`${k} \\times (${x})^2 ${m < 0 ? "-" : "+"} ${Math.abs(m)} = ${k} \\times ${x * x} ${m < 0 ? "-" : "+"} ${Math.abs(m)} = ${v}`]);
+    return withIdeas(["letterSquare"], numPart(fill(W.evalSquare, { e, x: signed(x) }), v, [{ id: "coefficientSquared", a: num(both), vars: { x: both, k, n: signed(x), v } }],
+      [`${k} \\times (${x})^2 ${m < 0 ? "-" : "+"} ${Math.abs(m)} = ${k} \\times ${x * x} ${m < 0 ? "-" : "+"} ${Math.abs(m)} = ${v}`]));
   }
   if (L === 2 && kind === 7) {
     // Fractions: xy is x times y.
     const [x, y, z] = [fr(r.int(1, 5), r.int(2, 6)), fr(r.int(1, 7), r.int(2, 5)), fr(r.int(1, 3), r.int(2, 8))];
     const v = x.mul(y).sub(z);
     const slip = x.add(y).sub(z);
-    return fracPart(fill(W.evalFrac, { x: plainFrac(x), y: plainFrac(y), z: plainFrac(z) }), v,
+    return withIdeas(["letterTimes"], fracPart(fill(W.evalFrac, { x: plainFrac(x), y: plainFrac(y), z: plainFrac(z) }), v,
       v.sub(slip).isZero() ? [] : [{ id: "xyAsSum", a: num(slip.toNumber(), 1e-9), vars: { x: plainFrac(slip), v: plainFrac(v) } }],
-      [`xy - z = ${x.tex()} \\times ${y.tex()} - ${z.tex()}`, `= ${x.mul(y).tex()} - ${z.tex()} = ${v.tex()}`]);
+      [`xy - z = ${x.tex()} \\times ${y.tex()} - ${z.tex()}`, `= ${x.mul(y).tex()} - ${z.tex()} = ${v.tex()}`]));
   }
   if (L === 2 && kind === 8 && r.next() < 0.5) {
     // Value sense: for n between 0 and 1/2, n² is the smallest and 1 ÷ n the largest.
     const large = r.next() < 0.5;
     const steps = ["n = 0.4: \\; n^2 = 0.16, \\; n = 0.4, \\; 2n = 0.8, \\; 1 \\div n = 2.5"];
-    return large
+    return withIdeas(["letterSquare"], large
       ? pickPart(r, W.largest, "1 ÷ n", [["squareBigger", "n²", {}]], ["n", "2n"], steps)
-      : pickPart(r, W.smallest, "n²", [["squareBigger", "n", {}]], ["2n", "1 ÷ n"], steps);
+      : pickPart(r, W.smallest, "n²", [["squareBigger", "n", {}]], ["2n", "1 ÷ n"], steps));
   }
   if (L === 2 && kind === 8) {
     // What the numbers in a price stand for: the one beside the letter comes with each km or month.
@@ -148,7 +148,7 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const say = gym ? { e: `${f} + ${p}m`, rate: W.perMonth, fixed: W.joining, total: W.gymTotal, count: W.months } : { e: `${f} + ${p}d`, rate: W.perKm, fixed: W.flagFall, total: W.taxiTotal, count: W.kms };
     const prompt = fill(gym ? W.gym : W.taxi, { e: say.e, n: rate ? p : f });
     const [right, wrong] = rate ? [say.rate, say.fixed] : [say.fixed, say.rate];
-    return pickPart(r, prompt, right, [["rateForFixed", wrong, {}]], [say.total, say.count], [texed(say.e)], true);
+    return withIdeas(["wordsToExpr"], pickPart(r, prompt, right, [["rateForFixed", wrong, {}]], [say.total, say.count], [texed(say.e)], true));
   }
   if (L === 2 && r.next() < 0.6) {
     // Brackets from words: "k times the sum of n and m" keeps the sum together.
@@ -156,12 +156,12 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const how = r.pick(["timesSum", "sumTimes", "timesDiff", "sumOver"] as const);
     const right = { timesSum: `${k}(n + ${m})`, sumTimes: `${k}(n + ${m})`, timesDiff: `${k}(n ${MINUS} ${m})`, sumOver: `(n + ${m}) ÷ ${k}` }[how];
     const loose = { timesSum: `${k}n + ${m}`, sumTimes: `n + ${m * k}`, timesDiff: `${k}n ${MINUS} ${m}`, sumOver: `n + ${m} ÷ ${k}` }[how];
-    return exprPart(fill(W.write, { p: fill(W[how], { k, m }) }), right, ["n"], [["bracketsLeftOut", loose, {}]], [texed(right)]);
+    return withIdeas(["wordsToExpr"], exprPart(fill(W.write, { p: fill(W[how], { k, m }) }), right, ["n"], [["bracketsLeftOut", loose, {}]], [texed(right)]));
   }
   if (L === 2) {
     // Change from a note: the note comes first, the tickets are taken from it.
     const [k, c] = [r.int(2, 6), r.pick([20, 50, 100])];
-    return exprPart(fill(W.change, { k, c }), `${c} ${MINUS} ${k}t`, ["t"], [["lessThanReversed", `${k}t ${MINUS} ${c}`, { k }]], [`${c} - ${k}t`]);
+    return withIdeas(["wordsToExpr"], exprPart(fill(W.change, { k, c }), `${c} ${MINUS} ${k}t`, ["t"], [["lessThanReversed", `${k}t ${MINUS} ${c}`, { k }]], [`${c} - ${k}t`]));
   }
   if (L === 3 && kind <= 6) {
     // Factoring by filling the brackets: every term is divided by the factor outside.
@@ -175,7 +175,7 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const whole = letters ? sum([[g * a, "xy"], [g * b, "x"]]) : sum([[g * a, "x"], [g * b, ""]]);
     const right = sum([[a, xa], [b, ""]]);
     const slip: [Trap["id"], string, Record<string, string | number>] = b === 1 ? ["factorLeftOne", sum([[a, xa]]), { g: out }] : ["factorNotDividedAll", sum([[a, xa], [g * b, ""]]), { g: out }];
-    return exprPart(fill(W.factor, { e: whole, g: out }), right, [xa], [slip], [`${texed(whole)} = ${out}(${texed(right)})`]);
+    return withIdeas(["factorOut"], exprPart(fill(W.factor, { e: whole, g: out }), right, [xa], [slip], [`${texed(whole)} = ${out}(${texed(right)})`]));
   }
   if (L === 3 && kind <= 8) {
     // Like terms with fraction or decimal coefficients: n terms together, numbers together.
@@ -187,7 +187,7 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
       const cc = Math.round((d - c) * 10) / 10;
       const right = sum([[cn, "n"], [cc, ""]]);
       const all = Math.round((p + q + d - c) * 100) / 100;
-      return pickPart(r, fill(W.simplify, { e }), right, [["unlikeCombined", `${all}n`, {}]], [sum([[cn, "n"], [Math.round((-c - d) * 10) / 10, ""]])], [`(${p} + ${q})n + (${d} - ${c}) = ${texed(right)}`]);
+      return withIdeas(["likeTerms"], pickPart(r, fill(W.simplify, { e }), right, [["unlikeCombined", `${all}n`, {}]], [sum([[cn, "n"], [Math.round((-c - d) * 10) / 10, ""]])], [`(${p} + ${q})n + (${d} - ${c}) = ${texed(right)}`]));
     }
     const [a, b, c] = [fr(1, r.int(2, 4)), fr(r.int(1, 3), r.pick([4, 5])), fr(1, r.int(5, 8))];
     const cx = a.sub(c);
@@ -196,14 +196,14 @@ function more(r: Rng, L: 1 | 2 | 3, kind: number, w: PracticeWords): Part {
     const fx = (f: Frac) => (f.d === 1 ? sum([[f.n, "x"]]) : `${f.n === 1 ? "" : f.n}x/${f.d}`);
     const e = `${fx(a)} + ${ft(b)} ${MINUS} ${fx(c)}`;
     const right = `${fx(cx)} + ${ft(b)}`;
-    return pickPart(r, fill(W.simplify, { e }), right, [["unlikeCombined", fx(a.add(b).sub(c)), {}]], [`${fx(a.add(c))} + ${ft(b)}`], [`(${a.tex()} - ${c.tex()})x + ${b.tex()} = ${cx.tex()}x + ${b.tex()}`]);
+    return withIdeas(["likeTerms"], pickPart(r, fill(W.simplify, { e }), right, [["unlikeCombined", fx(a.add(b).sub(c)), {}]], [`${fx(a.add(c))} + ${ft(b)}`], [`(${a.tex()} - ${c.tex()})x + ${b.tex()} = ${cx.tex()}x + ${b.tex()}`]));
   }
   // A thrown ball's height, vt − 5t²: only t is squared.
   const v = r.pick([20, 25, 30, 35, 40]);
   const t = r.int(2, v / 5 - 1);
   const h = v * t - 5 * t * t;
   const both = v * t - (5 * t) ** 2;
-  return numPart(fill(W.ball, { v, t }), h, [{ id: "coefficientSquared", a: num(both), vars: { x: both, k: 5, n: t, v: h } }], [`${v} \\times ${t} - 5 \\times ${t}^2 = ${v * t} - ${5 * t * t} = ${h}`]);
+  return withIdeas(["letterSquare"], numPart(fill(W.ball, { v, t }), h, [{ id: "coefficientSquared", a: num(both), vars: { x: both, k: 5, n: t, v: h } }], [`${v} \\times ${t} - 5 \\times ${t}^2 = ${v * t} - ${5 * t * t} = ${h}`]));
 }
 
 const gen: Gen = (r, L, w) => {
@@ -212,7 +212,7 @@ const gen: Gen = (r, L, w) => {
   // The one of four expressions equal to one given (src/math/exprMatch.ts); the wrong ones are slips that get named.
   const q = exprQuestion(L, r.next);
   const best = q.options[q.right];
-  return {
+  return withIdeas(L === 1 ? ["likeTerms"] : L === 2 ? ["distribute"] : q.given.text.startsWith("x ·") ? ["letterSquare"] : ["distribute", "letterSquare"], {
     prompt: fill(w.prompts.sameExpression, { e: q.given.text }),
     q: exprTex(q.given.text),
     answer: { k: "pick", options: q.options, right: q.right, traps: q.traps.map((x) => ({ id: x.id, a: { k: "pick", options: q.options, right: x.at }, vars: x.vars })) },
@@ -220,7 +220,7 @@ const gen: Gen = (r, L, w) => {
     plain: best.plain,
     format: "pick",
     steps: exprSteps(q),
-  };
+  });
 };
 
 export default gen;

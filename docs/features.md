@@ -2379,7 +2379,8 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     each topic, lists its skills with four small squares filled to the stage reached and the stage's number and name;
     on a roadmap a skill's tick takes its stage's colour with the number beside it
   - *Idea cards* (#579): every idea of the skills made of ideas (times, hcf, fractions, negative numbers, order of
-    operations, rounding, powers, brackets) has a card of four corners: its sign (a glyph no other idea or symbol in
+    operations, rounding, powers, brackets and, since #755, linear equations, expressions, decimals, percentages, ratio
+    and proportion) has a card of four corners: its sign (a glyph no other idea or symbol in
     Zeno has, and that never changes), what it is in one line, what it is easily taken for with the one test that
     tells the two apart, and how it goes wrong (the named mistake practice blames on it, where there is one). A topic's
     page shows its ideas' cards under the intro, one at a time by its sign. A spaced review on such a skill opens with

@@ -30,7 +30,7 @@ export type IdeaCard = {
 
 export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   // whole-number arithmetic
-  addWhole: { glyph: "+−", home: "times", like: "multiplyFacts" },
+  addWhole: { glyph: "+−", home: "times", like: "multiplyFacts", trap: "missingAdd" },
   multiplyFacts: { glyph: "7×8", home: "times", like: "addWhole" },
   multiplyLong: { glyph: "23×4", home: "times", like: "multiplyFacts" },
   divideExact: { glyph: "56÷8", home: "hcf" },
@@ -48,17 +48,17 @@ export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   toImproper: { glyph: "2¾→", home: "fractions", like: "toMixed", trap: "wholeTimesTop" },
   toMixed: { glyph: "→2¾", home: "fractions", like: "toImproper" },
   // signed numbers
-  negLine: { glyph: "←0→", home: "integers" },
-  addNeg: { glyph: "+(−)", home: "integers", like: "minusNeg" },
+  negLine: { glyph: "←0→", home: "integers", trap: "jumpDirection" },
+  addNeg: { glyph: "+(−)", home: "integers", like: "minusNeg", trap: "sumSign" },
   minusNeg: { glyph: "−(−)", home: "integers", like: "addNeg", trap: "subNeg" },
-  signTimes: { glyph: "−×−", home: "integers", like: "addNeg" },
+  signTimes: { glyph: "−×−", home: "integers", like: "addNeg", trap: "unlikeSigns" },
   // powers
   powValue: { glyph: "2⁵", home: "indices", like: "multiplyFacts" },
   powLaws: { glyph: "aᵐ⁺ⁿ", home: "indices", trap: "powersAddedForDivide" },
   negIndex: { glyph: "2⁻³", home: "indices", trap: "negPower" },
   fracIndex: { glyph: "x^½", home: "indices", like: "negIndex", trap: "powTimes" },
   // brackets
-  distribute: { glyph: "a(b+c)", home: "expand", like: "twoBrackets" },
+  distribute: { glyph: "a(b+c)", home: "expand", like: "twoBrackets", trap: "firstTermOnly" },
   twoBrackets: { glyph: "()()", home: "expand", like: "distribute", trap: "noMiddle" },
   squareBracket: { glyph: "()²", home: "expand", trap: "squareTerms" },
   // order of operations
@@ -72,6 +72,44 @@ export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   sigFigs: { glyph: "0.0①②", home: "rounding", like: "roundPlace" },
   stdForm: { glyph: "×10ⁿ", home: "rounding", trap: "powerOneOut" },
   bounds: { glyph: "±½", home: "rounding", like: "roundPlace", trap: "fullUnit" },
+  // linear equations (#755)
+  undoOp: { glyph: "2x=6", home: "linear", like: "balance", trap: "inverseNotUsed" },
+  checkRoot: { glyph: "x=5?", home: "linear", like: "undoOp", trap: "coefficientIgnored" },
+  balance: { glyph: "3x=x+4", home: "linear", like: "undoOp", trap: "xTermsAdded" },
+  writeEquation: { glyph: "✎=", home: "linear", trap: "storyOpSwapped" },
+  eqSteps: { glyph: "⇣=⇣", home: "linear", trap: "mistakeLaterLine" },
+  solutionCount: { glyph: "1·0·∞", home: "linear", trap: "solutionCountSwapped" },
+  // expressions (#755)
+  letterTimes: { glyph: "xy=x·y", home: "sameExpression", trap: "letterAsDigit" },
+  letterSquare: { glyph: "x·x=x²", home: "sameExpression", like: "letterTimes", trap: "coefficientSquared" },
+  termSigns: { glyph: "−3y", home: "sameExpression", like: "likeTerms", trap: "termSignLost" },
+  likeTerms: { glyph: "2x=x+x", home: "sameExpression", like: "termSigns", trap: "joinedUnlike" },
+  wordsToExpr: { glyph: "n−5", home: "sameExpression", trap: "lessThanReversed" },
+  factorOut: { glyph: "3(…)", home: "sameExpression", like: "distribute", trap: "factorNotDividedAll" },
+  // decimals (#755)
+  decCompare: { glyph: "0.4>0.35", home: "decimals", trap: "longerDecimal" },
+  decAlign: { glyph: "·|·", home: "decimals", like: "decCompare", trap: "alignedRight" },
+  decShift: { glyph: "×10→", home: "decimals", like: "decTimes", trap: "pointWrongWay" },
+  decTimes: { glyph: "0.3×4", home: "decimals", like: "decShift" },
+  divPastPoint: { glyph: "7÷4=1.75", home: "decimals", like: "decTimes" },
+  // percentages (#755)
+  perHundred: { glyph: "▦%", home: "percent", like: "asPercent", trap: "partsAsPercent" },
+  percentOf: { glyph: "25%", home: "percent", like: "asPercent", trap: "onePercentTenth" },
+  asPercent: { glyph: "a÷b·%", home: "percent", like: "percentOf", trap: "countAsPercent" },
+  reversePercent: { glyph: "?=100%", home: "percent", like: "percentOf", trap: "percentOfPart" },
+  percentChange: { glyph: "Δ%", home: "percent", like: "asPercent" },
+  // ratio (#755)
+  ratioSimplify: { glyph: "6:4→3:2", home: "ratio", like: "ratioScale" },
+  ratioScale: { glyph: "3:2", home: "ratio", like: "ratioParts", trap: "addedNotScaled" },
+  ratioParts: { glyph: "▮▮:▮▮▮", home: "ratio", like: "ratioScale", trap: "ratioAsFraction" },
+  ratioUnits: { glyph: "cm:m", home: "ratio", like: "ratioSimplify", trap: "ratioUnitsMixed" },
+  ratioOrder: { glyph: "A:B", home: "ratio", like: "ratioScale", trap: "ratioPointSwapped" },
+  // proportion (#755)
+  directProp: { glyph: "y∝x", home: "proportion", like: "inverseProp", trap: "constantDifference" },
+  constantK: { glyph: "y=kx", home: "proportion", like: "directProp", trap: "kInverted" },
+  propEquation: { glyph: "a/b=c/x", home: "proportion", like: "constantK", trap: "proportionFlipped" },
+  inverseProp: { glyph: "y∝1/x", home: "proportion", like: "directProp", trap: "inverseAsDirect" },
+  powerProp: { glyph: "y∝x²", home: "proportion", like: "directProp", trap: "powerIgnored" },
 };
 
 /** Every idea with a card, in the order the app lists ideas (IDEAS). */

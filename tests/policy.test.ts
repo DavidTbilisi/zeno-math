@@ -167,7 +167,7 @@ test("given the student's evidence on a skill, mastery also needs its moving ave
   assert.equal(isMastered("linear", 0.99, { ema }), false);
 
   // On a skill made of ideas every idea must be likely known together: sixteen at 0.9 each are not (0.9^16 ≈ 0.19).
-  const sure = { fractions: 1, linear: 1 };
+  const sure = { fractions: 1, quadratic: 1 };
   const all = (p: number) => Object.fromEntries(SKILL_IDEAS.fractions.map((id) => [id, p]));
   assert.equal(isMastered("fractions", 0.99, { ema: sure }), true, "without the ideas, no idea gate");
   assert.equal(isMastered("fractions", 0.99, { ema: sure, ideas: {} }), false);
@@ -175,12 +175,12 @@ test("given the student's evidence on a skill, mastery also needs its moving ave
   assert.ok(0.999 ** SKILL_IDEAS.fractions.length >= IDEAS_MASTERED_AT);
   assert.equal(isMastered("fractions", 0.99, { ema: sure, ideas: all(0.999) }), true);
   assert.equal(isMastered("fractions", 0.99, { ema: sure, ideas: { ...all(0.999), equivalent: 0.5 } }), false, "one weak idea holds it open");
-  assert.equal(isMastered("linear", 0.99, { ema: sure, ideas: {} }), true, "a skill without ideas has no idea gate");
+  assert.equal(isMastered("quadratic", 0.99, { ema: sure, ideas: {} }), true, "a skill without ideas has no idea gate");
 
   // The policy leaves behind only what passes every gate.
   const strong: ChanceModel = { predictAt: () => 0.99 };
-  assert.deepEqual(openSkills(strong, "s", ["linear", "fractions"], { ema: sure, ideas: {} }), ["fractions"]);
-  assert.equal(adaptiveChoice(strong, "s", ["linear", "fractions"], { ema: sure, ideas: {}, random: () => 0 }).skill, "fractions");
+  assert.deepEqual(openSkills(strong, "s", ["quadratic", "fractions"], { ema: sure, ideas: {} }), ["fractions"]);
+  assert.equal(adaptiveChoice(strong, "s", ["quadratic", "fractions"], { ema: sure, ideas: {}, random: () => 0 }).skill, "fractions");
 });
 
 test("given the student's ideas, a skill made of ideas is aimed at the one they are least likely to know", () => {
@@ -190,7 +190,7 @@ test("given the student's ideas, a skill made of ideas is aimed at the one they 
   assert.deepEqual(choose("adaptive", m, "s", ["fractions"], 0, { random: () => 0, ideas }), { skill: "fractions", level: 1, idea: "equivalent" });
   // Without the ideas, or on a skill without a graph, or in the fixed sequence, no idea is named.
   assert.deepEqual(adaptiveChoice(m, "s", ["fractions"], { random: () => 0 }), { skill: "fractions", level: 1 });
-  assert.deepEqual(adaptiveChoice(m, "s", ["linear"], { random: () => 0, ideas }), { skill: "linear", level: 1 });
+  assert.deepEqual(adaptiveChoice(m, "s", ["quadratic"], { random: () => 0, ideas }), { skill: "quadratic", level: 1 });
   assert.deepEqual(choose("fixed", m, "s", ["fractions"], 0, { ideas }), { skill: "fractions", level: 1 });
   // A new student's ideas are all level: the idea is one of the skill's, at random.
   assert.equal(adaptiveChoice(m, "s", ["times"], { random: () => 0.99, ideas: {} }).idea, "multiplyLong");

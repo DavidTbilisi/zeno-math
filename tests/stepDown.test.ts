@@ -46,8 +46,8 @@ test("two early misses step down to the weakest idea, three questions, then back
 
 test("early answers: wrong on the third, a skill without ideas, and one step-down at a time", () => {
   const s: StepDown = noStepDown();
-  const answer = (skill: "times" | "hcf" | "linear", correct: boolean) => learnStepDown(s, { skill: skill as never, policy: "fixed", correct }, {});
-  for (const c of [false, false, false]) answer("linear", c);
+  const answer = (skill: "times" | "hcf" | "quadratic", correct: boolean) => learnStepDown(s, { skill: skill as never, policy: "fixed", correct }, {});
+  for (const c of [false, false, false]) answer("quadratic", c);
   assert.deepEqual(s, { early: {} }, "a skill without ideas never steps down");
   answer("times", false);
   answer("times", true);

@@ -50,6 +50,12 @@ const GIVEN: Readonly<Record<IdeaNode, string>> = {
   distribute: "a(b+c)", twoBrackets: "()()", squareBracket: "()²",
   bracketsFirst: "(…)", powFirst: "3×2²", mulFirst: "2+3×4", chainLeft: "9−4−2",
   roundPlace: "5↑4↓", placeHolders: "…00", sigFigs: "0.0①②", stdForm: "×10ⁿ", bounds: "±½",
+  undoOp: "2x=6", checkRoot: "x=5?", balance: "3x=x+4", writeEquation: "✎=", eqSteps: "⇣=⇣", solutionCount: "1·0·∞",
+  letterTimes: "xy=x·y", letterSquare: "x·x=x²", termSigns: "−3y", likeTerms: "2x=x+x", wordsToExpr: "n−5", factorOut: "3(…)",
+  decCompare: "0.4>0.35", decAlign: "·|·", decShift: "×10→", decTimes: "0.3×4", divPastPoint: "7÷4=1.75",
+  perHundred: "▦%", percentOf: "25%", asPercent: "a÷b·%", reversePercent: "?=100%", percentChange: "Δ%",
+  ratioSimplify: "6:4→3:2", ratioScale: "3:2", ratioParts: "▮▮:▮▮▮", ratioUnits: "cm:m", ratioOrder: "A:B",
+  directProp: "y∝x", constantK: "y=kx", propEquation: "a/b=c/x", inverseProp: "y∝1/x", powerProp: "y∝x²",
 };
 
 test("glyphs are unique across Zeno, and a glyph once given is kept", () => {

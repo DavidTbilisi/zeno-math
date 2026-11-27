@@ -39,6 +39,8 @@ export const gcd = (a: number, b: number): number => {
 };
 
 export const fr = (n: number, d = 1) => new Frac(n, d);
+/** A question with the ideas of its skill's concept graph it needs (Exercise.ideas, #755). */
+export const withIdeas = (ideas: readonly string[], p: Part): Part => ({ ...p, ideas });
 
 /** A polynomial typed out from its coefficients, highest power first: [c0, c1, c2] → "c2x^2 + c1x + c0". */
 export function polyStr(cs: number[], v = "x"): string {
