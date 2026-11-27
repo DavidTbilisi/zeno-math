@@ -4,7 +4,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { boardWith } from "./helpers";
 
 const SHOTS = process.env.SHOTS_DIR;
-const NAME = "Number bases by skip counting";
+const NAME = "Skip-count dots: binary to octal and hex";
 const dragTo = async (page: Page, from: Locator, to: Locator) => {
   const a = (await from.boundingBox())!;
   const b = (await to.boundingBox())!;

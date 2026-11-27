@@ -5426,7 +5426,7 @@ export const en = {
       liveCruxEq: "Find the crux: equations",
       liveCircuitLab: "Circuit lab: gates and wires",
       liveCpuLab: "A tiny computer: fetch, decode, execute",
-      liveBaseDots: "Number bases by skip counting",
+      liveBaseDots: "Skip-count dots: binary to octal and hex",
       liveSystemLab: "Build a system: plug devices into a board",
       liveRaidLab: "Disks and RAID: pull a drive, keep the file",
       liveCacheLab: "The cache: hits, misses and mapping",
