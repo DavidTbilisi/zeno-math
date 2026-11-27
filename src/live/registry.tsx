@@ -94,6 +94,7 @@ import { CountTree } from "./CountTree";
 import { FairGame } from "./FairGame";
 import { NormalCut } from "./NormalCut";
 import { ShapeRead } from "./ShapeRead";
+import { LadderRates } from "./LadderRates";
 import { VecFind } from "./VecFind";
 import { SimHand } from "./SimHand";
 import { AreaBlocks } from "./AreaBlocks";
@@ -254,6 +255,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   fairGame: FairGame,
   normalCut: NormalCut,
   shapeRead: ShapeRead,
+  ladderRates: LadderRates,
   areaBlocks: AreaBlocks,
   counters: Counters,
   signArrow: SignArrow,

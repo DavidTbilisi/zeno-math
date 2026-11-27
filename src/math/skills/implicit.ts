@@ -3,11 +3,17 @@
 // ladder sliding down a wall (both ends taken to move at the same speed, named) or a spreading ripple (the rate dr/dt
 // left out of dA/dt, named). Since #745 half the seeds ask about inverses instead: the derivative of an inverse
 // function at a point from values of f (L1), the derivatives of arcsin, arccos and arctan of kx (L2), and the second
-// derivative of a circle at a point (L3).
-import { exact, F, piTimes } from "../calculusTwo";
+// derivative of a circle at a point (L3). Since #747 another three in ten are related rates: a rectangle's area with
+// two rates, an equation differentiated in t and the tangent line to an implicit curve (L1); two cars from a crossroads,
+// which expression is dQ/dt and which equation links the quantities (L2); a filling cone, a lamp's shadow and a balloon
+// (L3).
+import { exact, F, numTraps, piTimes, type NumSlip } from "../calculusTwo";
 import { fill } from "../chart";
+import { fromPoly, tex } from "../expr";
+import type { Frac } from "../fraction";
 import { minus } from "../logicSets";
-import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
+import { num, plainFrac } from "../practiceKit";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 import { pickPart } from "../tTails";
 
 const coef = (k: number, v: string) => `${k === 1 ? "" : k === -1 ? "-" : k}${v}`;
@@ -124,8 +130,163 @@ function more(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
   };
 }
 
+const piUnder = (q: Frac) => `\\frac{${q.n}}{${q.d === 1 ? "" : q.d}\\pi}`;
+/** A rational number over π, such as 3/(4π). */
+function overPi(q: Frac, slips: NumSlip[] = []): Pick<Part, "answer" | "show" | "plain" | "format"> {
+  const v = q.toNumber() / Math.PI;
+  const traps = numTraps(v, slips);
+  return {
+    answer: { ...num(v), ...(traps.length ? { traps } : {}) },
+    show: piUnder(q),
+    plain: q.d === 1 ? `${q.n}/pi` : `${q.n}/(${q.d}pi)`,
+    format: "exact",
+  };
+}
+
+const sup = (n: number) => ["", "", "²", "³"][n];
+const lineTex = (m: Frac, c: Frac) => `y = ${tex(fromPoly([c, m]))}`;
+
+/** Related rates (#747). */
+function rates(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
+  const K = w.rrK;
+  const kind = r.int(0, 2);
+  if (L === 1 && kind === 0) {
+    // A rectangle: the length grows, the width shrinks; dA/dt = l·dw/dt + w·dl/dt.
+    const [ll, bb, a] = [r.int(4, 12), r.int(3, 10), r.int(1, 4)];
+    let c = r.int(1, 3);
+    while (bb * a === ll * c) c = r.int(1, 3);
+    const ans = bb * a - ll * c;
+    const vars = { l: ll, a, b: bb, c };
+    return {
+      prompt: fill(K.rectQ, vars), q: `A = l \\cdot w, \\quad \\frac{dl}{dt} = ${a}, \\quad \\frac{dw}{dt} = -${c}`,
+      ...exact(F(ans), [["productRateOneTerm", -ll * c, vars], ["productRateOneTerm", bb * a, vars], ["ratesMultiplied", -a * c], ["decreasingRatePositive", bb * a + ll * c, { c }]]),
+      steps: [`\\frac{dA}{dt} = l\\frac{dw}{dt} + w\\frac{dl}{dt}`, `= ${ll} \\cdot (-${c}) + ${bb} \\cdot ${a} = ${ans}`],
+    };
+  }
+  if (L === 1 && kind === 1) {
+    // Differentiate a x^m + b y^n = c in t: each term gets its own rate.
+    const [a, b, m, n] = [r.int(1, 3), r.int(1, 3), r.int(2, 3), r.int(2, 3)];
+    const c = r.int(5, 40);
+    const term = (k: number, v: string, p: number) => `${k === 1 ? "" : k}${v}^{${p}}`;
+    const dterm = (k: number, v: string, p: number) => `${k * p}${v}${p - 1 > 1 ? sup(p - 1) : ""}`;
+    const [X, Y] = [dterm(a, "x", m), dterm(b, "y", n)];
+    const opts = [`${X}·dx/dt + ${Y}·dy/dt = 0`, `${X} + ${Y} = 0`, `${X} + ${Y}·dy/dt = 0`, `${X}·dx/dt + ${Y}·dy/dt = ${c}`];
+    const part = pickPart(r, opts, 0, [{ id: "rateFactorsDropped", at: 1 }, { id: "oneRateOnly", at: 2 }, { id: "constantRateKept", at: 3 }], K.diffQ,
+      [`\\frac{d}{dt}\\,x^{${m}} = ${m}x^{${m - 1}}\\frac{dx}{dt}, \\quad \\frac{d}{dt}\\,y^{${n}} = ${n}y^{${n - 1}}\\frac{dy}{dt}`, `\\frac{d}{dt}\\,${c} = 0`]);
+    return { ...part, q: `${term(a, "x", m)} + ${term(b, "y", n)} = ${c}` };
+  }
+  if (L === 1) {
+    // The tangent line to a x² + b y² = c at a point on it.
+    let [a, b] = [1, 1];
+    let [p, q] = [3, 4];
+    if (r.next() < 0.5) {
+      const [u, v] = r.pick([[3, 4], [5, 12], [6, 8], [8, 15]] as const);
+      [p, q] = (r.next() < 0.5 ? [u, v] : [v, u]).map((t) => t * r.sign());
+    } else {
+      [a, b] = [r.int(2, 4), r.int(1, 4)];
+      while (b === a) b = r.int(1, 4);
+      [p, q] = [r.nz(-3, 3), r.nz(-3, 3)];
+      while (a * p * a * p === b * q * b * q) q = r.nz(-3, 3);
+    }
+    const c = a * p * p + b * q * q;
+    const line = (m: Frac) => ({ m, c: F(q).sub(m.mul(F(p))) });
+    const right = line(F(-a * p, b * q));
+    const slips: [Trap["id"], Frac][] = [["normalForTangent", F(b * q, a * p)], ["implicitSlopeFlipped", F(-b * q, a * p)]];
+    const ms = plainFrac(right.m).replace("-", "−");
+    return {
+      prompt: fill(K.tangentQ, { x: minus(p), y: minus(q) }), q: `${coef(a, "x^{2}")} + ${coef(b, "y^{2}")} = ${c}`,
+      answer: { k: "expr", e: fromPoly([right.c, right.m]), mode: "line", traps: slips.map(([id, m]) => ({ id, a: { k: "expr" as const, e: fromPoly([line(m).c, line(m).m]), mode: "line" as const }, vars: { m: ms } })) },
+      show: lineTex(right.m, right.c), plain: `y = (${plainFrac(right.m)})x + (${plainFrac(right.c)})`, format: "line",
+      steps: [`${2 * a}x + ${2 * b}y\\frac{dy}{dx} = 0: \\quad \\frac{dy}{dx} = -\\frac{${coef(a, "x")}}{${coef(b, "y")}} = ${right.m.tex()}`, `y - ${q < 0 ? `(${q})` : q} = ${right.m.tex()}\\left(x - ${p < 0 ? `(${p})` : p}\\right)`, lineTex(right.m, right.c)],
+    };
+  }
+  if (L === 2 && kind === 0) {
+    // Two cars from a crossroads: D² = x² + y², dD/dt = (x·dx/dt + y·dy/dt)/D.
+    const [u, v0, d0] = r.pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17]] as const);
+    const [x, y] = r.next() < 0.5 ? [u, v0] : [v0, u];
+    const toward = r.next() < 0.5;
+    const a = r.int(4, 12) * 5;
+    const sa = toward ? -a : a;
+    let bb = r.int(4, 12) * 5;
+    while (x * sa + y * bb === 0) bb += 5;
+    const top = x * sa + y * bb;
+    const ans = F(top, d0);
+    const vars = { x, a, y, b: bb };
+    return {
+      prompt: fill(toward ? K.carsTowardQ : K.carsAwayQ, vars), q: `D^{2} = x^{2} + y^{2}`,
+      ...exact(ans, [["distanceRateAsSum", a + bb], ["distanceNotDividedOut", top, { d: d0 }], ...(toward ? [["decreasingRatePositive", F(x * a + y * bb, d0), { c: a }] as NumSlip] : [])]),
+      steps: [`2D\\frac{dD}{dt} = 2x\\frac{dx}{dt} + 2y\\frac{dy}{dt}`, `D = \\sqrt{${x}^{2} + ${y}^{2}} = ${d0}`, `\\frac{dD}{dt} = \\frac{${x} \\cdot ${sa < 0 ? `(${sa})` : sa} + ${y} \\cdot ${bb}}{${d0}} = ${ans.tex()}`],
+    };
+  }
+  if (L === 2 && kind === 1) {
+    // Which expression is dQ/dt for Q = c·v^n.
+    const [Q, v, qTex, cText, ncText, n] = r.pick([
+      ["A", "s", "A = s^{2}", "", "2", 2], ["V", "s", "V = s^{3}", "", "3", 3], ["A", "r", "A = \\pi r^{2}", "π", "2π", 2],
+      ["V", "r", "V = \\frac{4}{3}\\pi r^{3}", "(4/3)π", "4π", 3], ["S", "r", "S = 4\\pi r^{2}", "4π", "8π", 2], ["S", "s", "S = 6s^{2}", "6", "12", 2],
+    ] as const);
+    const low = `${v}${n - 1 > 1 ? sup(n - 1) : ""}`;
+    const opts = [`${ncText}${low}·d${v}/dt`, `${ncText}${low}`, `${cText}(d${v}/dt)${sup(n)}`, `${cText}${v}${sup(n)}·d${v}/dt`];
+    const part = pickPart(r, opts, 0, [{ id: "rateFactorLeftOut", at: 1, vars: { v } }, { id: "rateForVariable", at: 2, vars: { v } }, { id: "powerKeptInRate", at: 3, vars: { v } }],
+      fill(K.exprQ, { v, Q }), [`\\frac{d${Q}}{dt} = \\frac{d${Q}}{d${v}} \\cdot \\frac{d${v}}{dt}`, `\\frac{d${Q}}{d${v}} = ${ncText.replace("π", "\\pi ")}${v}${n - 1 > 1 ? `^{${n - 1}}` : ""}`]);
+    return { ...part, q: qTex };
+  }
+  if (L === 2) {
+    // Which equation links the quantities: a ladder, or water in a cone.
+    if (r.next() < 0.5) {
+      const Ld = r.pick([5, 10, 13, 6, 8]);
+      return pickPart(r, [`x² + y² = ${Ld * Ld}`, `x + y = ${Ld}`, `x² + y² = ${Ld}`], 0, [{ id: "pythagorasAsSum", at: 1 }, { id: "lengthNotSquared", at: 2, vars: { L: Ld } }],
+        fill(K.eqLadderQ, { L: Ld }), [`x^{2} + y^{2} = ${Ld}^{2} = ${Ld * Ld}`]);
+    }
+    const R = r.int(2, 6);
+    let H = r.int(3, 12);
+    while (H === R) H = r.int(3, 12);
+    return pickPart(r, [`V = (1/3)π(${R}h/${H})²·h`, `V = (1/3)π·${R}²·h`, `V = (1/3)π(${H}h/${R})²·h`], 0, [{ id: "coneRadiusConstant", at: 1 }, { id: "similarRatioFlipped", at: 2 }],
+      fill(K.eqConeQ, { R, H }), [`\\frac{r}{h} = \\frac{${R}}{${H}}: \\quad r = \\frac{${R}h}{${H}}`, `V = \\frac{1}{3}\\pi r^{2} h`]);
+  }
+  if (kind === 0) {
+    // A cone filling, point down: r = R h / H, dV/dt = π r² dh/dt.
+    const R = r.int(2, 6);
+    const k = r.int(2, 3);
+    const H = R * k;
+    const h = r.int(2, H - 1);
+    const q = r.int(2, 12) * 3;
+    const ans = F(q * k * k, h * h);
+    return {
+      prompt: fill(K.coneQ, { R, H, q, h }), q: `V = \\frac{1}{3}\\pi r^{2} h, \\quad \\frac{r}{h} = \\frac{${R}}{${H}}`,
+      ...overPi(ans, [["coneRadiusConstant", q / (Math.PI * R * R)]]),
+      steps: [`r = \\frac{h}{${k}}: \\quad V = \\frac{\\pi}{${3 * k * k}}h^{3}`, `\\frac{dV}{dt} = \\frac{\\pi}{${k * k}}h^{2}\\frac{dh}{dt}`, `\\frac{dh}{dt} = \\frac{${q} \\cdot ${k * k}}{\\pi \\cdot ${h * h}} = ${piUnder(ans)}`],
+    };
+  }
+  if (kind === 1) {
+    // A child walking from a lamp: s/p = (s + d)/Lp, so ds/dt = p·v/(Lp − p) and the tip moves at Lp·v/(Lp − p).
+    const Lp = r.int(4, 8);
+    const p = r.pick([1, 1.5, 2].filter((t) => t < Lp - 1));
+    const v = r.int(1, 3);
+    const tip = F(Lp * v * 2, (Lp - p) * 2);
+    const len = F(p * v * 2, (Lp - p) * 2);
+    const askTip = r.next() < 0.5;
+    const ans = askTip ? tip : len;
+    return {
+      prompt: fill(askTip ? K.shadowTipQ : K.shadowLenQ, { L: Lp, p: String(p), v }), q: `\\frac{s}{${p}} = \\frac{s + d}{${Lp}}, \\quad \\frac{dd}{dt} = ${v}`,
+      ...exact(ans, [askTip ? ["shadowLengthForTip", len] : ["shadowTipForLength", tip]]),
+      steps: [`${Lp}s = ${p}(s + d): \\quad s = \\frac{${p}}{${Lp - p}}d`, `\\frac{ds}{dt} = \\frac{${p}}{${Lp - p}} \\cdot ${v} = ${len.tex()}`, ...(askTip ? [`\\frac{d(s + d)}{dt} = ${len.tex()} + ${v} = ${tip.tex()}`] : [])],
+    };
+  }
+  // A balloon: dV/dt = 4πr² dr/dt.
+  const rad = r.int(2, 10);
+  const q = r.int(2, 20) * 10;
+  const ans = F(q, 4 * rad * rad);
+  return {
+    prompt: fill(K.balloonQ, { q, r: rad }), q: `V = \\frac{4}{3}\\pi r^{3}`,
+    ...overPi(ans, [["dividedByVolume", (3 * q) / (4 * Math.PI * rad ** 3)]]),
+    steps: [`\\frac{dV}{dt} = 4\\pi r^{2}\\frac{dr}{dt}`, `\\frac{dr}{dt} = \\frac{${q}}{4\\pi \\cdot ${rad * rad}} = ${piUnder(ans)}`],
+  };
+}
+
 const gen: Gen = (r, L, w) => {
-  if (r.int(0, 9) >= 5) return more(r, L, w);
+  const g = r.int(0, 9);
+  if (g >= 7) return more(r, L, w);
+  if (g >= 4) return rates(r, L, w);
   return L === 1 ? conicPart(r, w) : L === 2 ? productPart(r, w) : ratesPart(r, w);
 };
 

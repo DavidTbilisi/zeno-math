@@ -55,6 +55,7 @@ import { COUNT_TREE_START, type LiveCountTree } from "./countTree";
 import { FAIR_GAME_START, type LiveFairGame } from "./fairGame";
 import { NORMAL_CUT_START, type LiveNormalCut } from "./normalCut";
 import { SHAPE_READ_START, type LiveShapeRead } from "./shapeRead";
+import { LADDER_RATES_START, type LiveLadderRates } from "./ladderRates";
 import { SIM_HAND_START, type LiveSimHand } from "./simHand";
 import { AREA_START, type LiveAreaBlocks } from "./areaBlocks";
 import { COUNTERS_START, type LiveCounters } from "./counters";
@@ -655,6 +656,7 @@ export type LiveStates = {
   fairGame: LiveFairGame;
   normalCut: LiveNormalCut;
   shapeRead: LiveShapeRead;
+  ladderRates: LiveLadderRates;
   areaBlocks: LiveAreaBlocks;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
@@ -840,6 +842,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   fairGame: [740, 660],
   normalCut: [740, 660],
   shapeRead: [740, 740],
+  ladderRates: [740, 740],
   areaBlocks: [780, 730],
   counters: [680, 600],
   signArrow: [680, 720],
@@ -1027,6 +1030,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     fairGame: FAIR_GAME_START,
     normalCut: NORMAL_CUT_START,
     shapeRead: SHAPE_READ_START,
+    ladderRates: LADDER_RATES_START,
     areaBlocks: AREA_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,
