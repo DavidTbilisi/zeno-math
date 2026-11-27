@@ -100,12 +100,15 @@ test("rank and nullity agree with row reduction, and the null vector is killed b
 });
 
 test("linear maps: the matrix has the images as its columns, and [T]_B = P⁻¹AP", () => {
+  // Since #734 half the questions are other kinds (tests/matricesMore.test.ts); these are the ones from the images.
   each("linearMaps", 2, (ex, where) => {
+    if (ex.prompt !== w.linalg.prompt.matrixOf) return;
     if (ex.answer.k !== "matrix") throw new Error(where);
     const [e1, e2] = tuples(ex.q);
     assert.deepEqual(ex.answer.rows, e1.map((x, i) => [x, e2[i]]), where);
   });
   each("linearMaps", 3, (ex, where) => {
+    if (ex.prompt !== w.linalg.prompt.changeBasis) return;
     if (ex.answer.k !== "matrix") throw new Error(where);
     const [A] = matrices(ex.q);
     const [b1, b2] = tuples(ex.q);

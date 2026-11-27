@@ -49,6 +49,7 @@ import { VEC_FIND_START, type LiveVecFind } from "./vecFind";
 import { POWER_FIND_START, type LivePowerFind } from "./powerFind";
 import { INEQ_FIND_START, type LiveIneqFind } from "./ineqFind";
 import { CX_PLANE_START, type LiveCxPlane } from "./cxPlane";
+import { MAT_PLANE_START, type LiveMatPlane } from "./matPlane";
 import { SIM_HAND_START, type LiveSimHand } from "./simHand";
 import { AREA_START, type LiveAreaBlocks } from "./areaBlocks";
 import { COUNTERS_START, type LiveCounters } from "./counters";
@@ -643,6 +644,7 @@ export type LiveStates = {
   powerFind: LivePowerFind;
   ineqFind: LiveIneqFind;
   cxPlane: LiveCxPlane;
+  matPlane: LiveMatPlane;
   areaBlocks: LiveAreaBlocks;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
@@ -822,6 +824,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   powerFind: [740, 680],
   ineqFind: [740, 640],
   cxPlane: [740, 600],
+  matPlane: [740, 700],
   areaBlocks: [780, 730],
   counters: [680, 600],
   signArrow: [680, 720],
@@ -1003,6 +1006,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     powerFind: POWER_FIND_START,
     ineqFind: INEQ_FIND_START,
     cxPlane: CX_PLANE_START,
+    matPlane: MAT_PLANE_START,
     areaBlocks: AREA_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,

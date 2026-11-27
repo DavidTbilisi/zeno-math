@@ -2317,6 +2317,18 @@ function powerFindPreview(): Piece[] {
   return [...out, seg([-4, 1.6 * k], [5.4 * k, 1.6 * k], { color: "#1e1e1e", width: 2 })];
 }
 
+function matPlanePreview(): Piece[] {
+  // Axes, the unit square dashed and its image under a shear-and-stretch, with the two images of (1, 0) and (0, 1).
+  const k = 14;
+  const P = (x: number, y: number): [number, number] => [3 * k + x * k, 7 * k - y * k];
+  return [
+    seg(P(-3, 0), P(5, 0), { color: "#1e1e1e", width: 2 }), seg(P(0, -1), P(0, 5), { color: "#1e1e1e", width: 2 }),
+    seg(P(1, 0), P(1, 1), { color: "#868e96" }), seg(P(1, 1), P(0, 1), { color: "#868e96" }),
+    seg(P(2, 1), P(3, 3), { color: "#1971c2", width: 2 }), seg(P(3, 3), P(1, 2), { color: "#1971c2", width: 2 }),
+    seg(P(0, 0), P(2, 1), { color: "#2f9e44", width: 3 }), seg(P(0, 0), P(1, 2), { color: "#e8590c", width: 3 }),
+  ];
+}
+
 function cxPlanePreview(): Piece[] {
   // Axes, z as an arrow from 0 and i·z a quarter turn on from it, with the corner of the turn.
   const k = 12;
@@ -2746,6 +2758,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "livePowerFind", build: powerFindPreview, live: "powerFind" },
   { id: "liveIneqFind", build: ineqFindPreview, live: "ineqFind" },
   { id: "liveCxPlane", build: cxPlanePreview, live: "cxPlane" },
+  { id: "liveMatPlane", build: matPlanePreview, live: "matPlane" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },
