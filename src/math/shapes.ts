@@ -1582,6 +1582,12 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function pipelineLabPreview(): Piece[] {
+  // Three instructions, each five stages, staggered a tick apart.
+  const fills = ["#d0ebff", "#e5dbff", "#ffd8a8", "#c3fae8", "#d3f9d8"];
+  return [0, 1, 2].flatMap((r) => fills.map((f, k) => rect(10 + (r + k) * 22, 20 + r * 26, 20, 22, { fill: f, color: "#868e96", width: 1 })));
+}
+
 function hammingLabPreview(): Piece[] {
   // Three overlapping circles, one red: the check that fails.
   return [
@@ -3018,6 +3024,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCacheLab", build: cacheLabPreview, live: "cacheLab" },
   { id: "liveIoLab", build: ioLabPreview, live: "ioLab" },
   { id: "liveHammingLab", build: hammingLabPreview, live: "hammingLab" },
+  { id: "livePipelineLab", build: pipelineLabPreview, live: "pipelineLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
