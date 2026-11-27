@@ -2017,6 +2017,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Exponential and logarithmic models (#730): the start and the yearly rate read from a town's P(t) = a · bᵗ or a
+    car's V(t) = a · bᵗ; the hours for a medicine's (1/2)^(t/h) to halve, the yearly factor of a · b^(kt), a car's
+    decay function picked, and the first year exponential savings pass linear ones; c·eˣ = d and bˣ = d solved with
+    ln, log or the change of base; and, in logarithms, bᵏ = v written as a log and back, the change of base rule
+    picked and used to 2 decimal places, decibels, the Richter scale and e^(kx) = v. The factor taken for the start,
+    the factor as the rate, the time scale inverted, k ignored, growth for decay, the log taken before dividing, the
+    power divided out, the base and the exponent swapped, the result swapped with the input, the rule upside down,
+    log(x/b) for the rule, decibels without the 10, the magnitudes' difference times ten and v divided by k inside
+    the log are named
   - Sequences: recursive and explicit rules (#729): a recursive rule worked forward to a(k), including
     a(n) = 2a(n − 1) + c; the explicit and recursive rules of an arithmetic or geometric sequence picked from its
     terms; a recursive rule written out explicitly as a formula in n; the next term of a geometric sequence whose
