@@ -1582,6 +1582,16 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function raidLabPreview(): Piece[] {
+  // Three drives in a rack, the middle one pulled out grey; coloured blocks on the others, a grey parity block.
+  const colors = ["#74c0fc", "#8ce99a", "#e9ecef"];
+  const drive = (x: number, y: number, out: boolean) => [
+    rect(x, y, 44, 80, { fill: out ? "#adb5bd" : "#ced4da", color: "#212529", width: 1.2 }),
+    ...[0, 1, 2].map((r) => rect(x + 6, y + 6 + r * 22, 32, 18, { fill: out ? "#868e96" : colors[(r + x) % 3], color: "#495057", width: 1 })),
+  ];
+  return [rect(4, 6, 172, 92, { fill: "#495057", color: "#212529", width: 1.5 }), ...drive(12, 12, false), ...drive(66, 24, true), ...drive(120, 12, false)];
+}
+
 function systemLabPreview(): Piece[] {
   // A green board seen from above at a slant, its CPU and memory in, a cable out to a display.
   const board = { fill: "#2b8a3e", color: "#1b5e20", width: 1.5 };
@@ -2975,6 +2985,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCircuitLab", build: circuitLabPreview, live: "circuitLab" },
   { id: "liveCpuLab", build: cpuLabPreview, live: "cpuLab" },
   { id: "liveSystemLab", build: systemLabPreview, live: "systemLab" },
+  { id: "liveRaidLab", build: raidLabPreview, live: "raidLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },

@@ -30,7 +30,7 @@ import {
 } from "../math/systemLab";
 import { GREEN, MUTED, RED, keyTap, useDrag } from "./hand";
 import { starText } from "./ladderUi";
-import { clamp, FlatFace, lay, projector, wrap360, type Flat } from "./stage3d";
+import { box, clamp, FlatFace, lay, projector, wrap360, type Face, type Flat } from "./stage3d";
 import { fill, FONT, INK, type PieceProps } from "./ui";
 import { GameActions, GameHead, Said, Stage, useGame, type Line } from "./useGame";
 
@@ -42,20 +42,6 @@ const H = TRAY_Y + 2 * 50 + 8;
 const PX = 24;
 const PITCH: [number, number] = [18, 82];
 const BUS: V3 = [6.4, 4.6, 0.3];
-
-type Face = { pts: V3[]; n: V3; color: string };
-/** An upright box from (x, y, z), dx across, dy back and dz up: its six faces. */
-function box(x: number, y: number, z: number, dx: number, dy: number, dz: number, color: string): Face[] {
-  const p = (i: number, j: number, k: number): V3 => [x + i * dx, y + j * dy, z + k * dz];
-  return [
-    { pts: [p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)], n: [0, 0, 1], color },
-    { pts: [p(0, 0, 0), p(0, 1, 0), p(1, 1, 0), p(1, 0, 0)], n: [0, 0, -1], color },
-    { pts: [p(0, 0, 0), p(1, 0, 0), p(1, 0, 1), p(0, 0, 1)], n: [0, -1, 0], color },
-    { pts: [p(0, 1, 0), p(0, 1, 1), p(1, 1, 1), p(1, 1, 0)], n: [0, 1, 0], color },
-    { pts: [p(0, 0, 0), p(0, 0, 1), p(0, 1, 1), p(0, 1, 0)], n: [-1, 0, 0], color },
-    { pts: [p(1, 0, 0), p(1, 1, 0), p(1, 1, 1), p(1, 0, 1)], n: [1, 0, 0], color },
-  ];
-}
 
 const KIND_COLOR: Record<Kind, string> = {
   cpu: "#495057", ram: "#2f9e44", pcie: "#1971c2", sata: "#e8590c", usb: "#1c7ed6", video: "#7048e8", audioOut: "#40c057", audioIn: "#f06595", net: "#f59f00",
