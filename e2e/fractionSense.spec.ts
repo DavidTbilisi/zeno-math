@@ -58,7 +58,10 @@ test("equal amounts: a board cleared with no misses earns three stars", async ({
 });
 
 test("equal fractions in practice: the equal one picked from the buttons", async ({ page, request }) => {
-  const r = 0.33;
+  // The first draw from 0.33 on that asks for the equal one from buttons (the level has other kinds since #702).
+  let k = 33;
+  while (exercise("equivalent", 2, seedOf(k / 100), w).answer.k !== "near") k++;
+  const r = k / 100;
   const ex = exercise("equivalent", 2, seedOf(r), w);
   if (ex.answer.k !== "near") throw new Error();
   const best = ex.answer.options[ex.answer.right];
