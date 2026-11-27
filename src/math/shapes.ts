@@ -2366,6 +2366,19 @@ function fairGamePreview(): Piece[] {
   ];
 }
 
+function normalCutPreview(): Piece[] {
+  // A bell curve over its axis, with the cuts one standard deviation either side of the mean.
+  const k = 12;
+  const X = (z: number) => 5 * k + z * 1.4 * k;
+  const Y = (z: number) => 8 * k - 6 * k * Math.exp((-z * z) / 2);
+  const zs = Array.from({ length: 25 }, (_, i) => -3 + i * 0.25);
+  return [
+    seg([X(-3.2), 8 * k], [X(3.2), 8 * k], { color: "#1e1e1e", width: 2 }),
+    ...zs.slice(1).map((z, i) => seg([X(zs[i]), Y(zs[i])], [X(z), Y(z)], { color: "#1971c2", width: 3 })),
+    ...[-1, 1].map((z) => seg([X(z), 8 * k], [X(z), Y(0) - k], { color: "#e8590c", width: 2 })),
+  ];
+}
+
 function cxPlanePreview(): Piece[] {
   // Axes, z as an arrow from 0 and i·z a quarter turn on from it, with the corner of the turn.
   const k = 12;
@@ -2799,6 +2812,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveMeanBalance", build: meanBalancePreview, live: "meanBalance" },
   { id: "liveCountTree", build: countTreePreview, live: "countTree" },
   { id: "liveFairGame", build: fairGamePreview, live: "fairGame" },
+  { id: "liveNormalCut", build: normalCutPreview, live: "normalCut" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

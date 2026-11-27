@@ -74294,6 +74294,820 @@
       "input": "0.5023605914343232",
       "label": "wrong",
       "mistake": "normalVarianceAsSd"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 1,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 1,
+      "input": "Ben",
+      "label": "wrong",
+      "mistake": "rawScoresCompared"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 2,
+      "input": "Ana",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 2,
+      "input": "Ben",
+      "label": "wrong",
+      "mistake": "rawScoresCompared"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 4,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 4,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "shiftChangesSpread"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 4,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 7,
+      "input": "55",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 7,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "percentileIncludesSelf"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 7,
+      "input": "11",
+      "label": "wrong",
+      "mistake": "rankNotPercent"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 7,
+      "input": "62",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 8,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 8,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "percentileIncludesSelf"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 8,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "rankNotPercent"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 8,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 12,
+      "input": "2.5",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 12,
+      "input": "-5/2",
+      "label": "wrong",
+      "mistake": "zSignFlipped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 12,
+      "input": "77/4",
+      "label": "wrong",
+      "mistake": "zNoMean"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 12,
+      "input": "10/67",
+      "label": "wrong",
+      "mistake": "zOverMean"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 12,
+      "input": "9.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 14,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 14,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "zSignFlipped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 14,
+      "input": "57/8",
+      "label": "wrong",
+      "mistake": "zNoMean"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 14,
+      "input": "-8/65",
+      "label": "wrong",
+      "mistake": "zOverMean"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 14,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 20,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 20,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "shiftChangesSpread"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 20,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 41,
+      "input": "70",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 41,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "scaleSkipsSpread"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 41,
+      "input": "700",
+      "label": "wrong",
+      "mistake": "spreadSquared"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 41,
+      "input": "77",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 44,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 44,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "scaleSkipsSpread"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 44,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "spreadSquared"
+    },
+    {
+      "skill": "normalModel",
+      "level": 1,
+      "seed": 44,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 1,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 1,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "widthShare"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 2,
+      "input": "9/25",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 2,
+      "input": "3/5",
+      "label": "wrong",
+      "mistake": "widthShare"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 4,
+      "input": "68",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 4,
+      "input": "95",
+      "label": "wrong",
+      "mistake": "wrongBandUsed"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 4,
+      "input": "997/10",
+      "label": "wrong",
+      "mistake": "wrongBandUsed"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 4,
+      "input": "75",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 7,
+      "input": "It never goes below the horizontal axis, and the area under it is 1",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 7,
+      "input": "Its highest point is at a height of 1",
+      "label": "wrong",
+      "mistake": "peakAtOne"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 7,
+      "input": "The area under it can be any positive number",
+      "label": "wrong",
+      "mistake": "densityAreaAny"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 8,
+      "input": "It never goes below the horizontal axis, and the area under it is 1",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 8,
+      "input": "Its highest point is at a height of 1",
+      "label": "wrong",
+      "mistake": "peakAtOne"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 8,
+      "input": "The area under it can be any positive number",
+      "label": "wrong",
+      "mistake": "densityAreaAny"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 12,
+      "input": "2/5",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 12,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "heightIgnored"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 12,
+      "input": "4/5",
+      "label": "wrong",
+      "mistake": "lowerCutIgnored"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 14,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 14,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "heightIgnored"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 14,
+      "input": "7/10",
+      "label": "wrong",
+      "mistake": "lowerCutIgnored"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 20,
+      "input": "95",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 20,
+      "input": "68",
+      "label": "wrong",
+      "mistake": "wrongBandUsed"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 20,
+      "input": "997/10",
+      "label": "wrong",
+      "mistake": "wrongBandUsed"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 20,
+      "input": "102",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 41,
+      "input": "2.5",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 41,
+      "input": "5",
+      "label": "wrong",
+      "mistake": "bothTailsCounted"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 41,
+      "input": "195/2",
+      "label": "wrong",
+      "mistake": "belowForAbove"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 41,
+      "input": "9.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 44,
+      "input": "47.5",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 44,
+      "input": "95",
+      "label": "wrong",
+      "mistake": "bandNotHalved"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 44,
+      "input": "54.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 67,
+      "input": "16",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 67,
+      "input": "32",
+      "label": "wrong",
+      "mistake": "bothTailsCounted"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 67,
+      "input": "84",
+      "label": "wrong",
+      "mistake": "belowForAbove"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 67,
+      "input": "23",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 69,
+      "input": "47.5",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 69,
+      "input": "95",
+      "label": "wrong",
+      "mistake": "bandNotHalved"
+    },
+    {
+      "skill": "normalModel",
+      "level": 2,
+      "seed": 69,
+      "input": "54.5",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 1,
+      "input": "45.4",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 1,
+      "input": "34.60408199843158",
+      "label": "wrong",
+      "mistake": "reverseTailSwapped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 1,
+      "input": "0.6744897501960523",
+      "label": "wrong",
+      "mistake": "zAsScore"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 1,
+      "input": "52.4",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 2,
+      "input": "0.09",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 2,
+      "input": "0.9104426667829629",
+      "label": "wrong",
+      "mistake": "keptForRejected"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 3,
+      "input": "0.181",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 3,
+      "input": "0.022750131948179184",
+      "label": "wrong",
+      "mistake": "oneTailOnly"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 3,
+      "input": "0.8185946141203639",
+      "label": "wrong",
+      "mistake": "keptForRejected"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 4,
+      "input": "0.317",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 4,
+      "input": "0.1586552539314569",
+      "label": "wrong",
+      "mistake": "oneTailOnly"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 4,
+      "input": "0.6826894921370862",
+      "label": "wrong",
+      "mistake": "keptForRejected"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 5,
+      "input": "0.225",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 5,
+      "input": "0.06680720126885786",
+      "label": "wrong",
+      "mistake": "oneTailOnly"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 5,
+      "input": "0.1586552539314569",
+      "label": "wrong",
+      "mistake": "oneTailOnly"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 5,
+      "input": "0.7745375447996852",
+      "label": "wrong",
+      "mistake": "keptForRejected"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 6,
+      "input": "59.6",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 6,
+      "input": "20.400360154599326",
+      "label": "wrong",
+      "mistake": "reverseTailSwapped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 6,
+      "input": "1.9599639845400674",
+      "label": "wrong",
+      "mistake": "zAsScore"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 6,
+      "input": "66.6",
+      "label": "wrong"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 7,
+      "input": "0.885",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 7,
+      "input": "0.115069670221708",
+      "label": "wrong",
+      "mistake": "tailSwapped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 8,
+      "input": "0.933",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 8,
+      "input": "0.06680720126885786",
+      "label": "wrong",
+      "mistake": "tailSwapped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 9,
+      "input": "0.036",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 9,
+      "input": "0.9640696808870742",
+      "label": "wrong",
+      "mistake": "tailSwapped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 15,
+      "input": "0.726",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 15,
+      "input": "0.2742531177500733",
+      "label": "wrong",
+      "mistake": "tailSwapped"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 20,
+      "input": "0.225",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 20,
+      "input": "0.1586552539314569",
+      "label": "wrong",
+      "mistake": "oneTailOnly"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 20,
+      "input": "0.06680720126885786",
+      "label": "wrong",
+      "mistake": "oneTailOnly"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 20,
+      "input": "0.7745375447996852",
+      "label": "wrong",
+      "mistake": "keptForRejected"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 38,
+      "input": "0.046",
+      "label": "correct"
+    },
+    {
+      "skill": "normalModel",
+      "level": 3,
+      "seed": 38,
+      "input": "0.9544997361036416",
+      "label": "wrong",
+      "mistake": "keptForRejected"
     }
   ]
 }

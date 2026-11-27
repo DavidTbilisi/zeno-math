@@ -2033,6 +2033,19 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     share, normal SDs added or a variance as SD) are named. A new piece, "Expected value: find the fair price", sets
     a spinner's prizes as weights on a beam: the learner taps prices until it balances, a tally shows winnings
     against pay over many games, and only in the last round is the rule said: the fair price is the expected value
+  - The normal model (#740), a new data skill after spread: a percentile from a list of scores, a z-score worked
+    out, two scores compared by their z-scores, and the standard deviation after every value is shifted or scaled;
+    what is true of every density curve, an area under a flat and under a falling density, and the empirical rule
+    between, above and up to a band; then normal probabilities, the score that marks a top percent, and a new
+    setting, the share of a factory's bolts rejected at both ends. The slips (her own score counted, the rank for the
+    percent, the sign of z flipped, the mean not taken away or divided by, raw scores compared, a shift that changes
+    the spread, a scale that does not or squares it, a density's peak at 1 or any area, the width for the area or the
+    lower cut left out, a falling density shared by width, the wrong band, both tails counted or the part below, the
+    band not halved, the tail swapped, the reverse look-up on the wrong side or z given as the score, one end only
+    and the bolts kept for those rejected) are named. A new piece, "Normal curve: cut it and find the 68–95–99.7
+    rule", lets the learner drag cuts on a bell curve of heights, bottles and marks until the shaded share reads
+    about 68%, 95%, 99.7%, then one tail of 16% and of 2.5%; too small and too large a share and the wrong tail are
+    named, and only the last round states the rule
   - Probability rules, sample spaces and counting (#738): in probability, an experiment's result, two bags compared,
     a prediction from a chance, a model's missing chance, which claim about a few coin flips is valid, and a chance
     estimated from a simulation's digits (grade 7); a sample space counted, the numbers in A ∩ B, A ∪ B or A′, the

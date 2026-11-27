@@ -508,6 +508,7 @@ export type PracticeWords = {
   ctK: Record<"mealQ" | "outfitQ" | "codeQ" | "shakeQ" | "officerQ" | "lotteryQ" | "committeeQ", string>;
   exK: Record<"buildQ" | "carsQ" | "carsHead" | "homesHead" | "validQ" | "graphQ" | "interpQ" | "evLong" | "evEvery" | "evLikely" | "sdQ" | "payQ" | "fairQ" | "fairDie" | "fairCoins" | "unfairSix" | "unfairSum" | "booksQ" | "booksHead" | "pupilsHead" | "phoneQ" | "buy" | "skip" | "same" | "transMeanQ" | "transSdQ" | "combQ", string>;
   dsK: Record<"identQ" | "binA0" | "binA1" | "geoA" | "depA" | "binWhy" | "geoWhy" | "kindQ" | "scB0" | "scB1" | "scG0" | "scG1" | "binName" | "geoName" | "neither" | "geoQ" | "sdQ" | "cumQ" | "meanQ" | "simQ" | "succHead" | "setsHead" | "tripQ", string>;
+  nmK: Record<"pctQ" | "zQ" | "cmpQ" | "ana" | "ben" | "same" | "addQ" | "mulQ" | "denQ" | "denRight" | "denHeightOne" | "denAreaAny" | "uniQ" | "triQ" | "empBetweenQ" | "empAboveQ" | "empHalfQ" | "belowQ" | "aboveQ" | "topQ" | "boltQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

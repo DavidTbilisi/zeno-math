@@ -130,6 +130,7 @@ import dotangle from "./dotangle";
 import crossPlanes from "./crossPlanes";
 import polyOps from "./polyOps";
 import powerLaws from "./powerLaws";
+import normalModel from "./normalModel";
 import projection from "./projection";
 import differentiate from "./differentiate";
 import tangent from "./tangent";
@@ -420,6 +421,7 @@ export const GENS: Record<SkillId, Gen> = {
   crossPlanes,
   polyOps,
   powerLaws,
+  normalModel,
   projection,
   differentiate,
   tangent,
