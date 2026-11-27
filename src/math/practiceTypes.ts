@@ -527,6 +527,9 @@ export type PracticeWords = {
   itK: Record<"defineUQ" | "uDefQ" | "divideQ" | "partsDefQ" | "squareQ" | "trigSubQ", string>;
   iaK: Record<"horizQ" | "compositeQ" | "loopsQ" | "squareQ" | "semiQ" | "triangleQ" | "washerQ" | "axisQ" | "meaningQ" | "leakQ" | "waterGiven" | "waterRight" | "waterRate" | "waterAmount" | "waterAverage" | "carGiven" | "carRight" | "carRate" | "carAmount" | "carAverage" | "townGiven" | "townRight" | "townRate" | "townAmount" | "townAverage", string>;
   pvK: Record<"secondQ" | "vecVelQ" | "vecAccQ" | "motionQ" | "polarDxQ" | "polarSlopeQ" | "polarAreaQ" | "polarArcQ", string>;
+  seK: Record<"evalQ" | "whichQ" | "bounceQ", string>;
+  cvK: Record<"termQ" | "sumQ" | "integralQ" | "convNotIntegral" | "convIsIntegral" | "directQ" | "bConverges" | "bDiverges" | "aConverges" | "aDiverges" | "saysNothing" | "limitQ" | "remainderQ", string>;
+  psK: Record<"geomQ" | "calcQ" | "derivQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

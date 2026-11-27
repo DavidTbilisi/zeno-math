@@ -1034,21 +1034,21 @@
     {
       "skill": "series",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "175/264",
       "label": "correct"
     },
     {
       "skill": "series",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "350/528",
       "label": "form"
     },
     {
       "skill": "series",
       "level": 3,
-      "seed": 7,
+      "seed": 52,
       "input": "0.663",
       "label": "form",
       "note": "a decimal for an exact fraction"
@@ -8931,14 +8931,14 @@
     {
       "skill": "powerSeries",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "powerSeries",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "1/2",
       "label": "wrong",
       "note": "the limit of the ratio taken as the radius",
@@ -8947,14 +8947,14 @@
     {
       "skill": "powerSeries",
       "level": 2,
-      "seed": 7,
+      "seed": 436,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "powerSeries",
       "level": 2,
-      "seed": 7,
+      "seed": 436,
       "input": "1/2",
       "label": "wrong",
       "note": "the limit of the ratio taken as the radius",
@@ -8963,14 +8963,14 @@
     {
       "skill": "powerSeries",
       "level": 3,
-      "seed": 7,
+      "seed": 146,
       "input": "-4 < x < -2",
       "label": "correct"
     },
     {
       "skill": "powerSeries",
       "level": 3,
-      "seed": 7,
+      "seed": 146,
       "input": "-4 <= x <= -2",
       "label": "wrong",
       "note": "both ends taken without trying them",
@@ -8979,42 +8979,42 @@
     {
       "skill": "convergence",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "converges",
       "label": "correct"
     },
     {
       "skill": "convergence",
       "level": 1,
-      "seed": 7,
+      "seed": 27,
       "input": "diverges",
       "label": "wrong"
     },
     {
       "skill": "convergence",
       "level": 2,
-      "seed": 7,
+      "seed": 60,
       "input": "ratio test",
       "label": "correct"
     },
     {
       "skill": "convergence",
       "level": 2,
-      "seed": 7,
+      "seed": 60,
       "input": "comparison test",
       "label": "wrong"
     },
     {
       "skill": "convergence",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "converges conditionally",
       "label": "correct"
     },
     {
       "skill": "convergence",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "converges absolutely",
       "label": "wrong",
       "note": "Σ 1/n^(1/3) diverges",
@@ -87139,6 +87139,1104 @@
       "input": "(12, 27)",
       "label": "wrong",
       "mistake": "velocityForPosition"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 1,
+      "input": "sum k=1..12 (k + 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 1,
+      "input": "sum k=1..13 (k + 1)",
+      "label": "wrong",
+      "mistake": "sigmaTopAsLastTerm"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 1,
+      "input": "sum k=0..12 (k + 1)",
+      "label": "wrong",
+      "mistake": "sigmaStartShifted"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 2,
+      "input": "sum k=1..12 (2k - 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 2,
+      "input": "sum k=1..23 (2k - 1)",
+      "label": "wrong",
+      "mistake": "sigmaTopAsLastTerm"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 2,
+      "input": "sum k=0..12 (2k - 1)",
+      "label": "wrong",
+      "mistake": "sigmaStartShifted"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 2,
+      "input": "sum k=1..12 (k)",
+      "label": "wrong",
+      "mistake": "sigmaStepLeftOut"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 3,
+      "input": "25",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 3,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "sigmaTopLeftOut"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 3,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "sigmaStartAtOne"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 3,
+      "input": "32",
+      "label": "wrong"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 4,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 4,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "sigmaTopLeftOut"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 4,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "sigmaStartAtOne"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 4,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 5,
+      "input": "sum k=1..5 (4k - 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 5,
+      "input": "sum k=1..18 (4k - 2)",
+      "label": "wrong",
+      "mistake": "sigmaTopAsLastTerm"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 5,
+      "input": "sum k=0..5 (4k - 2)",
+      "label": "wrong",
+      "mistake": "sigmaStartShifted"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 5,
+      "input": "sum k=1..5 (k + 1)",
+      "label": "wrong",
+      "mistake": "sigmaStepLeftOut"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 6,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 6,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "sigmaTopLeftOut"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 6,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 16,
+      "input": "22",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 16,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "sigmaTopLeftOut"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 16,
+      "input": "29",
+      "label": "wrong"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 44,
+      "input": "sum k=1..10 (k - 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 44,
+      "input": "sum k=1..7 (k - 3)",
+      "label": "wrong",
+      "mistake": "sigmaTopAsLastTerm"
+    },
+    {
+      "skill": "series",
+      "level": 1,
+      "seed": 44,
+      "input": "sum k=0..10 (k - 3)",
+      "label": "wrong",
+      "mistake": "sigmaStartShifted"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 1,
+      "input": "44",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 1,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "bounceUpOnlyCounted"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 1,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "bounceDropCountedTwice"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 1,
+      "input": "51",
+      "label": "wrong"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 2,
+      "input": "34",
+      "label": "correct"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 2,
+      "input": "26",
+      "label": "wrong",
+      "mistake": "bounceUpOnlyCounted"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 2,
+      "input": "52",
+      "label": "wrong",
+      "mistake": "bounceDropCountedTwice"
+    },
+    {
+      "skill": "series",
+      "level": 3,
+      "seed": 2,
+      "input": "41",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 1,
+      "input": "50",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 1,
+      "input": "232",
+      "label": "wrong",
+      "mistake": "partialSumForTerm"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 1,
+      "input": "56",
+      "label": "wrong",
+      "mistake": "termIndexShifted"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 1,
+      "input": "57",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 2,
+      "input": "31",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 2,
+      "input": "136",
+      "label": "wrong",
+      "mistake": "partialSumForTerm"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 2,
+      "input": "35",
+      "label": "wrong",
+      "mistake": "termIndexShifted"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 2,
+      "input": "38",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 4,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 4,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "termIndexShifted"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 4,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 5,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 5,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "termLimitForSum"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 5,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 10,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 10,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "termLimitForSum"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 10,
+      "input": "7/5",
+      "label": "wrong",
+      "mistake": "firstPartialForSum"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 10,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 11,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 11,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "termLimitForSum"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 11,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "firstPartialForSum"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 11,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 37,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 37,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "termLimitForSum"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 37,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 43,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 43,
+      "input": "18",
+      "label": "wrong",
+      "mistake": "partialSumForTerm"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 43,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 98,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 98,
+      "input": "12",
+      "label": "wrong",
+      "mistake": "partialSumForTerm"
+    },
+    {
+      "skill": "convergence",
+      "level": 1,
+      "seed": 98,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 1,
+      "input": "It converges, but its sum is not the integral's value",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 1,
+      "input": "It converges, and its sum equals the integral's value",
+      "label": "wrong",
+      "mistake": "sumEqualsIntegral"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 2,
+      "input": "diverges",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 3,
+      "input": "It converges, but its sum is not the integral's value",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 3,
+      "input": "It converges, and its sum equals the integral's value",
+      "label": "wrong",
+      "mistake": "sumEqualsIntegral"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 5,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 5,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "limitComparisonFlipped"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 5,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 10,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 10,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "limitComparisonFlipped"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 10,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 11,
+      "input": "The test says nothing",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 11,
+      "input": "Σ aₙ diverges",
+      "label": "wrong",
+      "mistake": "comparisonWrongWay"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 13,
+      "input": "Σ aₙ converges",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 13,
+      "input": "The test says nothing",
+      "label": "wrong",
+      "mistake": "comparisonNoVerdict"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 20,
+      "input": "Σ aₙ diverges",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 20,
+      "input": "The test says nothing",
+      "label": "wrong",
+      "mistake": "comparisonNoVerdict"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 41,
+      "input": "The test says nothing",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 41,
+      "input": "Σ aₙ diverges",
+      "label": "wrong",
+      "mistake": "comparisonWrongWay"
+    },
+    {
+      "skill": "convergence",
+      "level": 2,
+      "seed": 47,
+      "input": "diverges",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 3,
+      "seed": 1,
+      "input": "1/16",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 3,
+      "seed": 1,
+      "input": "1/14",
+      "label": "wrong",
+      "mistake": "remainderLastTerm"
+    },
+    {
+      "skill": "convergence",
+      "level": 3,
+      "seed": 1,
+      "input": "17/144",
+      "label": "wrong",
+      "mistake": "remainderNextTwo"
+    },
+    {
+      "skill": "convergence",
+      "level": 3,
+      "seed": 2,
+      "input": "1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "convergence",
+      "level": 3,
+      "seed": 2,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "remainderLastTerm"
+    },
+    {
+      "skill": "convergence",
+      "level": 3,
+      "seed": 2,
+      "input": "13/42",
+      "label": "wrong",
+      "mistake": "remainderNextTwo"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 1,
+      "input": "81",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 1,
+      "input": "-27",
+      "label": "wrong",
+      "mistake": "geometricPowerOff"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 1,
+      "input": "88",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 2,
+      "input": "-16",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 2,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "geometricSignLost"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "geometricPowerOff"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 2,
+      "input": "-9",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 3,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 3,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "geometricPowerOff"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 3,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 11,
+      "input": "-81",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 11,
+      "input": "81",
+      "label": "wrong",
+      "mistake": "geometricSignLost"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 11,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "geometricPowerOff"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 1,
+      "seed": 11,
+      "input": "-74",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 1,
+      "input": "192",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 1,
+      "input": "160",
+      "label": "wrong",
+      "mistake": "differentiatedIndexShift"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 1,
+      "input": "199",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 2,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 2,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "differentiatedIndexShift"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 2,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 5,
+      "input": "-1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 5,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 5,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "geometricSignLost"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 10,
+      "input": "-1/7",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 10,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 10,
+      "input": "1/7",
+      "label": "wrong",
+      "mistake": "geometricSignLost"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 11,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 11,
+      "input": "-16",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 11,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "geometricSignLost"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 11,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 20,
+      "input": "8/3",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 20,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 25,
+      "input": "1/5",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 25,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 41,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 41,
+      "input": "-16",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 41,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "geometricSignLost"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 41,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 188,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 188,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 188,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 244,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 244,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "integratedNotDivided"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 2,
+      "seed": 244,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 1,
+      "input": "4/9",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 1,
+      "input": "2/9",
+      "label": "wrong",
+      "mistake": "derivativeAtZeroAsCoefficient"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 2,
+      "input": "2/3",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 2,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "derivativeAtZeroAsCoefficient"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 13,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 13,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "derivativeAtZeroAsCoefficient"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 13,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 37,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 37,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "derivativeAtZeroAsCoefficient"
+    },
+    {
+      "skill": "powerSeries",
+      "level": 3,
+      "seed": 37,
+      "input": "13",
+      "label": "wrong"
     }
   ]
 }

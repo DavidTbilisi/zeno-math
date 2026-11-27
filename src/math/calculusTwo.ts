@@ -90,6 +90,11 @@ export function pickOf(options: Opt[], right: number, slips: [MistakeId, number,
   const traps: Trap[] = slips.filter(([, i]) => i !== right).map(([id, i, vars]) => ({ id, a: { k: "pick", options, right: i }, ...(vars ? { vars } : {}) }));
   return { answer: { k: "pick", options, right, ...(traps.length ? { traps } : {}) }, show: options[right].tex, plain: options[right].plain, format: "pick" };
 }
+/** A pick question with its options in a random order, the right one and the slips' places followed. */
+export function shuffled(r: { next: () => number }, options: Opt[], right: number, slips: [MistakeId, number][]): Shown {
+  const order = options.map((_, i) => i).sort(() => r.next() - 0.5);
+  return pickOf(order.map((i) => options[i]), order.indexOf(right), slips.map(([id, at]) => [id, order.indexOf(at)]));
+}
 
 // ---------- written out ----------
 

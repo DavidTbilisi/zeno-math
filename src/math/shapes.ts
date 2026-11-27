@@ -1082,6 +1082,16 @@ function ladderRatesPreview(): Piece[] {
     poly([[160, 205], [200, 205]], { width: 2, color: "#e8590c" })];
 }
 
+function partialSumsPreview(): Piece[] {
+  // Bars for S₁, S₂, … of 1/2 + 1/4 + …, rising to a line at 1.
+  const bars = [1, 2, 3, 4, 5, 6].map((n) => {
+    const h = 150 * (1 - 0.5 ** n);
+    const x = 30 + (n - 1) * 30;
+    return poly([[x, 190], [x, 190 - h], [x + 18, 190 - h], [x + 18, 190], [x, 190]], { width: 2, color: "#1971c2" });
+  });
+  return [poly([[20, 190], [220, 190]], { width: 2 }), ...bars, poly([[20, 40], [220, 40]], { width: 3, color: "#e8590c" })];
+}
+
 function fillUnderPreview(): Piece[] {
   // A rising curve with left-end rectangles under it.
   const c = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 180 - (i * i) / 16 - 30] as [number, number]);
@@ -2870,6 +2880,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDropPoint", build: dropPointPreview, live: "dropPoint" },
   { id: "liveShapeRead", build: shapeReadPreview, live: "shapeRead" },
   { id: "liveLadderRates", build: ladderRatesPreview, live: "ladderRates" },
+  { id: "livePartialSums", build: partialSumsPreview, live: "partialSums" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

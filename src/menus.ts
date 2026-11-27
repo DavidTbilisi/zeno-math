@@ -161,6 +161,7 @@ export const MENUS: MenuGroup[] = [
           { live: "dropPoint", icon: "⇗" },
           { live: "shapeRead", icon: "f″" },
           { live: "ladderRates", icon: "🪜" },
+          { live: "partialSums", icon: "Σ" },
           { kind: "ode", icon: "y′", label: "odes" },
           { kind: "numerical", icon: "≈", label: "numericalTool" },
         ],
