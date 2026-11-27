@@ -2822,6 +2822,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     adders, subtracting by adding the opposite plus one, an ALU slice (AND, OR, +, −), a 4-bit ALU with a zero flag, a
     4-bit register with Load, a 3-bit counter. Numbers of several switches are read in decimal in the table, which
     shows a few chosen rows while every row (up to 1024) is checked; free play offers each chip once its puzzle is passed
+  - *A tiny computer* (#844; Discrete → Computer, and the Computer stage of the Software engineer goal): the
+    hypothetical machine of Stallings, Fig. 3.4 to 3.5, worked by hand. Memory holds the program from 300 and the data
+    from 940, the system bus has address, data and control lines, and the CPU shows PC, MAR, MBR, IR, AC, the ALU and
+    the control unit. Each tap of the clock is one step of the fetch, decode and execute cycle, and its path lights up;
+    ▶ runs a whole instruction at a time. Drag an instruction or an address onto a cell, or tap a cell and type into it.
+    The I/O module has ports 5, 6 and 7: drag the keyboard's or the display's plug to a port, and tap the cable to pull
+    it out. IN or OUT with nothing on its port makes the CPU wait. Six puzzles: the book's program, an adder, the
+    book's problem 3.1 with the devices still to plug in, a countdown, multiply by adding, and the larger of two. Each
+    halted program is checked on several tests and earns stars by length. Notices: a program that writes into its own
+    cells, and waiting on a missing device.
   - *Be the sort*: the player is the algorithm, making each of its decisions in turn: bubble sort's next swap (tap ⇄
     between two neighbours; the compares that swap nothing play themselves from the ▲, and a pass with no swap ends
     the sort), the gap insertion sort's key drops into, the smallest of the rest for selection sort (the first of two

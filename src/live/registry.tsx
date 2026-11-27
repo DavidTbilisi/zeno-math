@@ -154,6 +154,7 @@ import { WhichTool } from "./WhichTool";
 import { Crux } from "./Crux";
 import { ConnectTowns } from "./ConnectTowns";
 import { CircuitLab } from "./CircuitLab";
+import { CpuLab } from "./CpuLab";
 import { DescentLab } from "./DescentLab";
 import { Surface } from "./Surface";
 import { PcaLab } from "./PcaLab";
@@ -349,6 +350,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   cruxEq: Crux,
   descentLab: DescentLab,
   circuitLab: CircuitLab,
+  cpuLab: CpuLab,
   surface: Surface,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,

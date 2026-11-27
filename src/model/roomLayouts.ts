@@ -11,7 +11,7 @@ export const ROOM_LAYOUTS: Readonly<Partial<Record<GoalId, GoalRooms>>> = {
     "algorithms": ["read:algorithms","skill:growth","skill:inversions","game:beSort","game:beSearch","game:beBinary","game:bePointers","game:beWindow","game:beStack","game:beHeap","game:beTree","game:beUnion","game:beTopo","game:beDp","game:beBacktrack"],
     "chance": ["read:probability","skill:probability","skill:conditional","skill:expectation","skill:distributions"],
     "graphics": ["read:vectors","skill:coordinates","skill:vectors","skill:dotangle","skill:matrices","skill:determinant","skill:linearMaps","lab:geoLab","skill:crossPlanes"],
-    "computer": ["lab:circuitLab"],
+    "computer": ["lab:circuitLab","lab:cpuLab"],
     "crypto": ["skill:congruences","skill:crt","skill:fermatEuler","skill:rsa","skill:discreteLog"],
   },
   algorithms: {
