@@ -1582,6 +1582,18 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function systemLabPreview(): Piece[] {
+  // A green board seen from above at a slant, its CPU and memory in, a cable out to a display.
+  const board = { fill: "#2b8a3e", color: "#1b5e20", width: 1.5 };
+  return [
+    path([[20, 70], [140, 70], [170, 100], [50, 100]], board),
+    path([[66, 76], [92, 76], [100, 86], [74, 86]], { fill: "#adb5bd", color: "#212529", width: 1 }),
+    seg([112, 74], [126, 92], { color: "#37b24d", width: 4 }),
+    rect(140, 8, 52, 36, { fill: "#212529", color: "#212529", width: 1 }),
+    seg([166, 44], [150, 74], { color: "#212529", width: 2.5 }),
+  ];
+}
+
 function cpuLabPreview(): Piece[] {
   // Memory cells, the bus, and the CPU's registers with the step just done lit orange.
   const cell = { fill: "#ffffff", color: "#dee2e6", width: 1 };
@@ -2962,6 +2974,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveDescentLab", build: descentLabPreview, live: "descentLab" },
   { id: "liveCircuitLab", build: circuitLabPreview, live: "circuitLab" },
   { id: "liveCpuLab", build: cpuLabPreview, live: "cpuLab" },
+  { id: "liveSystemLab", build: systemLabPreview, live: "systemLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },

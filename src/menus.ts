@@ -193,7 +193,7 @@ export const MENUS: MenuGroup[] = [
           { live: "solver", icon: "🧮" },
         ],
       },
-      { title: "secComputer", items: [{ live: "circuitLab", icon: "💡" }, { live: "cpuLab", icon: "🖥️" }] },
+      { title: "secComputer", items: [{ live: "circuitLab", icon: "💡" }, { live: "cpuLab", icon: "🖥️" }, { live: "systemLab", icon: "🔌" }] },
       {
         title: "secChance", items: [
           { live: "coin", icon: "🪙" },
