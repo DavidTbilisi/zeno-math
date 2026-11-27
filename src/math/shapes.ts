@@ -1616,6 +1616,14 @@ function ioLabPreview(): Piece[] {
   ];
 }
 
+function baseDotsPreview(): Piece[] {
+  // A row of place values with a dot under every third: 64, 8, 1.
+  return [
+    ...[0, 1, 2, 3, 4, 5, 6].map((i) => rect(6 + i * 26, 20, 22, 22, { fill: i % 3 === 0 ? "#d0ebff" : "#f8f9fa", color: "#adb5bd", width: 1 })),
+    ...[0, 3, 6].map((i) => ellipse(17 + i * 26, 60, 6, 6, { fill: "#1971c2", color: "#1971c2", width: 1 })),
+  ];
+}
+
 function cacheLabPreview(): Piece[] {
   // Four cache lines beside a grid of memory blocks, each coloured by the line it may go in.
   const colors = ["#d0ebff", "#d3f9d8", "#fff3bf", "#ffe3e3"];
@@ -3031,6 +3039,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSystemLab", build: systemLabPreview, live: "systemLab" },
   { id: "liveRaidLab", build: raidLabPreview, live: "raidLab" },
   { id: "liveCacheLab", build: cacheLabPreview, live: "cacheLab" },
+  { id: "liveBaseDots", build: baseDotsPreview, live: "baseDots" },
   { id: "liveIoLab", build: ioLabPreview, live: "ioLab" },
   { id: "liveHammingLab", build: hammingLabPreview, live: "hammingLab" },
   { id: "livePipelineLab", build: pipelineLabPreview, live: "pipelineLab" },

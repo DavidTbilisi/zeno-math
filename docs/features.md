@@ -2867,6 +2867,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     (interrupts: save, take, return), or sets up the DMA controller first (DMA). Acting too early or stepping past is
     explained. At the end the ticks each way leaves for the program are compared (5, 11 and 16 of 20; Stallings
     7.2–7.5). A fourth puzzle polls a keyboard every k ticks and finds the slowest polling that loses no key.
+  - *Skip-count dots* (#862; Discrete → Computer, and the Computer stage of the Software engineer
+    goal): the place-value row of base 2 or 3, high on the left, with dots under it. Drag the first dot to where the
+    dots start and the second to every k-th column; arcs show each ×b^k jump. A number sits under the row (tap a
+    digit to change it); with the dots from 1 its digits close into coloured groups of k, each read as one digit of
+    base b^k (binary to base 4, octal and hex, base 3 to base 9 and 27), and the sum of groups times powers of the new
+    base shows why. Dots started at 2 still step ×4 but are base 4 shifted, and nothing groups.
   - *The cache* (#855; Discrete → Computer, and the Computer stage of the Software engineer goal): the CPU's requests
     in a row, a cache of four lines, and main memory's sixteen blocks coloured by the line or set each may go in. Each
     request is answered by tapping a cache line (or dragging the block from memory onto it): the line that holds it, a

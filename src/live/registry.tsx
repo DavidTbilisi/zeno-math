@@ -155,6 +155,7 @@ import { Crux } from "./Crux";
 import { ConnectTowns } from "./ConnectTowns";
 import { CircuitLab } from "./CircuitLab";
 import { CpuLab } from "./CpuLab";
+import { BaseDots } from "./BaseDots";
 import { SystemLab } from "./SystemLab";
 import { RaidLab } from "./RaidLab";
 import { CacheLab } from "./CacheLab";
@@ -358,6 +359,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   descentLab: DescentLab,
   circuitLab: CircuitLab,
   cpuLab: CpuLab,
+  baseDots: BaseDots,
   systemLab: SystemLab,
   raidLab: RaidLab,
   cacheLab: CacheLab,
