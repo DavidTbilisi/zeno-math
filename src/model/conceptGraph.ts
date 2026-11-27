@@ -367,11 +367,141 @@ export const ROUNDING = {
 } as const satisfies ConceptGraph;
 export type RoundingNode = keyof typeof ROUNDING.nodes;
 
+// The middle-school skills (#755): equations, expressions, decimals, percentages, ratio and proportion. Their
+// questions have no working to read, so each generator names the ideas a question needs (Exercise.ideas) and taggedUses
+// below checks them against the graph. The arithmetic inside is left out: the numbers are small, and the graphs carry
+// the skill's own ideas and the few they share with the others (a bracket multiplied out, a sign, rounding).
+
+/** Linear equations: undoing, both sides, checking, writing one from a story, the lines of a solution, how many solutions. */
+export const EQUATIONS = {
+  nodes: {
+    undoOp: "solving undoes what was done to x, with the opposite operation on both sides: x + 5 = 12 gives x = 12 − 5",
+    checkRoot: "a solution makes the two sides equal: put it in for x and work each side out",
+    balance: "x on both sides: the same x term taken from both sides, never added across",
+    writeEquation: "a story, a sentence or a bar made into an equation: each number in the place the words give it",
+    eqSteps: "each line of a solution is an equation with the same solution as the one before: the first that is not is the mistake",
+    solutionCount: "an equation has one solution, none or every number: collected, x on both sides alike leaves a true or a false statement",
+    distribute: BRACKETS.nodes.distribute,
+    signTimes: SIGNED.nodes.signTimes,
+  },
+  edges: [
+    ["undoOp", "balance", "needs"],
+    ["checkRoot", "undoOp", "joins"],
+    ["undoOp", "eqSteps", "needs"],
+    ["writeEquation", "undoOp", "joins"],
+    ["balance", "solutionCount", "needs"],
+    ["distribute", "balance", "joins"],
+    ["signTimes", "undoOp", "joins"],
+  ],
+} as const satisfies ConceptGraph;
+export type EquationsNode = keyof typeof EQUATIONS.nodes;
+
+/** Expressions (the sameExpression skill): letters for numbers, signs, like terms, words, a common factor taken out. */
+export const EXPRESSIONS = {
+  nodes: {
+    letterTimes: "a number beside a letter multiplies it: 3n is 3 × n, xy is x × y",
+    letterSquare: "a square is the letter times itself: 3n² is 3 × n × n, x · x is x², not 2x",
+    termSigns: "a term takes the sign in front of it: in 5x − 3y the coefficient of y is −3",
+    likeTerms: "only like terms combine: the x terms together, the plain numbers together",
+    wordsToExpr: "words made into an expression: the order of a difference or a quotient, and brackets where a sum is kept together",
+    factorOut: "a common factor taken out divides every term: 6x + 9 = 3(2x + 3)",
+    distribute: BRACKETS.nodes.distribute,
+    signTimes: SIGNED.nodes.signTimes,
+  },
+  edges: [
+    ["letterTimes", "letterSquare", "needs"],
+    ["letterTimes", "likeTerms", "needs"],
+    ["termSigns", "likeTerms", "joins"],
+    ["letterTimes", "wordsToExpr", "needs"],
+    ["distribute", "factorOut", "needs"],
+    ["letterTimes", "distribute", "joins"],
+    ["signTimes", "termSigns", "joins"],
+  ],
+} as const satisfies ConceptGraph;
+export type ExpressionsNode = keyof typeof EXPRESSIONS.nodes;
+
+/** Decimals: comparing, lining up the points, moving the digits, multiplying and dividing, rounding. */
+export const DECIMALS = {
+  nodes: {
+    decCompare: "decimals compared place by place from the left: 2.4 is more than 2.35, though it has fewer digits",
+    decAlign: "adding or taking away decimals: the points lined up, a zero put in where a number has fewer places",
+    decShift: "× 10, 100 or 1000 moves every digit that many places up, so the number grows; ÷ moves them down",
+    decTimes: "a decimal times or divided by a whole number: worked in tenths or hundredths as whole numbers",
+    divPastPoint: "a division carried past the point: the remainder written as tenths, hundredths and on",
+    roundPlace: ROUNDING.nodes.roundPlace,
+  },
+  edges: [
+    ["decCompare", "decAlign", "needs"],
+    ["decShift", "decTimes", "joins"],
+    ["decTimes", "divPastPoint", "needs"],
+    ["roundPlace", "divPastPoint", "joins"],
+    ["decCompare", "roundPlace", "joins"],
+  ],
+} as const satisfies ConceptGraph;
+export type DecimalsNode = keyof typeof DECIMALS.nodes;
+
+/** Percentages: per hundred, a percent of a number, one number as a percent of another, the whole back, a change. */
+export const PERCENT = {
+  nodes: {
+    perHundred: "a percent is a number of hundredths: 35 % of a grid is 35 of its 100 squares",
+    percentOf: "p % of a number is p hundredths of it: 30 % of 80 is 0.3 × 80 = 24",
+    asPercent: "what percent a is of b: a ÷ b, times 100 %",
+    reversePercent: "the whole from a part: p % is the part, so 1 % is the part ÷ p and 100 % is that times 100",
+    percentChange: "a change as a percent: the change divided by the amount before it",
+  },
+  edges: [
+    ["perHundred", "percentOf", "needs"],
+    ["perHundred", "asPercent", "needs"],
+    ["percentOf", "reversePercent", "needs"],
+    ["asPercent", "percentChange", "needs"],
+  ],
+} as const satisfies ConceptGraph;
+export type PercentNode = keyof typeof PERCENT.nodes;
+
+/** Ratio: simplest form, equal ratios, a ratio as parts of a whole, the same units, the order of its terms. */
+export const RATIO = {
+  nodes: {
+    ratioSimplify: "a ratio in its simplest form: every term divided by their highest common factor",
+    ratioScale: "equal ratios: every term multiplied by the same number, never the same number added",
+    ratioParts: "a ratio as parts: m : n is m + n equal parts of the whole, so A's share is m of them",
+    ratioUnits: "a ratio compares amounts in one unit: 50 cm to 2 m is 50 : 200",
+    ratioOrder: "a ratio's terms keep their order: A : B is A first, across on a graph",
+  },
+  edges: [
+    ["ratioScale", "ratioSimplify", "joins"],
+    ["ratioScale", "ratioParts", "needs"],
+    ["ratioSimplify", "ratioUnits", "joins"],
+    ["ratioOrder", "ratioScale", "joins"],
+  ],
+} as const satisfies ConceptGraph;
+export type RatioNode = keyof typeof RATIO.nodes;
+
+/** Direct and inverse proportion: y = kx, its constant, a proportion written, x × y the same, a power of x. */
+export const PROPORTION = {
+  nodes: {
+    directProp: "y in direct proportion to x: y ÷ x is the same for every pair, and the graph is a line through (0, 0)",
+    constantK: "the constant of proportion: k = y ÷ x, what y is when x is 1, so y = kx",
+    propEquation: "a proportion written with the same quantity on top on both sides: 3 notebooks over 12 lari = 5 over x",
+    inverseProp: "y in inverse proportion to x: x × y stays the same, so as one doubles the other halves",
+    powerProp: "y in proportion to a power of x: y = kx², so doubling x makes y four times as big",
+  },
+  edges: [
+    ["directProp", "constantK", "needs"],
+    ["directProp", "propEquation", "joins"],
+    ["directProp", "inverseProp", "joins"],
+    ["constantK", "powerProp", "needs"],
+  ],
+} as const satisfies ConceptGraph;
+export type ProportionNode = keyof typeof PROPORTION.nodes;
+
 /**
  * Every idea of every graph, each once, in the order the app lists them: fractions' (with arithmetic's) first, then
  * each later graph's own. An idea is one thing wherever it is used, so a student has one P(known) for each.
  */
-export const IDEAS = { ...FRACTIONS.nodes, ...SIGNED.nodes, ...POWERS.nodes, ...BRACKETS.nodes, ...ORDER.nodes, ...ROUNDING.nodes };
+export const IDEAS = {
+  ...FRACTIONS.nodes, ...SIGNED.nodes, ...POWERS.nodes, ...BRACKETS.nodes, ...ORDER.nodes, ...ROUNDING.nodes,
+  ...EQUATIONS.nodes, ...EXPRESSIONS.nodes, ...DECIMALS.nodes, ...PERCENT.nodes, ...RATIO.nodes, ...PROPORTION.nodes,
+};
 export type IdeaNode = keyof typeof IDEAS;
 
 const inOrderOf = <N extends string>(g: ConceptGraph<N>, nodes: ReadonlySet<string>): Uses<N> => usesOf(g, (Object.keys(g.nodes) as N[]).filter((n) => nodes.has(n)));
@@ -567,6 +697,23 @@ export function roundingUses(ex: Exercise): Uses<RoundingNode> {
   return inOrderOf(ROUNDING, nodes);
 }
 
+/**
+ * The ideas a question of a skill whose generator names them (#755) needs: its tags, in the graph's order. A question
+ * without tags, or with one the graph hasn't, is a generator's slip, so it throws rather than read as needing nothing.
+ */
+const taggedUses = <N extends string>(g: ConceptGraph<N>, skill: string) => (ex: Exercise): Uses<N> => {
+  const tags = ex.ideas ?? [];
+  const stray = tags.filter((t) => !(t in g.nodes));
+  if (!tags.length || stray.length) throw new Error(`${skill} ${ex.level}/${ex.seed}: ideas [${tags.join(", ")}] are not its graph's`);
+  return inOrderOf(g, new Set(tags));
+};
+export const equationsUses = taggedUses(EQUATIONS, "linear");
+export const expressionsUses = taggedUses(EXPRESSIONS, "sameExpression");
+export const decimalsUses = taggedUses(DECIMALS, "decimals");
+export const percentUses = taggedUses(PERCENT, "percent");
+export const ratioUses = taggedUses(RATIO, "ratio");
+export const proportionUses = taggedUses(PROPORTION, "proportion");
+
 /** The idea each signed-numbers mistake shows is missing. */
 export const SIGNED_GAPS: Partial<Record<MistakeId, SignedNode>> = {
   // 3 − (−5) answered −2: the negative taken away as if it were positive.
@@ -631,8 +778,119 @@ export const ROUNDING_GAPS: Partial<Record<MistakeId, RoundingNode>> = {
   // 0.0038 as 4 × 10⁻² : the power one out, the places to the first digit miscounted.
   powerOneOut: "stdForm",
 };
+/** The idea each equations mistake shows is missing. */
+export const EQUATIONS_GAPS: Partial<Record<MistakeId, EquationsNode>> = {
+  // x + 4 = 9 answered 13: the operation in the equation used, not undone.
+  inverseNotUsed: "undoOp",
+  // x/3 + 2 = 5 answered 21: the 2 moved across with its sign kept.
+  constantSignKept: "undoOp",
+  // which of these solves 3x + 4 = 19: 15 picked, the 3 in front of x left out.
+  coefficientIgnored: "checkRoot",
+  // 0.7x + 2 = 0.3x + 6 answered 4: the x terms of the two sides added.
+  xTermsAdded: "balance",
+  // a bracket multiplied out on its first term only.
+  bracketFirstTermOnly: "distribute",
+  // −4x = 12 answered 3: the sign lost dividing.
+  divideSignLost: "signTimes",
+  // a story's operation swapped, a tape read as n(x + b), the two numbers of a fare swapped, the middle number given.
+  storyOpSwapped: "writeEquation",
+  tapeMisread: "writeEquation",
+  termsMeaningSwapped: "writeEquation",
+  middleForSmallest: "writeEquation",
+  // a later line taken for the first wrong one.
+  mistakeLaterLine: "eqSteps",
+  // no solution and every number taken for each other.
+  solutionCountSwapped: "solutionCount",
+};
+/** The idea each expressions mistake shows is missing. */
+export const EXPRESSIONS_GAPS: Partial<Record<MistakeId, ExpressionsNode>> = {
+  // 3n at n = 4 read as 34; xy taken as x + y.
+  letterAsDigit: "letterTimes",
+  xyAsSum: "letterTimes",
+  // 3x² at x = 2 taken as 6²; x · x as 2x; n² taken as always bigger than n.
+  coefficientSquared: "letterSquare",
+  squareAsDouble: "letterSquare",
+  squareBigger: "letterSquare",
+  // the coefficient of y in 5x − 3y given as 3.
+  termSignLost: "termSigns",
+  // 3x + 4 written 7x; a number put in with the letter terms.
+  joinedUnlike: "likeTerms",
+  unlikeCombined: "likeTerms",
+  // "5 less than n" as 5 − n, n ÷ 4 as 4 ÷ n, 3 boxes and 2 loose as 3(n + 2), a sum left unbracketed, a fare's numbers swapped.
+  lessThanReversed: "wordsToExpr",
+  quotientReversed: "wordsToExpr",
+  allMultiplied: "wordsToExpr",
+  bracketsLeftOut: "wordsToExpr",
+  rateForFixed: "wordsToExpr",
+  // 6x + 9 factored as 3(2x + 9), or 3x + 3 as 3(x + 0).
+  factorNotDividedAll: "factorOut",
+  factorLeftOne: "factorOut",
+  // 3(x + 2) as 3x + 2.
+  firstTermOnly: "distribute",
+  // 2a − 3b at b = −2 with b's minus dropped.
+  negSubSignLost: "signTimes",
+};
+/** The idea each decimals mistake shows is missing (cutting off for rounding is ROUNDING_GAPS's). */
+export const DECIMALS_GAPS: Partial<Record<MistakeId, DecimalsNode>> = {
+  // 2.35 taken for more than 2.4.
+  longerDecimal: "decCompare",
+  // 3.4 + 1.25 worked with the last digits lined up.
+  alignedRight: "decAlign",
+  // 3.4 × 100 answered 0.034.
+  pointWrongWay: "decShift",
+};
+/** The idea each percentages mistake shows is missing. */
+export const PERCENT_GAPS: Partial<Record<MistakeId, PercentNode>> = {
+  // the white squares counted, or the parts of a bar counted, as the percent.
+  percentUnshaded: "perHundred",
+  partsAsPercent: "perHundred",
+  // 1 % of 300 taken as 30; 30 % of 80 as 30 × 80 or 80 ÷ 30; 150 % of 40 as the 20 over 100 % alone.
+  onePercentTenth: "percentOf",
+  percentTimesWhole: "percentOf",
+  divideByPercent: "percentOf",
+  overHundredExtra: "percentOf",
+  // 12 of 48 answered 12 %, or 400 %.
+  countAsPercent: "asPercent",
+  percentFlipped: "asPercent",
+  // 20 % is 30, the whole answered 6; a sale price raised by the discount for the price before it.
+  percentOfPart: "reversePercent",
+  percentOfAfter: "reversePercent",
+};
+/** The idea each ratio mistake shows is missing. */
+export const RATIO_GAPS: Partial<Record<MistakeId, RatioNode>> = {
+  // 2 : 3 = 8 : ? answered 9: the 6 added, not the ratio scaled by 4.
+  addedNotScaled: "ratioScale",
+  // one part of a tape given for B's share; m : n shared as m/n of the total.
+  onePartOnly: "ratioParts",
+  ratioAsFraction: "ratioParts",
+  // 50 cm : 2 m written 25 : 1.
+  ratioUnitsMixed: "ratioUnits",
+  // a point of A : B read up first.
+  ratioPointSwapped: "ratioOrder",
+};
+/** The idea each proportion mistake shows is missing. */
+export const PROPORTION_GAPS: Partial<Record<MistakeId, ProportionNode>> = {
+  // y each the same amount more than x taken for proportional; a line that misses (0, 0) too; a direct case worked inversely.
+  constantDifference: "directProp",
+  lineNotThroughOrigin: "directProp",
+  directAsInverse: "directProp",
+  // k as x ÷ y, the number with x taken for k, a point read backwards.
+  kInverted: "constantK",
+  kCoefficientOnly: "constantK",
+  pointReadBackwards: "constantK",
+  // the second ratio of a proportion upside down.
+  proportionFlipped: "propEquation",
+  // an inverse case worked as direct.
+  inverseAsDirect: "inverseProp",
+  // y ∝ x² worked as y ∝ x; x² found and the root not taken.
+  powerIgnored: "powerProp",
+  noSquareRoot: "powerProp",
+};
 /** Every mistake that names an idea, from every graph's table; no mistake is in two. */
-export const GAPS: Partial<Record<MistakeId, IdeaNode | EdgeId>> = { ...FRACTIONS_GAPS, ...SIGNED_GAPS, ...POWERS_GAPS, ...BRACKETS_GAPS, ...ORDER_GAPS, ...ROUNDING_GAPS };
+export const GAPS: Partial<Record<MistakeId, IdeaNode | EdgeId>> = {
+  ...FRACTIONS_GAPS, ...SIGNED_GAPS, ...POWERS_GAPS, ...BRACKETS_GAPS, ...ORDER_GAPS, ...ROUNDING_GAPS,
+  ...EQUATIONS_GAPS, ...EXPRESSIONS_GAPS, ...DECIMALS_GAPS, ...PERCENT_GAPS, ...RATIO_GAPS, ...PROPORTION_GAPS,
+};
 
 /**
  * How much of a concept a student has: the share of its ideas and of its connections they know, and whether they have

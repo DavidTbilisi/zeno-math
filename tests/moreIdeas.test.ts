@@ -12,6 +12,7 @@ import type { MistakeId } from "../src/math/mistakes.ts";
 import {
   BRACKETS, BRACKETS_GAPS, bracketsUses, FRACTIONS_GAPS, GAPS, IDEAS, needsOf, ORDER, ORDER_GAPS, orderUses, POWERS, POWERS_GAPS, powersUses, ROUNDING, ROUNDING_GAPS,
   roundingUses, SIGNED, SIGNED_GAPS, signedUses, type ConceptGraph,
+  DECIMALS_GAPS, EQUATIONS_GAPS, EXPRESSIONS_GAPS, PERCENT_GAPS, PROPORTION_GAPS, RATIO_GAPS,
 } from "../src/model/conceptGraph.ts";
 import { rng } from "../src/model/random.ts";
 import { asksWhatWasHard, gapIdea, hasIdeas, IDEA_PRIOR, SKILL_IDEAS, usesOf, type IdeaState } from "../src/model/ideaState.ts";
@@ -32,7 +33,7 @@ test("the five graphs are whole, their needs have no cycle, and an idea shared b
     assert.ok(hasIdeas(skill), skill);
   }
   // No mistake is in two tables, and the table the app reads has them all.
-  const tables = [FRACTIONS_GAPS, ...SKILLS.map((s) => GRAPHS[s][1])];
+  const tables = [FRACTIONS_GAPS, ...SKILLS.map((s) => GRAPHS[s][1]), EQUATIONS_GAPS, EXPRESSIONS_GAPS, DECIMALS_GAPS, PERCENT_GAPS, RATIO_GAPS, PROPORTION_GAPS];
   assert.equal(Object.keys(GAPS).length, tables.reduce((n, t) => n + Object.keys(t).length, 0));
   // "sign" is tried on every question, so it names no idea.
   assert.equal(gapIdea("sign"), undefined);

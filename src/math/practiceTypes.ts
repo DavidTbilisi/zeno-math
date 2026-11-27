@@ -185,6 +185,11 @@ export type Exercise = {
    */
   src?: string;
   /**
+   * The ideas of the skill's concept graph the question needs, named by its generator (#755: linear, sameExpression,
+   * decimals, percent, ratio, proportion), where no working is there to read them off: what conceptGraph.ts reads.
+   */
+  ideas?: readonly string[];
+  /**
    * The steps before the last, each a question of its own, on a skill whose questions are worked in steps (stepsOf):
    * the last step is the question itself. Faded worked examples show some of them done and leave the rest.
    */

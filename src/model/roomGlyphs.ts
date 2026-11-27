@@ -15,6 +15,7 @@ import { TOPICS } from "./topics.ts";
 /** The idea whose glyph marks its home skill, where the first of the skill's ideas would say less. */
 const HOME_IDEA: Partial<Record<IdeaSkill, IdeaNode>> = {
   times: "multiplyFacts", fractions: "addSub", integers: "negLine", indices: "powValue", expand: "distribute", order: "mulFirst", rounding: "roundPlace", hcf: "hcf",
+  linear: "undoOp", sameExpression: "likeTerms", decimals: "decCompare", percent: "percentOf", ratio: "ratioScale", proportion: "directProp",
 };
 
 /** A mark for each skill on a roadmap that has no idea card of its own: its notation where it has one. */
@@ -24,13 +25,13 @@ export const SKILL_GLYPHS: Partial<Record<SkillId, string>> = {
   barModels: "▭▭?", makeTarget: "→24", kakooma: "+=?", parity: "±±", currency: "€⇄$",
   placeValue: "3|4|5", addSubtract: "8+5", tables: "6×7", divide: "56÷7", squares: "√49", realNumbers: "ℝ", convert: "½=50%", stackedFractions: "½⁄3", areaPerimeter: "▭cm²",
   // fractions, ratio and percentages
-  shadeFraction: "◑", compareFractions: "⅓<½", equivalent: "⅔=⁴⁄₆", orderFractions: "<⅓<", makeWhole: "⅓+⅔", decimals: "0.25",
-  percent: "25%", ratio: "3:2", rate: "km/h", scale: "1:50", inflation: "↑%", moneySense: "%off",
+  shadeFraction: "◑", compareFractions: "⅓<½", equivalent: "⅔=⁴⁄₆", orderFractions: "<⅓<", makeWhole: "⅓+⅔",
+  rate: "km/h", scale: "1:50", inflation: "↑%", moneySense: "%off",
   // number theory
   bases: "1011₂", divisibility: "÷3?", primes: "2·3·5", modular: "≡", congruences: "ax≡b", crt: "≡≡", fermatEuler: "aᵖ⁻¹", rsa: "RSA",
   discreteLog: "gˣ=h", bezout: "ax+by", residues: "x²≡a", elGamal: "gᵏ", ellipticCurves: "y²=x³",
   // algebra
-  shapePatterns: "○△○△", findRule: "?→", growingPattern: "▪▪▪", balance: "▲=●●", sameExpression: "2x=x+x", linear: "2x=6", proportion: "y∝x",
+  shapePatterns: "○△○△", findRule: "?→", growingPattern: "▪▪▪", balance: "▲=●●",
   formulae: "s=d/t", logs: "log", exponential: "2ˣ", sequences: "a₁,a₂", series: "Σ", inequalities: "x≤3", regions: "y>2x", absoluteValue: "|x|", polyOps: "3x·x²", powerLaws: "aᵐaⁿ", normalModel: "z", factor: "x²−1", algFractions: "¹⁄ₓ",
   quadratic: "x²+bx", quadraticGraph: "(x+h)²", simultaneous: "{x,y}", polynomials: "p(x)", polyGraph: "x³", rationalFn: "1/x", rootEquations: "√x=", fnTransform: "f(x−h)", surds: "√2",
   // functions

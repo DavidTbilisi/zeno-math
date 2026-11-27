@@ -358,34 +358,34 @@ test("a class practises the skills it was given, in curriculum order", async () 
 });
 
 test("the plan carries the student's spaced reviews: a skill mastered comes back a day later, then three days after a right review; kept, then not", async () => {
-  const { code } = (await call("POST", "/api/classes", { skills: ["linear"] }, TEACHER)).body;
+  const { code } = (await call("POST", "/api/classes", { skills: ["average"] }, TEACHER)).body;
   const joined = (await call("POST", "/api/students", { class: code })).body;
   const plan = async () => (await call("GET", `/api/students/${joined.code}/plan`)).body;
   assert.deepEqual((await plan()).spacing, {});
   const right = (shownAt: number, policy = joined.condition) =>
-    attempt(joined.code, { policy, level: 3, shownAt, answers: [{ verdict: "correct", ms: 9000 }] });
+    attempt(joined.code, { skill: "average", policy, level: 3, shownAt, answers: [{ verdict: "correct", ms: 9000 }] });
   const T = Date.UTC(2026, 10, 1, 9);
   let at = T, spacing: Record<string, { step: number; due: number; again?: boolean }> = {};
-  for (let i = 0; i < 60 && !spacing.linear; i++) {
+  for (let i = 0; i < 60 && !spacing.average; i++) {
     assert.equal((await call("POST", "/api/attempts", right((at += 60_000)))).status, 201);
     spacing = (await plan()).spacing;
   }
-  assert.deepEqual(spacing.linear, { step: 0, due: at + DAY }, "scheduled by the answer that mastered it, on the student's clock");
+  assert.deepEqual(spacing.average, { step: 0, due: at + DAY }, "scheduled by the answer that mastered it, on the student's clock");
   // The review: chosen by the spaced review, never marked as a review of misses.
-  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { policy: "spaced", review: true }))).status, 400);
+  assert.equal((await call("POST", "/api/attempts", attempt(joined.code, { skill: "average", policy: "spaced", review: true }))).status, 400);
   const review = at + DAY + 5000;
   assert.equal((await call("POST", "/api/attempts", right(review, "spaced"))).status, 201);
-  assert.deepEqual((await plan()).spacing.linear, { step: 1, due: review + 3 * DAY });
+  assert.deepEqual((await plan()).spacing.average, { step: 1, due: review + 3 * DAY });
   // The teacher sees the skill kept, and the arm counts it as the result, not as progress still to check.
   const dash = async () => (await call("GET", `/api/research/dashboard?class=${code}`, undefined, TEACHER)).body;
   let d = await dash();
-  assert.deepEqual([d.students[0].holds, d.students[0].held], [{ linear: "kept" }, { mastered: 0, kept: 1, again: 0 }]);
+  assert.deepEqual([d.students[0].holds, d.students[0].held], [{ average: "kept" }, { mastered: 0, kept: 1, again: 0 }]);
   assert.deepEqual([d.arms[joined.arm].kept, d.arms[joined.arm].mastered], [1, 0]);
   // Wrong on the next review: no longer kept, practised again.
-  const wrong = attempt(joined.code, { policy: "spaced", level: 3, shownAt: review + 3 * DAY + 5000, outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] });
+  const wrong = attempt(joined.code, { skill: "average", policy: "spaced", level: 3, shownAt: review + 3 * DAY + 5000, outcome: "revealed", answers: [{ verdict: "wrong", ms: 9000 }] });
   assert.equal((await call("POST", "/api/attempts", wrong)).status, 201);
   d = await dash();
-  assert.deepEqual([d.students[0].holds, d.arms[joined.arm].kept], [{ linear: "again" }, 0]);
+  assert.deepEqual([d.students[0].holds, d.arms[joined.arm].kept], [{ average: "again" }, 0]);
   const exported = parseCsv((await call("GET", `/api/research/attempts.csv?class=${code}`, undefined, TEACHER)).body as string);
   assert.equal(exported.filter((r) => r.policy === "spaced").length, 2);
 });

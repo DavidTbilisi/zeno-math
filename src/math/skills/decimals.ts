@@ -6,7 +6,7 @@
 import { fill } from "../chart";
 import { hundredthsGrids } from "../decimalGrids";
 import { pickText } from "../mulDivKit";
-import { fmtM, noZeroEnd, num, tidy } from "../practiceKit";
+import { fmtM, noZeroEnd, num, tidy, withIdeas } from "../practiceKit";
 import type { Gen, Part, Trap } from "../practiceTypes";
 
 const gen: Gen = (r, L, w) => {
@@ -25,7 +25,7 @@ const gen: Gen = (r, L, w) => {
     const steps = a.p === b.p ? [`${fa} ${op} ${fb} = ${tidy(v)}`] : [`${fa} ${op} ${fb} = ${fmtM(at(a), P)} ${op} ${fmtM(at(b), P)}`, `= ${fmtM(res, P)}`];
     const story = prompt !== w.prompts.times;
     const solution = { kind: "decimal" as const, spec: { pic: "columns", op, a: at(a), b: at(b), pa: a.p, pb: b.p, P, steps } };
-    return { prompt, q: story ? "" : `${fa} ${op} ${fb}`, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution, ...(pic ? { pic } : {}) };
+    return withIdeas(["decAlign"], { prompt, q: story ? "" : `${fa} ${op} ${fb}`, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution, ...(pic ? { pic } : {}) });
   };
   if (L === 1) {
     const kind = r.int(0, 4);
@@ -51,7 +51,7 @@ const gen: Gen = (r, L, w) => {
     const op = plus ? "+" : "-";
     const steps = a.p === b.p ? [`${fa} ${op} ${fb} = ${tidy(v)}`] : [`${fa} ${op} ${fb} = ${fmtM(at(a), P)} ${op} ${fmtM(at(b), P)}`, `= ${fmtM(res, P)}`];
     const solution = { kind: "decimal" as const, spec: { pic: "columns", op, a: at(a), b: at(b), pa: a.p, pb: b.p, P, steps } };
-    return { prompt: w.prompts.times, q: `${fa} ${op} ${fb}`, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution };
+    return withIdeas(["decAlign"], { prompt: w.prompts.times, q: `${fa} ${op} ${fb}`, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution });
   }
   /** x × f or x ÷ f (f a power of ten), with the other one as the trap: the digits moved the wrong way. */
   const shifted = (m: number, p: number, f: number, times: boolean) => {
@@ -67,7 +67,7 @@ const gen: Gen = (r, L, w) => {
       const { v, traps } = shifted(m, p, f, times);
       const q = `${fmtM(m, p)} ${times ? "\\times" : "\\div"} ${f}`;
       const solution = { kind: "decimal" as const, spec: { pic: "shift", m, p, e: Math.log10(f), times, steps: [`${q} = ${tidy(v)}`] } };
-      return { prompt: w.prompts.times, q, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution };
+      return withIdeas(["decShift"], { prompt: w.prompts.times, q, answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution });
     }
     // A decimal times or divided by a one-digit number (P4), worked in tenths or hundredths as whole numbers. For a
     // division the answer is drawn first, so it comes out exactly.
@@ -77,14 +77,14 @@ const gen: Gen = (r, L, w) => {
       const m = noZeroEnd(r, f + 1, 30 * f);
       const v = (m * d) / f;
       const steps = [`${fmtM(m, p)} \\times ${d} = \\frac{${m} \\times ${d}}{${f}} = \\frac{${m * d}}{${f}} = ${tidy(v)}`];
-      return { prompt: w.prompts.times, q: `${fmtM(m, p)} \\times ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec: { pic: "jumps", m, p, d, times: true, steps } } };
+      return withIdeas(["decTimes"], { prompt: w.prompts.times, q: `${fmtM(m, p)} \\times ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec: { pic: "jumps", m, p, d, times: true, steps } } });
     }
     let m: number;
     do m = noZeroEnd(r, f + 1, 20 * f);
     while ((m * d) % 10 === 0);
     const v = m / f;
     const steps = [`${fmtM(m * d, p)} \\div ${d} = \\frac{${m * d} \\div ${d}}{${f}} = \\frac{${m}}{${f}} = ${tidy(v)}`];
-    return { prompt: w.prompts.times, q: `${fmtM(m * d, p)} \\div ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec: { pic: "jumps", m, p, d, times: false, steps } } };
+    return withIdeas(["decTimes"], { prompt: w.prompts.times, q: `${fmtM(m * d, p)} \\div ${d}`, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec: { pic: "jumps", m, p, d, times: false, steps } } });
   }
   if (r.int(0, 3) === 0) {
     // Thousandths (#704): a number with three places and one with one or two, bare or as stopwatch times.
@@ -120,7 +120,7 @@ const gen: Gen = (r, L, w) => {
     const a = `${fmtM(m, p)} ${w.units[down ? big : small]}`;
     const units = [w.units[down ? big : small], w.units[down ? small : big]];
     const spec = { pic: "shift", m, p, e: Math.log10(f), times: down, units, steps: [`${fmtM(m, p)} ${down ? "\\times" : "\\div"} ${f} = ${tidy(v)}`] };
-    return { prompt: fill(w.prompts.convertUnit, { a, u: w.units[down ? small : big] }), q: "", answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec } };
+    return withIdeas(["decShift"], { prompt: fill(w.prompts.convertUnit, { a, u: w.units[down ? small : big] }), q: "", answer: { ...num(v), traps }, show: tidy(v), plain: tidy(v), format: "number", solution: { kind: "decimal", spec } });
   }
   // A whole number divided by a whole number, the answer as a decimal (P4): exact when the divisor goes into a power of
   // ten, else rounded to 2 places. The worked solution is the long division, carried past the point.
@@ -133,8 +133,8 @@ const gen: Gen = (r, L, w) => {
   const places = exact ? (tidy(v).split(".")[1] ?? "").length : 3;
   const solution = { kind: "model" as const, spec: { type: "division", style: "bracket", a, b, decimals: places, step: 999 } };
   const q = `${a} \\div ${b}`;
-  if (exact) return { prompt: w.prompts.decimalQuotient, q, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution };
-  return { prompt: w.prompts.decimalQuotient2, q, answer: num(v, 0.0051), show: v.toFixed(2), plain: v.toFixed(2), format: "dp2", solution };
+  if (exact) return withIdeas(["divPastPoint"], { prompt: w.prompts.decimalQuotient, q, answer: num(v), show: tidy(v), plain: tidy(v), format: "number", solution });
+  return withIdeas(["divPastPoint", "roundPlace"], { prompt: w.prompts.decimalQuotient2, q, answer: num(v, 0.0051), show: v.toFixed(2), plain: v.toFixed(2), format: "dp2", solution });
 
   /** P4's new kinds (#704): 2 ± on hundredths grids, 3 the best estimate, 4 stories. */
   function easyNew(kind: number): Part {
@@ -163,9 +163,9 @@ const gen: Gen = (r, L, w) => {
       const exact = (plus ? x + y : x - y) / 100;
       const q = `${tidy(x / 100)} ${plus ? "+" : "−"} ${tidy(y / 100)}`;
       const others = [right + 2, right - 2, right + 1].filter((o) => o > 0 && o !== cut && o !== right).slice(0, cut !== right ? 1 : 2);
-      return pickText(r, fill(D.bestEstimate, { q }), String(right), cut !== right ? [{ text: String(cut), id: "truncated", vars: {} }] : [], others.map(String), {
+      return withIdeas(["roundPlace"], pickText(r, fill(D.bestEstimate, { q }), String(right), cut !== right ? [{ text: String(cut), id: "truncated", vars: {} }] : [], others.map(String), {
         steps: [`${tidy(x / 100)} \\approx ${rx}, \\quad ${tidy(y / 100)} \\approx ${ry}`, `${rx} ${plus ? "+" : "-"} ${ry} = ${right} \\quad (${tidy(exact)})`],
-      });
+      }));
     }
     const t = r.int(0, 3);
     if (t <= 1) {
@@ -195,9 +195,9 @@ const gen: Gen = (r, L, w) => {
       // More digits taken for bigger names the one with two places.
       const longer = swap ? D.nino : D.gio;
       const slips = longer !== right ? [{ text: longer, id: "longerDecimal" as const, vars: { a: Number(a).toFixed(2), b: Number(b).toFixed(2) } }] : [];
-      return pickText(r, fill(D.jump, { a, b }), right, slips, slips.length ? [] : [nino ? D.gio : D.nino], {
+      return withIdeas(["decCompare"], pickText(r, fill(D.jump, { a, b }), right, slips, slips.length ? [] : [nino ? D.gio : D.nino], {
         steps: [`${Number(a).toFixed(2)} ${nino ? ">" : "<"} ${Number(b).toFixed(2)}`],
-      });
+      }));
     }
     // A length rounded to a tenth, or a mass to a whole: the digits cut off instead is the slip.
     const tenth = r.next() < 0.5;
@@ -205,10 +205,10 @@ const gen: Gen = (r, L, w) => {
     const v = tenth ? Math.round(m / 10) / 10 : Math.round(m / 100);
     const cut = tenth ? Math.floor(m / 10) / 10 : Math.floor(m / 100);
     const a = tidy(m / 100);
-    return {
+    return withIdeas(["roundPlace"], {
       prompt: fill(tenth ? D.pencil : D.apples, { a }), q: "", answer: { ...num(v), traps: [{ id: "truncated", a: num(cut), vars: {} }] }, show: tidy(v), plain: tidy(v), format: "number",
       steps: [`${a} \\approx ${tidy(v)}`],
-    };
+    });
   }
 };
 

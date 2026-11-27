@@ -28,7 +28,7 @@ function fractions(level: Level, want: { trap?: string; form?: FractionForm }): 
 }
 
 test("the skills made of ideas and their ideas", () => {
-  assert.ok(hasIdeas("fractions") && hasIdeas("times") && hasIdeas("hcf") && !hasIdeas("linear"));
+  assert.ok(hasIdeas("fractions") && hasIdeas("times") && hasIdeas("hcf") && !hasIdeas("quadratic"));
   assert.equal(SKILL_IDEAS.fractions.length, 16);
   assert.deepEqual(SKILL_IDEAS.times, ["addWhole", "multiplyFacts", "multiplyLong"]);
   assert.deepEqual(SKILL_IDEAS.hcf, ["addWhole", "multiplyFacts", "multiplyLong", "divideExact", "hcf", "lcm"]);
@@ -64,8 +64,8 @@ test("a question moves the ideas it needs; a recognised mistake is blamed on its
   learnIdeas(sure, ex, false, "addAcross");
   assert.equal(sure.addSub, bktStep(0.99, IDEA_PRIOR, false).known);
   const none: IdeaState = {};
-  learnIdeas(none, exercise("linear", 1, 1, w), true);
-  learnIdeas(none, exercise("linear", 1, 2, w), false, "sign");
+  learnIdeas(none, exercise("quadratic", 1, 1, w), true);
+  learnIdeas(none, exercise("quadratic", 1, 2, w), false, "sign");
   assert.deepEqual(none, {});
   const arithmetic: IdeaState = {};
   learnIdeas(arithmetic, exercise("hcf", 2, 3, w), true);
@@ -112,7 +112,7 @@ test("a wrong answer with ticks: the ticked ideas fall below a plain miss and th
   assert.deepEqual(blamedTicked, blamed);
   // The list is asked after a wrong answer on a skill with ideas, unless a mistake already named one of the question's.
   assert.ok(asksWhatWasHard(ex) && asksWhatWasHard(ex, "flipFirst") && !asksWhatWasHard(ex, "addAcross"));
-  assert.ok(!asksWhatWasHard(exercise("linear", 1, 1, w)));
+  assert.ok(!asksWhatWasHard(exercise("quadratic", 1, 1, w)));
 });
 
 test("the weakest idea is the lowest; while all are level, a random one of the skill's", () => {
@@ -135,14 +135,14 @@ test("a question bears most on an idea when it asks for it alone", () => {
   const sum = fractions(1, { trap: "addAcross" });
   assert.ok(bearing(sum, "addSub") > 0 && bearing(sum, "addSub") < 0.5);
   assert.equal(bearing(sum, "toMixed"), 0);
-  assert.equal(bearing(exercise("linear", 1, 1, w), "part"), 0);
+  assert.equal(bearing(exercise("quadratic", 1, 1, w), "part"), 0);
 });
 
 test("exerciseFor: a fresh question on the skill and level, or, aimed at an idea, the one bearing most on it", () => {
   const r = rng(7);
-  const plain = exerciseFor({ skill: "linear", level: 2 }, w, r.next);
-  assert.deepEqual([plain.skill, plain.level], ["linear", 2]);
-  assert.deepEqual(exerciseFor({ skill: "linear", level: 2 }, w, rng(7).next), plain, "the same draw gives the same question");
+  const plain = exerciseFor({ skill: "quadratic", level: 2 }, w, r.next);
+  assert.deepEqual([plain.skill, plain.level], ["quadratic", 2]);
+  assert.deepEqual(exerciseFor({ skill: "quadratic", level: 2 }, w, rng(7).next), plain, "the same draw gives the same question");
   // Each fractions idea with a form of its own gets that form.
   const forms: [string, FractionForm][] = [
     ["equivalent", "equivalent"], ["lowest", "lowest"], ["commonDenom", "lcd"], ["reciprocal", "reciprocal"], ["toImproper", "toImproper"], ["toMixed", "toMixed"],
@@ -161,6 +161,6 @@ test("exerciseFor: a fresh question on the skill and level, or, aimed at an idea
   // On times every question needs the same ideas: the aim changes nothing but the draw. An idea nothing bears on, or a skill without a graph, gets a fresh question.
   assert.equal(exerciseFor({ skill: "times", level: 1, idea: "multiplyFacts" }, w, r.next).skill, "times");
   assert.equal(exerciseFor({ skill: "hcf", level: 1, idea: "toMixed" }, w, r.next).skill, "hcf");
-  assert.equal(exerciseFor({ skill: "linear", level: 1, idea: "part" }, w, r.next).skill, "linear");
+  assert.equal(exerciseFor({ skill: "quadratic", level: 1, idea: "part" }, w, r.next).skill, "quadratic");
   assert.equal(AIM_TRIES, 100);
 });

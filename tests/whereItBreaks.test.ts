@@ -24,8 +24,10 @@ test("each skill made of ideas makes a worked answer to judge from a seed, the s
     for (const L of LEVELS) {
       const b = whereItBreaks(skill, L, w, rng(5).next);
       assert.equal(b.ex.skill, skill);
-      assert.deepEqual(whereItBreaks(skill, L, w, rng(5).next), b, `${skill} ${L}: the same seed, the same question`);
-      assert.deepEqual(breakOf(exercise(skill, b.ex.level, b.ex.seed, w), b.variant), b, `${skill} ${L}: rebuilt from its question and variant`);
+      // A question's picture is drawn by a function made afresh each time: compared by what it draws.
+      const same = (x: typeof b | null) => x && { ...x, ex: { ...x.ex, pic: x.ex.pic?.svg(0, 0) } };
+      assert.deepEqual(same(whereItBreaks(skill, L, w, rng(5).next)), same(b), `${skill} ${L}: the same seed, the same question`);
+      assert.deepEqual(same(breakOf(exercise(skill, b.ex.level, b.ex.seed, w), b.variant)), same(b), `${skill} ${L}: rebuilt from its question and variant`);
       assert.equal(b.options.length, 3);
       assert.equal(new Set(b.options).size, 3);
       if (b.worked.mistake) assert.ok(b.options.includes(b.worked.mistake), `${skill}: the real mistake is offered`);
@@ -108,7 +110,7 @@ test("a run of right answers in class practice on a skill made of ideas brings o
   answer(false);
   assert.equal(s.due, undefined, "a wrong answer starts the run again");
   for (const p of ["review", "spaced", "free", "homework", "stepdown"]) answer(true, p);
-  answer(true, "adaptive", "linear");
+  answer(true, "adaptive", "quadratic");
   answer(null);
   assert.equal(s.due, undefined, "only class practice on a skill made of ideas, with something to go by");
   for (let i = 0; i < BREAK_AFTER; i++) answer(true);

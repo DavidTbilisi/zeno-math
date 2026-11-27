@@ -1,6 +1,7 @@
 // What the practice policy knows of each idea a student has met, so the adaptive condition can ask for the idea they
 // are least likely to know. The skills with a concept graph (src/model/conceptGraph.ts) are times, hcf and fractions,
-// and since issue #265 signed numbers, order of operations, rounding, powers and expanding brackets; every question on
+// and since issue #265 signed numbers, order of operations, rounding, powers and expanding brackets, and since #755
+// linear equations, expressions, decimals, percentages, ratio and proportion; every question on
 // them is read for the ideas it needs, and one BKT step moves those ideas together, as in the world
 // of ideas (src/model/ideas.ts): a question is right only when every idea it needs is known, and a wrong answer in
 // the shape of a recognised mistake (3/10 for 1/5 + 2/5) is blamed on the one idea the mistake shows is missing; after
@@ -16,16 +17,19 @@ import type { MistakeId } from "../math/mistakes.ts";
 import type { Exercise } from "../math/practice.ts";
 import type { SkillId } from "../math/practiceSkills.ts";
 import {
-  ARITHMETIC, arithmeticUses, BRACKETS, bracketsUses, FRACTIONS, fractionsUses, GAPS, IDEAS, ORDER, orderUses, POWERS, powersUses, ROUNDING, roundingUses, SIGNED, signedUses,
+  ARITHMETIC, arithmeticUses, BRACKETS, bracketsUses, DECIMALS, decimalsUses, EQUATIONS, equationsUses, EXPRESSIONS, expressionsUses, FRACTIONS, fractionsUses, GAPS, IDEAS,
+  ORDER, orderUses, PERCENT, percentUses, POWERS, powersUses, PROPORTION, proportionUses, RATIO, ratioUses, ROUNDING, roundingUses, SIGNED, signedUses,
   type IdeaNode, type Uses,
 } from "./conceptGraph.ts";
 import { bktStep, type BktParams } from "./evaluate.ts";
 
 /**
  * The skills with a concept graph, in curriculum order: what a learner knows of an idea goes from each to the next.
- * The first three are the world of ideas the simulations run (WORLD_SKILLS in ideas.ts).
+ * The first three are the world of ideas the simulations run (WORLD_SKILLS in ideas.ts); the six #755 added come last.
  */
-export const IDEA_SKILLS = ["times", "hcf", "fractions", "integers", "order", "rounding", "indices", "expand"] as const satisfies readonly SkillId[];
+export const IDEA_SKILLS = [
+  "times", "hcf", "fractions", "integers", "order", "rounding", "indices", "expand", "linear", "sameExpression", "decimals", "percent", "ratio", "proportion",
+] as const satisfies readonly SkillId[];
 export type IdeaSkill = (typeof IDEA_SKILLS)[number];
 export const hasIdeas = (skill: SkillId): skill is IdeaSkill => (IDEA_SKILLS as readonly SkillId[]).includes(skill);
 
@@ -38,7 +42,8 @@ const without = (ids: readonly string[], drop: readonly string[]) => ids.filter(
  * Times multiplies two whole numbers; hcf asks for a highest common factor or a lowest common multiple, the whole of
  * arithmetic; fractions, with its forms, asks for every idea of the graph. The later skills ask for every idea of
  * their graphs but the arithmetic their numbers never reach (no long multiplication in a signed product or a bracket,
- * no factors in rounding), and order of operations never asks for a negative number multiplied. ideasOf in ideas.ts
+ * no factors in rounding), and order of operations never asks for a negative number multiplied. The six #755 added
+ * ask for every idea of their graphs, which hold only what their generators name. ideasOf in ideas.ts
  * reads the same lists off the generators' questions, and its test holds these to that.
  */
 export const SKILL_IDEAS: Readonly<Record<IdeaSkill, readonly IdeaNode[]>> = {
@@ -50,11 +55,18 @@ export const SKILL_IDEAS: Readonly<Record<IdeaSkill, readonly IdeaNode[]>> = {
   rounding: inGraphOrder(without(Object.keys(ROUNDING.nodes), ["divideExact", "hcf", "lcm"])),
   indices: inGraphOrder(without(Object.keys(POWERS.nodes), ["divideExact", "hcf", "lcm"])),
   expand: inGraphOrder(without(Object.keys(BRACKETS.nodes), ["divideExact", "hcf", "lcm"])),
+  linear: inGraphOrder(Object.keys(EQUATIONS.nodes)),
+  sameExpression: inGraphOrder(Object.keys(EXPRESSIONS.nodes)),
+  decimals: inGraphOrder(Object.keys(DECIMALS.nodes)),
+  percent: inGraphOrder(Object.keys(PERCENT.nodes)),
+  ratio: inGraphOrder(Object.keys(RATIO.nodes)),
+  proportion: inGraphOrder(Object.keys(PROPORTION.nodes)),
 };
 
 /** How each skill's questions are read for their ideas. */
 const READERS: Record<IdeaSkill, (ex: Exercise) => Uses> = {
   times: arithmeticUses, hcf: arithmeticUses, fractions: fractionsUses, integers: signedUses, order: orderUses, rounding: roundingUses, indices: powersUses, expand: bracketsUses,
+  linear: equationsUses, sameExpression: expressionsUses, decimals: decimalsUses, percent: percentUses, ratio: ratioUses, proportion: proportionUses,
 };
 /** The ideas a question needs, read from it. */
 export const usesOf = (ex: Exercise) => READERS[ex.skill as IdeaSkill](ex).nodes as IdeaNode[];

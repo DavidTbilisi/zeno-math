@@ -5,7 +5,8 @@
 // three named mistakes, one of them the real one.
 //
 // The mistakes are the question's own traps, worked into the lines, so the working comes to exactly the answer the
-// trap gives (the tests type it into the checker, which names that mistake). Times and hcf have no traps, and a skill
+// trap gives (the tests type it into the checker, which names that mistake). The six skills #755 added are worked from
+// their questions' own steps and their traps' numbers, so only the kinds with both can be judged. Times and hcf have no traps, and a skill
 // with one trap leaves nothing to pick between, so a few slips that need no trap fill the lists (SLIPS): a times-table
 // fact one row off, a partial product without its zero, a carry lost, a common factor that isn't the highest. Each
 // mistake belongs to the idea it shows is missing (gapIdea in ideaState.ts, or SLIPS), so a question is built only
@@ -59,6 +60,12 @@ export const POOLS = {
   rounding: ["truncated", "doubleRound", "placeLost", "fullUnit"],
   indices: ["negPower", "powTimes", "powAsTimes"],
   expand: ["noMiddle", "squareTerms", "oneTermTimes"],
+  linear: ["inverseNotUsed", "divideSignLost", "constantSignKept"],
+  sameExpression: ["letterAsDigit", "coefficientSquared", "negSubSignLost"],
+  decimals: ["alignedRight", "pointWrongWay", "truncated"],
+  percent: ["onePercentTenth", "overHundredExtra", "percentOfPart", "countAsPercent"],
+  ratio: ["addedNotScaled", "onePartOnly", "ratioAsFraction"],
+  proportion: ["kInverted", "kCoefficientOnly", "directAsInverse", "inverseAsDirect"],
 } as const satisfies Record<IdeaSkill, readonly (MistakeId | Slip)[]>;
 export type BreakId = (typeof POOLS)[IdeaSkill][number];
 const isSlip = (id: string): id is Slip => id in SLIPS;
@@ -426,7 +433,242 @@ function expand(ex: Exercise): Version[] {
   return [];
 }
 
-const WRITERS: Record<IdeaSkill, (ex: Exercise) => Version[]> = { times, hcf, fractions, integers, order, rounding, indices, expand };
+// ---------- the six skills #755 added: worked from the question's own steps and its traps' numbers ----------
+
+/** The working's lines: each step's equals signs after the first start a line of their own. */
+const linesOf = (steps: readonly string[]) => steps.flatMap((s) => {
+  const [head, ...rest] = s.split(" = ");
+  return rest.length ? [`${head} = ${rest[0]}`, ...rest.slice(1).map((t) => `= ${t}`)] : [s];
+});
+/** A number as typed: a decimal when it ends, else a fraction ("47/6" for 7.8333…). */
+const typedOf = (v: number) => {
+  for (let d = 1; d <= 1000; d++) {
+    const n = Math.round(v * d);
+    if (Math.abs(v * d - n) > 1e-7) continue;
+    let q = d;
+    while (q % 2 === 0) q /= 2;
+    while (q % 5 === 0) q /= 5;
+    return q === 1 ? String(Number(v.toFixed(6))) : `${n}/${d}`;
+  }
+  return String(Number(v.toFixed(6)));
+};
+const texOfTyped = (p: string) => {
+  const m = /^(-?)(\d+)\/(\d+)$/.exec(p);
+  return m ? `${m[1]}\\frac{${m[2]}}{${m[3]}}` : p;
+};
+/** A number in TeX inside working: bracketed when negative. */
+const parTex = (s: string) => (s.startsWith("-") ? `(${s})` : s);
+const numOf = (t: Trap) => (t.a as { v: number }).v;
+const isNum = (ex: Exercise) => ex.answer.k === "num";
+
+/** Linear equations: a one-step equation undone, or x/a ± b = c and dx − e = f in two steps. */
+function linear(ex: Exercise): Version[] {
+  const steps = ex.steps ?? [];
+  const has = (id: MistakeId) => trapOf(ex, id);
+  const slip = (id: BreakId & MistakeId, lines: string[]): Version[] => {
+    const t = has(id);
+    if (!t) return [];
+    const p = typedOf(numOf(t));
+    return [{ lines: [...lines, `= ${texOfTyped(p)}`], plain: p, mistake: id, vars: t.vars }];
+  };
+  const right = (): Version => ({ lines: linesOf(steps), plain: ex.plain });
+  let m: RegExpExecArray | null;
+  if (steps.length === 1) {
+    const s = steps[0];
+    if ((m = /^x = (\S+) ([+-]) (\S+) = (\S+)$/.exec(s))) return [right(), ...slip("inverseNotUsed", [`x = ${m[1]} ${m[2] === "+" ? "-" : "+"} ${m[3]}`])];
+    if ((m = /^x = \\frac\{(\S+)\}\{(\S+)\} = (\S+)$/.exec(s)))
+      return [right(), ...slip("inverseNotUsed", [`x = ${m[1]} \\times ${parTex(m[2])}`]), ...slip("divideSignLost", [`x = \\frac{${m[1]}}{${m[2]}}`])];
+    if ((m = /^x = (\S+) \\times \\frac\{(\d+)\}\{(\d+)\} = (\S+)$/.exec(s))) return [right(), ...slip("inverseNotUsed", [`x = ${m[1]} \\times \\frac{${m[3]}}{${m[2]}}`])];
+    if ((m = /^x = (\S+) \\times \((-?\d+)\) = (\S+)$/.exec(s)) || (m = /^x = (\S+) \\times (\d+) = (\S+)$/.exec(s)))
+      return [right(), ...slip("inverseNotUsed", [`x = \\frac{${m[1]}}{${m[2]}}`]), ...slip("divideSignLost", [`x = ${m[1]} \\times ${parTex(m[2])}`])];
+    return [];
+  }
+  if (steps.length !== 2) return [];
+  // x/a ± b = c: the b undone first, then the a.
+  if ((m = /^\\frac\{x\}\{(\d+)\} = (-?\d+) ([+-]) (\d+) = (-?\d+)$/.exec(steps[0])) && /^x = /.test(steps[1])) {
+    const [a, c, b] = [Number(m[1]), Number(m[2]), Number(m[4])];
+    const w = m[3] === "+" ? c - b : c + b;
+    return [right(), ...slip("constantSignKept", [`\\frac{x}{${a}} = ${c} ${m[3] === "+" ? "-" : "+"} ${b}`, `= ${w}`, `x = ${par(w)} \\times ${a}`])];
+  }
+  // dx − e = f: the e added to both sides, then divided by d.
+  if ((m = /^(\d*\.?\d+)x = (-?\d*\.?\d+) \+ (\d*\.?\d+) = (\S+)$/.exec(steps[0])) && /^x = \\frac/.test(steps[1])) {
+    const [d, f, e] = [m[1], m[2], m[3]];
+    const w = tidy(Number(f) - Number(e));
+    return [right(), ...slip("constantSignKept", [`${d}x = ${f} - ${e}`, `= ${w}`, `x = \\frac{${w}}{${d}}`])];
+  }
+  return [];
+}
+
+/** Expressions: a value worked out with a number put in for each letter. */
+function sameExpression(ex: Exercise): Version[] {
+  const steps = ex.steps ?? [];
+  if (!isNum(ex) || !steps.length) return [];
+  const v = ex.plain;
+  let m: RegExpExecArray | null;
+  const t = (id: MistakeId) => trapOf(ex, id);
+  // an ± b at n: 3n is 3 × n, not the digits 3 and n.
+  if ((m = /^(\d+) \\times (\d+) ([+-]) (\d+) = (-?\d+)$/.exec(steps[0])) && t("letterAsDigit")) {
+    const [a, n, s, b] = [m[1], m[2], m[3], m[4]];
+    const x = t("letterAsDigit")!;
+    return [
+      { lines: [`= ${a} \\times ${n} ${s} ${b}`, `= ${v}`], plain: v },
+      { lines: [`= ${a}${n} ${s} ${b}`, `= ${numOf(x)}`], plain: String(numOf(x)), mistake: "letterAsDigit", vars: x.vars },
+    ];
+  }
+  // kx² ± m at x: only x is squared.
+  if ((m = /^(\d+) \\times \((-?\d+)\)\^2 ([+-]) (\d+) = /.exec(steps[0])) && t("coefficientSquared")) {
+    const [k, x, s, c] = [Number(m[1]), Number(m[2]), m[3], m[4]];
+    const tr = t("coefficientSquared")!;
+    return [
+      { lines: [`= ${k} \\times ${par(x)}^2 ${s} ${c}`, `= ${k} \\times ${x * x} ${s} ${c}`, `= ${v}`], plain: v },
+      { lines: [`= (${k} \\times ${par(x)})^2 ${s} ${c}`, `= ${(k * x) ** 2} ${s} ${c}`, `= ${numOf(tr)}`], plain: String(numOf(tr)), mistake: "coefficientSquared", vars: tr.vars },
+    ];
+  }
+  // A thrown ball, vt − 5t²: only t is squared.
+  if ((m = /^(\d+) \\times (\d+) - 5 \\times (\d+)\^2 = /.exec(steps[0])) && t("coefficientSquared")) {
+    const [u, s] = [Number(m[1]), Number(m[2])];
+    const tr = t("coefficientSquared")!;
+    return [
+      { lines: [`= ${u} \\times ${s} - 5 \\times ${s}^2`, `= ${u * s} - ${5 * s * s}`, `= ${v}`], plain: v },
+      { lines: [`= ${u} \\times ${s} - (5 \\times ${s})^2`, `= ${u * s} - ${(5 * s) ** 2}`, `= ${numOf(tr)}`], plain: String(numOf(tr)), mistake: "coefficientSquared", vars: tr.vars },
+    ];
+  }
+  // pa − qb + c with b negative: −q × (b) is added.
+  if (steps.length === 2 && (m = /^= (\d+) \+ (\d+) \+ (\d+) = (-?\d+)$/.exec(steps[1])) && t("negSubSignLost")) {
+    const tr = t("negSubSignLost")!;
+    return [
+      { lines: [`= ${steps[0]}`, `= ${m[1]} + ${m[2]} + ${m[3]}`, `= ${v}`], plain: v },
+      { lines: [`= ${steps[0]}`, `= ${m[1]} - ${m[2]} + ${m[3]}`, `= ${numOf(tr)}`], plain: String(numOf(tr)), mistake: "negSubSignLost", vars: tr.vars },
+    ];
+  }
+  return [];
+}
+
+/** Decimals: a sum or difference in columns, × or ÷ a power of ten, and a measurement rounded. */
+function decimals(ex: Exercise): Version[] {
+  const spec = ex.solution?.spec as Record<string, unknown> | undefined;
+  if (!isNum(ex)) return [];
+  if (spec?.pic === "columns") {
+    const t = trapOf(ex, "alignedRight");
+    if (!t) return [];
+    const [a, b, pa, pb, P, op] = [spec.a, spec.b, spec.pa, spec.pb, spec.P, spec.op] as [number, number, number, number, number, string];
+    const work = (x: number, y: number, value: string) => ({ lines: [`= ${fmtM(x, P)} ${op} ${fmtM(y, P)}`, `= ${value}`], plain: value });
+    return [work(a, b, ex.plain), { ...work(a / 10 ** (P - pa), b / 10 ** (P - pb), tidy(numOf(t))), mistake: "alignedRight", vars: t.vars }];
+  }
+  if (spec?.pic === "shift") {
+    const t = trapOf(ex, "pointWrongWay");
+    if (!t) return [];
+    const first = `${fmtM(spec.m as number, spec.p as number)} ${spec.times ? "\\times" : "\\div"} 10^{${spec.e}}`;
+    return [{ lines: [first, `= ${ex.plain}`], plain: ex.plain }, { lines: [first, `= ${tidy(numOf(t))}`], plain: tidy(numOf(t)), mistake: "pointWrongWay", vars: t.vars }];
+  }
+  const t = trapOf(ex, "truncated");
+  const m = t && /^(\d+\.\d+) \\approx \S+$/.exec(ex.steps?.[0] ?? "");
+  if (!t || !m) return [];
+  // To a whole when cutting off leaves the whole number, else to a tenth: the digit after the place decides.
+  const whole = numOf(t) === Math.floor(Number(m[1]));
+  const cut = m[1].indexOf(".") + (whole ? 0 : 2);
+  const first = `${m[1].slice(0, cut)}\\,|\\,${m[1].slice(cut)}`;
+  return [{ lines: [first, `\\approx ${ex.plain}`], plain: ex.plain }, { lines: [first, `\\approx ${tidy(numOf(t))}`], plain: tidy(numOf(t)), mistake: "truncated", vars: t.vars }];
+}
+
+/** Percentages: 1 % of a number, a percent over 100, the whole from a part, and one number as a percent of another. */
+function percent(ex: Exercise): Version[] {
+  const at = (id: MistakeId) => trapOf(ex, id);
+  let t: Trap | undefined;
+  const n = (k: string) => Number(t!.vars![k]);
+  if ((t = at("onePercentTenth"))) {
+    const a = n("a");
+    return [{ lines: [`1\\% = ${a} \\div 100`, `= ${ex.plain}`], plain: ex.plain }, { lines: [`1\\% = ${a} \\div 10`, `= ${numOf(t)}`], plain: String(numOf(t)), mistake: "onePercentTenth", vars: t.vars }];
+  }
+  if ((t = at("overHundredExtra"))) {
+    const first = `${n("p")}\\% = 100\\% + ${n("e")}\\%`;
+    return [{ lines: [first, `= ${n("a")} + ${numOf(t)}`, `= ${ex.plain}`], plain: ex.plain }, { lines: [first, `= ${numOf(t)}`], plain: String(numOf(t)), mistake: "overHundredExtra", vars: t.vars }];
+  }
+  if ((t = at("percentOfPart"))) {
+    const [p, a] = [n("p"), n("a")];
+    return [
+      { lines: [`${p}\\% = ${a}`, `100\\% = ${a} \\times \\frac{100}{${p}}`, `= ${ex.plain}`], plain: ex.plain },
+      { lines: [`${p}\\% = ${a}`, `100\\% = ${a} \\times \\frac{${p}}{100}`, `= ${numOf(t)}`], plain: String(numOf(t)), mistake: "percentOfPart", vars: t.vars },
+    ];
+  }
+  if ((t = at("countAsPercent"))) {
+    const [a, b] = [n("a"), n("b")];
+    return [
+      { lines: [`\\frac{${a}}{${b}} \\times 100\\%`, `= ${ex.plain.replace("%", "\\%")}`], plain: ex.plain },
+      { lines: [`\\frac{${a}}{100} \\times 100\\%`, `= ${a}\\%`], plain: `${a}%`, mistake: "countAsPercent", vars: t.vars },
+    ];
+  }
+  return [];
+}
+
+/** Ratio: a missing term of equal ratios, one part of a tape, and a total shared or a part as a fraction. */
+function ratio(ex: Exercise): Version[] {
+  const spec = ex.solution?.spec as { pic?: string; vs?: number[]; u?: number; who?: number } | undefined;
+  let t: Trap | undefined;
+  if (isNum(ex) && (t = trapOf(ex, "addedNotScaled")) && typeof t.vars?.k === "number") {
+    const [a, b, k] = [Number(t.vars.a), Number(t.vars.b), t.vars.k];
+    const v = Number(ex.plain), other = v / k;
+    if (!Number.isInteger(other) || other + b - a !== numOf(t)) return [];
+    return [
+      { lines: [`${b} \\div ${a} = ${k}`, `${other} \\times ${k} = ${v}`], plain: ex.plain },
+      { lines: [`${b} - ${a} = ${b - a}`, `${other} + ${b - a} = ${numOf(t)}`], plain: String(numOf(t)), mistake: "addedNotScaled", vars: t.vars },
+    ];
+  }
+  if ((t = trapOf(ex, "onePartOnly")) && ex.steps?.length === 2) {
+    const u = Number(t.vars?.u);
+    return [{ lines: [...ex.steps], plain: ex.plain }, { lines: [ex.steps[0], `${u} \\times 1 = ${u}`], plain: String(u), mistake: "onePartOnly", vars: t.vars }];
+  }
+  if ((t = trapOf(ex, "ratioAsFraction")) && spec?.vs) {
+    const [m, n] = spec.vs;
+    if (spec.pic === "share" && spec.u) {
+      const T = spec.u * (m + n);
+      return [
+        { lines: [`${T} \\div ${m + n} = ${spec.u}`, `${spec.u} \\times ${m} = ${spec.u * m}`], plain: ex.plain },
+        { lines: [`${T} \\times \\frac{${m}}{${n}}`, `= ${numOf(t)}`], plain: String(numOf(t)), mistake: "ratioAsFraction", vars: t.vars },
+      ];
+    }
+    if (spec.pic === "fraction")
+      return [
+        { lines: [`${m} + ${n} = ${m + n}`, `\\frac{${m}}{${m + n}}`], plain: ex.plain },
+        { lines: [`${fr(m, n).tex()}`], plain: plainFrac(fr(m, n)), mistake: "ratioAsFraction", vars: t.vars },
+      ];
+  }
+  return [];
+}
+
+/** Proportion: k read off an equation or a table, and a word problem through the amount for one or the product. */
+function proportion(ex: Exercise): Version[] {
+  let t: Trap | undefined;
+  if ((t = trapOf(ex, "kCoefficientOnly"))) {
+    const [x, a, k] = [t.vars!.x, t.vars!.a, t.vars!.k];
+    return [{ lines: [`y = \\frac{${x}}{${a}}x`, `= ${k}x`, `k = ${k}`], plain: ex.plain }, { lines: [`y = ${x}x`, `k = ${x}`], plain: String(x), mistake: "kCoefficientOnly", vars: t.vars }];
+  }
+  if ((t = trapOf(ex, "kInverted")) && isNum(ex) && typeof t.vars?.yv === "number") {
+    const [y, x] = [t.vars.yv, t.vars.xv];
+    return [
+      { lines: [`k = \\frac{y}{x} = \\frac{${y}}{${x}}`, `= ${ex.plain}`], plain: ex.plain },
+      { lines: [`k = \\frac{x}{y} = \\frac{${x}}{${y}}`, `\\approx ${t.vars.x}`], plain: String(t.vars.x), mistake: "kInverted", vars: t.vars },
+    ];
+  }
+  const [s0, s1] = ex.steps ?? [];
+  const about = (v: number, shown: string) => (Math.abs(v - Number(shown)) < 1e-9 ? `= ${shown}` : `\\approx ${shown}`);
+  let m0: RegExpExecArray | null, m1: RegExpExecArray | null;
+  // Direct: the amount for one, then times the number asked about.
+  if ((t = trapOf(ex, "directAsInverse")) && (m0 = /^(\d+) \\div (\d+) = \S+$/.exec(s0 ?? "")) && (m1 = /^\S+ \\times (\d+) = \S+$/.exec(s1 ?? ""))) {
+    const [a, b, c] = [Number(m0[1]), Number(m0[2]), Number(m1[1])];
+    return [{ lines: [s0, s1], plain: ex.plain }, { lines: [`${a} \\times ${b} = ${a * b}`, `${a * b} \\div ${c} ${about(numOf(t), String(t.vars!.x))}`], plain: String(t.vars!.x), mistake: "directAsInverse", vars: t.vars }];
+  }
+  // Inverse: the product that stays the same, then divided by the number asked about.
+  if ((t = trapOf(ex, "inverseAsDirect")) && (m0 = /^(\d+) \\times (\d+) = \S+$/.exec(s0 ?? "")) && (m1 = /^\S+ \\div (\d+) = \S+$/.exec(s1 ?? ""))) {
+    const [n, a, c] = [Number(m0[1]), Number(m0[2]), Number(m1[1])];
+    return [{ lines: [s0, s1], plain: ex.plain }, { lines: [`\\frac{${a}}{${n}} \\times ${c}`, about(numOf(t), String(t.vars!.x))], plain: String(t.vars!.x), mistake: "inverseAsDirect", vars: t.vars }];
+  }
+  return [];
+}
+
+const WRITERS: Record<IdeaSkill, (ex: Exercise) => Version[]> = {
+  times, hcf, fractions, integers, order, rounding, indices, expand, linear, sameExpression, decimals, percent, ratio, proportion,
+};
 
 /**
  * The workings a question can be shown with: the right one first, then each with a mistake whose idea the question

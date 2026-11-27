@@ -103,15 +103,15 @@ test("the outbox survives a failing network and keeps attempts added mid-send", 
 });
 
 test("leaving a question moves the class plan on the way the server will", () => {
-  const plan = toClassPlan({ ...protocol, condition: "fixed", feature: "policy", arm: "off", skills: ["linear", "expand"], position: 4, recent: ["linear", "linear", "expand"], state: priorState(), ideas: {}, ema: {} });
+  const plan = toClassPlan({ ...protocol, condition: "fixed", feature: "policy", arm: "off", skills: ["quadratic", "expand"], position: 4, recent: ["quadratic", "quadratic", "expand"], state: priorState(), ideas: {}, ema: {} });
   const base = { clientId: "x", student: student.code, level: 2 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, shownAt: 0, predicted: 0.5 };
-  const right: Attempt = { ...base, skill: "linear", outcome: "solved", policy: "fixed", answers: [{ input: "3", verdict: "correct", ms: 1 }] };
-  const before = plan.model.predict({ student: ME, skill: "linear", level: 2 });
+  const right: Attempt = { ...base, skill: "quadratic", outcome: "solved", policy: "fixed", answers: [{ input: "3", verdict: "correct", ms: 1 }] };
+  const before = plan.model.predict({ student: ME, skill: "quadratic", level: 2 });
   applyAttempt(plan, right);
   assert.equal(plan.position, 5);
-  assert.deepEqual(plan.recent, ["linear", "expand", "linear"]);
-  assert.ok(plan.model.predict({ student: ME, skill: "linear", level: 2 }) > before);
-  assert.ok(plan.ema.linear! > EMA.start, "the moving average on the skill rises with it");
+  assert.deepEqual(plan.recent, ["quadratic", "expand", "quadratic"]);
+  assert.ok(plan.model.predict({ student: ME, skill: "quadratic", level: 2 }) > before);
+  assert.ok(plan.ema.quadratic! > EMA.start, "the moving average on the skill rises with it");
   // A free question teaches the model but doesn't move the fixed sequence; form messages alone teach nothing.
   const formOnly: Attempt = { ...base, skill: "expand", outcome: "skipped", policy: "free", answers: [{ input: "6/2", verdict: "form", ms: 1 }] };
   const state = JSON.stringify(plan.model.state());
@@ -163,7 +163,7 @@ test("an attempt teaches the ideas as the server will: the question rebuilt from
   assert.deepEqual(Object.keys(miss).sort(), Object.keys(right).sort());
   // Form messages alone, a skipped question nobody tried, and other skills say nothing.
   learnFromAttempt(formOnly, { ...base, outcome: "skipped", answers: [{ input: "((", verdict: "form", ms: 1 }] });
-  learnFromAttempt(formOnly, { skill: "linear", level: 1, seed: 1, outcome: "solved", answers: [{ input: "1", verdict: "correct", ms: 1 }] });
+  learnFromAttempt(formOnly, { skill: "quadratic", level: 1, seed: 1, outcome: "solved", answers: [{ input: "1", verdict: "correct", ms: 1 }] });
   assert.deepEqual(formOnly, {});
   // What was ticked as hard goes with a miss: the ticked idea ends lower than after the plain miss.
   const ticked: IdeaState = {};
@@ -193,7 +193,7 @@ test("what was hard is asked after a miss no recognised mistake explains, and th
   logAnswer(trapped, trapEx.trap.input, check(trapEx.e, trapEx.trap.input, w));
   finish(trapped, "revealed");
   assert.equal(whatWasHard(trapEx.e, trapped), null, "the mistake already names the idea");
-  const other = exercise("linear", 1, 1, w), otherMiss = startLog();
+  const other = exercise("quadratic", 1, 1, w), otherMiss = startLog();
   logAnswer(otherMiss, "12345", check(other, "12345", w));
   finish(otherMiss, "revealed");
   assert.equal(whatWasHard(other, otherMiss), null);
@@ -243,23 +243,23 @@ test("a question worked in steps: each step goes with the attempt and moves the 
 });
 
 test("class practice schedules spaced reviews as the server will: mastered a day later, then further apart, open again after a miss", () => {
-  const plan = toClassPlan({ ...protocol, condition: "adaptive", feature: "policy", arm: "on", skills: ["linear"], position: 0, recent: [], state: priorState(), ideas: {}, ema: {} });
+  const plan = toClassPlan({ ...protocol, condition: "adaptive", feature: "policy", arm: "on", skills: ["quadratic"], position: 0, recent: [], state: priorState(), ideas: {}, ema: {} });
   assert.deepEqual(plan.spacing, {}, "a plan from a server without spacing starts with none");
   const T = Date.UTC(2026, 10, 1, 9);
-  const base = { clientId: "x", student: student.code, skill: "linear" as const, level: 3 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, predicted: 0.5 };
+  const base = { clientId: "x", student: student.code, skill: "quadratic" as const, level: 3 as const, seed: 1, review: false, solutionViewed: false, msTotal: 1, predicted: 0.5 };
   const right = (shownAt: number, policy: Attempt["policy"] = "adaptive"): Attempt => ({ ...base, shownAt, policy, outcome: "solved", answers: [{ input: "3", verdict: "correct", ms: 1 }] });
   const wrong = (shownAt: number): Attempt => ({ ...base, shownAt, policy: "spaced", outcome: "revealed", answers: [{ input: "0", verdict: "wrong", ms: 1 }] });
-  const mastered = () => isMastered("linear", plan.model.predictAt(ME, "linear", 3), { ema: plan.ema, ideas: plan.ideas });
+  const mastered = () => isMastered("quadratic", plan.model.predictAt(ME, "quadratic", 3), { ema: plan.ema, ideas: plan.ideas });
   let at = T;
   for (let i = 0; i < 60 && !mastered(); i++) applyAttempt(plan, right((at += 60_000)));
   assert.ok(mastered(), "right answers master the skill");
-  assert.deepEqual(plan.spacing.linear, { step: 0, due: at + DAY });
+  assert.deepEqual(plan.spacing.quadratic, { step: 0, due: at + DAY });
   // The review a day later, right: the next one falls three days on.
-  const review = plan.spacing.linear.due + 5000;
+  const review = plan.spacing.quadratic.due + 5000;
   applyAttempt(plan, right(review, "spaced"));
-  assert.deepEqual(plan.spacing.linear, { step: 1, due: review + 3 * DAY });
+  assert.deepEqual(plan.spacing.quadratic, { step: 1, due: review + 3 * DAY });
   // Missed: open again for practice.
-  applyAttempt(plan, wrong(plan.spacing.linear.due));
-  assert.equal(plan.spacing.linear.again, true);
-  assert.deepEqual(openAgain(plan.spacing), ["linear"]);
+  applyAttempt(plan, wrong(plan.spacing.quadratic.due));
+  assert.equal(plan.spacing.quadratic.again, true);
+  assert.deepEqual(openAgain(plan.spacing), ["quadratic"]);
 });

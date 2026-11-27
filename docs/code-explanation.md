@@ -1286,6 +1286,19 @@ Before 1 November 2026, only fractions mapped a recognised mistake to an idea. O
 - **Mistake tables:** `SIGNED_GAPS`, `POWERS_GAPS`, `BRACKETS_GAPS`, `ORDER_GAPS` and `ROUNDING_GAPS` name the idea behind each mistake those questions recognise: `subNeg`; `negPower` and `powTimes`; `noMiddle` and `squareTerms`; `leftToRight`, `mulBeforePow` and `grouped`; `truncated`, `doubleRound`, `placeLost` and `fullUnit`. `GAPS` merges all six tables for `gapIdea`.
 - **`sign` names no idea:** the checker tries this answer with the wrong sign on every question, so it doesn't point at any one idea.
 
+#### Six middle-school graphs, tagged by their questions (issue #755)
+
+Since issue #755, six more skills are made of ideas: linear equations, expressions, decimals, percentages, ratio and proportion. Their questions are too varied to read back from a spec, so each generator names the ideas a question needs as it makes it: `withIdeas(ideas, part)` (`practiceKit.ts`) sets `Exercise.ideas`, and the readers (`equationsUses`, `expressionsUses`, `decimalsUses`, `percentUses`, `ratioUses`, `proportionUses`) return those tags in graph order, throwing on an untagged question or a tag outside the graph.
+
+- `EQUATIONS` (linear): `undoOp`, `checkRoot`, `balance`, `writeEquation`, `eqSteps` and `solutionCount`, plus `distribute` and `signTimes`.
+- `EXPRESSIONS` (sameExpression): `letterTimes`, `letterSquare`, `termSigns`, `likeTerms`, `wordsToExpr` and `factorOut`, plus `distribute` and `signTimes`.
+- `DECIMALS`: `decCompare`, `decAlign`, `decShift`, `decTimes` and `divPastPoint`, plus `roundPlace`.
+- `PERCENT`: `perHundred`, `percentOf`, `asPercent`, `reversePercent` and `percentChange`.
+- `RATIO`: `ratioSimplify`, `ratioScale`, `ratioParts`, `ratioUnits` and `ratioOrder`.
+- `PROPORTION`: `directProp`, `constantK`, `propEquation`, `inverseProp` and `powerProp`.
+
+Their tables (`EQUATIONS_GAPS` … `PROPORTION_GAPS`) blame every trap those questions lay on an idea the question is tagged with; rounding's `truncated` stays in `ROUNDING_GAPS`. Each idea has a card, and "where it breaks" works these skills from the question's own steps and its traps' numbers (`whereItBreaks.ts`), so only the kinds with both can be judged. The thesis world (`IDEA_SKILLS.slice(0, 3)`) is unchanged: the six are appended. `tests/middleIdeas.test.ts` checks the graphs, the tags and the tables.
+
 #### The three atom tests (`:196-285`)
 
 `needsOf(g, node)` (`:198-206`) is everything an idea needs, following needs edges only.

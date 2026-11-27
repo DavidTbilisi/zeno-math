@@ -2,7 +2,9 @@
 // answers have shown it. "Shown" is the same bar as mastery: the model's chance that the student knows the idea reaches
 // 0.95 (ideaState.ts). A tile lit once stays lit, even when a later answer lowers the estimate, because the map
 // rewards what the student has done; the policy keeps reading the live estimate to choose questions.
-import { ARITHMETIC, BRACKETS, FRACTIONS, ORDER, POWERS, ROUNDING, SIGNED, type ConceptGraph, type IdeaNode } from "./conceptGraph.ts";
+import {
+  ARITHMETIC, BRACKETS, DECIMALS, EQUATIONS, EXPRESSIONS, FRACTIONS, ORDER, PERCENT, POWERS, PROPORTION, RATIO, ROUNDING, SIGNED,
+  type ConceptGraph, type IdeaNode } from "./conceptGraph.ts";
 import { knownOf, SKILL_IDEAS, type IdeaSkill, type IdeaState } from "./ideaState.ts";
 
 /** The chance of knowing an idea at which its tile lights. */
@@ -11,6 +13,7 @@ export const LIT = 0.95;
 /** The graph each skill's ideas come from. */
 const GRAPH_OF: Record<IdeaSkill, ConceptGraph> = {
   times: ARITHMETIC, hcf: ARITHMETIC, fractions: FRACTIONS, integers: SIGNED, order: ORDER, rounding: ROUNDING, indices: POWERS, expand: BRACKETS,
+  linear: EQUATIONS, sameExpression: EXPRESSIONS, decimals: DECIMALS, percent: PERCENT, ratio: RATIO, proportion: PROPORTION,
 };
 
 /** The ideas newly shown: known well enough now and not lit before, in the order the state lists them. */
