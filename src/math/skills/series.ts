@@ -1,10 +1,77 @@
 // Practice: Series and sums. Since #729, four medium questions in ten are a finite geometric series in a story:
-// shares of a post over n days, where the last day's shares alone and a day too many are slips.
+// shares of a post over n days, where the last day's shares alone and a day too many are slips. Since #751 half the
+// easy seeds read Σ notation (a sum's value, the top term left out or the start moved, named; which Σ writes a sum,
+// the last term taken for the top, named) and four hard seeds in ten are a bouncing ball, a setting the easier levels
+// did not show (the distance up counted once, or the first drop twice, named).
+import { exact, F, shuffled, sym } from "../calculusTwo";
 import { fill } from "../chart";
+import type { MistakeId } from "../mistakes";
 import { fr, num, plainFrac, polyStr, T } from "../practiceKit";
 import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
 
+const lin = (p: number, q: number, v: string) => `${p === 1 ? "" : p}${v}${q ? ` ${q < 0 ? "-" : "+"} ${Math.abs(q)}` : ""}`;
+const sumTex = (xs: number[]) => xs.join(" + ").replace(/\+ -/g, "- ");
+
+/** Σ notation read (#751): a sum's value, or which Σ writes a sum out. */
+function sigma(r: Rng, w: PracticeWords): Part {
+  const K = w.seK;
+  const p = r.int(1, 4);
+  // k alone would make its last term its top, and the slip the answer.
+  const q = p === 1 ? r.nz(-3, 5) : r.int(-3, 5);
+  const f = (k: number) => p * k + q;
+  const total = (a: number, b: number) => Array.from({ length: Math.max(0, b - a + 1) }, (_, i) => f(a + i)).reduce((x, y) => x + y, 0);
+  if (r.next() < 0.5) {
+    const a = r.int(0, 2);
+    const b = a + r.int(3, 6);
+    const v = total(a, b);
+    const terms = Array.from({ length: b - a + 1 }, (_, i) => f(a + i));
+    return {
+      prompt: K.evalQ,
+      q: `\\sum_{k=${a}}^{${b}} (${lin(p, q, "k")})`,
+      ...exact(F(v), [["sigmaTopLeftOut", total(a, b - 1), { b }], ...(a !== 1 ? [["sigmaStartAtOne", total(1, b), { a }] as [MistakeId, number, { a: number }]] : [])]),
+      steps: [`k = ${a}, \\dots, ${b}: \\quad ${sumTex(terms)}`, `= ${v}`],
+    };
+  }
+  const n = r.int(5, 12);
+  const last = f(n);
+  const body = `(${lin(p, q, "k")})`;
+  const c1 = f(1) - 1;
+  const opts = [
+    sym(`\\sum_{k=1}^{${n}} ${body}`, `sum k=1..${n} ${body}`),
+    sym(`\\sum_{k=1}^{${last}} ${body}`, `sum k=1..${last} ${body}`),
+    sym(`\\sum_{k=0}^{${n}} ${body}`, `sum k=0..${n} ${body}`),
+    sym(`\\sum_{k=1}^{${n}} (${lin(1, c1, "k")})`, `sum k=1..${n} (${lin(1, c1, "k")})`),
+  ];
+  const keep = p === 1 ? [0, 1, 2] : [0, 1, 2, 3];
+  return {
+    prompt: K.whichQ,
+    q: `${sumTex([f(1), f(2), f(3)])} + \\dots + ${last}`.replace(/\+ -/g, "- "),
+    ...shuffled(r, keep.map((i) => opts[i]), 0, [["sigmaTopAsLastTerm", 1], ["sigmaStartShifted", 2], ...(p > 1 ? [["sigmaStepLeftOut", 3] as [MistakeId, number]] : [])]),
+    steps: [`${lin(p, q, "k")}: \\ k = 1 \\to ${f(1)}`, `${lin(p, q, "k")} = ${last} \\Rightarrow k = ${n}`],
+  };
+}
+
+/** A ball dropped from H bounces back to q of its height: the distance travelled when it lands for the n-th time. */
+function bounce(r: Rng, w: PracticeWords): Part {
+  const K = w.seK;
+  const [qn, qd] = r.pick([[1, 2], [1, 3], [2, 3], [3, 4]] as const);
+  const n = r.int(3, 5);
+  const H = qd ** (n - 1) * r.int(1, 2);
+  // The heights after each bounce: Hq, Hq², …, Hq^(n−1), each gone up and down.
+  const heights = Array.from({ length: n - 1 }, (_, i) => F(H * qn ** (i + 1), qd ** (i + 1)));
+  const ups = heights.reduce((x, y) => x.add(y), F(0));
+  const v = F(H).add(ups).add(ups);
+  return {
+    prompt: fill(K.bounceQ, { H, q: `${qn}/${qd}`, n }),
+    q: "",
+    ...exact(v, [["bounceUpOnlyCounted", F(H).add(ups), { n }], ["bounceDropCountedTwice", F(2 * H).add(ups).add(ups), { H }]]),
+    steps: [`${H} + 2\\left(${heights.map((x) => x.tex()).join(" + ")}\\right)`, `= ${H} + 2 \\cdot ${ups.tex()} = ${v.tex()}`],
+  };
+}
+
 const gen: Gen = (r, L, w) => {
+  if (L === 1 && r.int(0, 9) >= 5) return sigma(r, w);
+  if (L === 3 && r.int(0, 9) >= 6) return bounce(r, w);
   const sol = (topic: string, src: string) => ({ kind: "sequences" as const, spec: { topic, src } });
   const list = (vs: string[]) => `${vs.join(", ")}, …`.replace(/-/g, "−");
   if (L === 1) {

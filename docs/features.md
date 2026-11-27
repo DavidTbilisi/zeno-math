@@ -1597,7 +1597,11 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     subtracted before squaring among the 21 slips named), Taylor series
     (four Maclaurin coefficients, a value approximated to 3 places, a coefficient about a ≠ 0), power series (a
     radius, an interval with each end tried) and convergence tests (geometric and p-series, which test settles a
-    series, absolute or conditional). Every integral is made from its answer, so each is right by construction.
+    series, absolute or conditional; since #751 also a term from its partial sums, the sum from S_n, what the
+    integral test and a comparison settle, the error after N terms of an alternating series, coefficients of
+    geometric series and of their derivatives and integrals, and f⁽ᵏ⁾(0) read from a series, with Σ notation and a
+    bouncing ball in series; partial sums close in on a line the learner drags in the partial-sums piece, until the
+    sum a/(1 − r) is found with only three bars drawn). Every integral is made from its answer, so each is right by construction.
     The named slips: 0/0 read as 0, the constant terms used at infinity, 1^∞ taken as 1, the chain factor left out of L'Hôpital, one side taken for both, the product
     rule dropped on xy, both ends of a ladder at one speed, dr/dt left out, the inner factor of a substitution not divided out, the sign of by parts, the cover-up values
     swapped, the p-test backwards or used at 0, the area under one curve, π left out, the integral squared, the
