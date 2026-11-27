@@ -77,6 +77,16 @@ export function tableSvg(head: readonly string[], rows: readonly (readonly (stri
   return { body: out.join(""), w: W + 6, h: (rows.length + 1) * rh + 6 };
 }
 
+/** A Venn diagram of two sets in S, the count of each part (A only, both, B only, neither) written where it lies. */
+export function vennSvg(names: readonly [string, string], counts: readonly [number, number, number, number]): Pic {
+  const [W, H] = [360, 210];
+  const out = [`<rect x="2" y="2" width="${W}" height="${H}" rx="6" fill="#fff" stroke="${C.ink}" stroke-width="1.4"/>`, text(20, 26, "S", 15, C.ink, "middle", true)];
+  out.push(`<circle cx="140" cy="112" r="78" fill="${C.blue}" fill-opacity="0.14" stroke="${C.blue}" stroke-width="2"/>`, `<circle cx="222" cy="112" r="78" fill="${C.orange}" fill-opacity="0.14" stroke="${C.orange}" stroke-width="2"/>`);
+  out.push(text(80, 40, names[0], 14, C.blue, "middle", true), text(282, 40, names[1], 14, C.orange, "middle", true));
+  out.push(text(103, 118, counts[0], 20), text(181, 118, counts[1], 20), text(259, 118, counts[2], 20), text(W - 24, H - 14, counts[3], 20));
+  return { body: out.join(""), w: W + 6, h: H + 6 };
+}
+
 /**
  * A mosaic plot of two groups: each column is as wide as its group's share of everyone, and split from the bottom into
  * the first part's share of that group and the rest. Both scales are marked every 10 %.
