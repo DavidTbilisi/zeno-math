@@ -530,6 +530,9 @@ export type PracticeWords = {
   seK: Record<"evalQ" | "whichQ" | "bounceQ", string>;
   cvK: Record<"termQ" | "sumQ" | "integralQ" | "convNotIntegral" | "convIsIntegral" | "directQ" | "bConverges" | "bDiverges" | "aConverges" | "aDiverges" | "saysNothing" | "limitQ" | "remainderQ", string>;
   psK: Record<"geomQ" | "calcQ" | "derivQ", string>;
+  ofK: Record<"growthQ" | "coolQ" | "rumourQ" | "separableQ" | "implicitQ" | "domainQ" | "errorQ" | "homogeneousQ" | "coolingQ", string>;
+  lpK: Record<"stepQ" | "deltaQ" | "convQ" | "convLQ" | "stepIvpQ" | "convIvpQ", string>;
+  osK: Record<"springQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

@@ -10246,14 +10246,14 @@
     {
       "skill": "odeFirst",
       "level": 1,
-      "seed": 7,
+      "seed": 68,
       "input": "4e^(-2x)",
       "label": "correct"
     },
     {
       "skill": "odeFirst",
       "level": 1,
-      "seed": 7,
+      "seed": 68,
       "input": "((e)^((((-1) * 2) * x)) + 3)",
       "label": "wrong",
       "mistake": "constantAddedAfterExp"
@@ -10261,21 +10261,21 @@
     {
       "skill": "odeFirst",
       "level": 1,
-      "seed": 7,
+      "seed": 68,
       "input": "4e^(-2x) + 1",
       "label": "wrong"
     },
     {
       "skill": "odeFirst",
       "level": 2,
-      "seed": 7,
+      "seed": 487,
       "input": "3e^(-2x) - e^(3x)",
       "label": "correct"
     },
     {
       "skill": "odeFirst",
       "level": 2,
-      "seed": 7,
+      "seed": 487,
       "input": "((((-1) * 15) * (e)^((((-1) * 2) * x))) + (17 * (e)^((((-1) * 3) * x))))",
       "label": "wrong",
       "mistake": "integratingFactorSign"
@@ -10283,21 +10283,21 @@
     {
       "skill": "odeFirst",
       "level": 2,
-      "seed": 7,
+      "seed": 487,
       "input": "3e^(-2x) - e^(3x) + 1",
       "label": "wrong"
     },
     {
       "skill": "odeFirst",
       "level": 3,
-      "seed": 7,
+      "seed": 6748,
       "input": "-3x^2y + xy - 4x + 3y^2 + C",
       "label": "correct"
     },
     {
       "skill": "odeFirst",
       "level": 3,
-      "seed": 7,
+      "seed": 6748,
       "input": "(((((-1) * 6) * (x)^(2)) * y) + ((2 * x) * y) + ((-1) * (4 * x)) + (3 * (y)^(2)))",
       "label": "wrong",
       "mistake": "exactAddedBoth"
@@ -10305,7 +10305,7 @@
     {
       "skill": "odeFirst",
       "level": 3,
-      "seed": 7,
+      "seed": 6748,
       "input": "2(-3x^2y + xy - 4x + 3y^2)",
       "label": "wrong"
     },
@@ -10436,14 +10436,14 @@
     {
       "skill": "laplace",
       "level": 1,
-      "seed": 7,
+      "seed": 1879,
       "input": "-3/(s + 3) + 3s/(s^2 + 4)",
       "label": "correct"
     },
     {
       "skill": "laplace",
       "level": 1,
-      "seed": 7,
+      "seed": 1879,
       "input": "((((-1) * 3) * ((s + ((-1) * 3)))^((-1))) + ((3 * s) * (((s)^(2) + 4))^((-1))))",
       "label": "wrong",
       "mistake": "laplaceShiftSign"
@@ -10451,7 +10451,7 @@
     {
       "skill": "laplace",
       "level": 1,
-      "seed": 7,
+      "seed": 1879,
       "input": "((((-1) * 3) * ((s + 3))^((-1))) + (6 * (((s)^(2) + 4))^((-1))))",
       "label": "wrong",
       "mistake": "laplaceSinCos"
@@ -10459,7 +10459,7 @@
     {
       "skill": "laplace",
       "level": 1,
-      "seed": 7,
+      "seed": 1879,
       "input": "-3/(s + 3) + 3s/(s^2 + 4) + 1",
       "label": "wrong"
     },
@@ -10488,14 +10488,14 @@
     {
       "skill": "laplace",
       "level": 3,
-      "seed": 7,
+      "seed": 1042,
       "input": "3 - e^(3t)",
       "label": "correct"
     },
     {
       "skill": "laplace",
       "level": 3,
-      "seed": 7,
+      "seed": 1042,
       "input": "(3 + ((-1) * (3 * (e)^((3 * t)))))",
       "label": "wrong",
       "mistake": "initialValueDropped"
@@ -10503,7 +10503,7 @@
     {
       "skill": "laplace",
       "level": 3,
-      "seed": 7,
+      "seed": 1042,
       "input": "3 - e^(3t) + 1",
       "label": "wrong"
     },
@@ -88237,6 +88237,1532 @@
       "seed": 37,
       "input": "13",
       "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 1,
+      "input": "y' = 0.3(2000 - y)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 1,
+      "input": "y' = 0.3y",
+      "label": "wrong",
+      "mistake": "rateOfWrongAmount"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 1,
+      "input": "y' = 0.3(y - 2000)",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 1,
+      "input": "y' = 0.3t",
+      "label": "wrong",
+      "mistake": "rateProportionalToTime"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 2,
+      "input": "T' = -0.2(T - 22)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 2,
+      "input": "T' = 0.2(T - 22)",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 2,
+      "input": "T' = -0.2T",
+      "label": "wrong",
+      "mistake": "rateOfWrongAmount"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 2,
+      "input": "T' = -0.2(T + 22)",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 3,
+      "input": "P' = 0.2P",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 3,
+      "input": "P' = 0.2t",
+      "label": "wrong",
+      "mistake": "rateProportionalToTime"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 3,
+      "input": "P' = -0.2P",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 3,
+      "input": "P' = 0.2",
+      "label": "wrong",
+      "mistake": "rateOfWrongAmount"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 4,
+      "input": "P' = 0.1P",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 4,
+      "input": "P' = 0.1t",
+      "label": "wrong",
+      "mistake": "rateProportionalToTime"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 4,
+      "input": "P' = -0.1P",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 4,
+      "input": "P' = 0.1",
+      "label": "wrong",
+      "mistake": "rateOfWrongAmount"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 5,
+      "input": "y' = e^(x + y)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 5,
+      "input": "y' = 2x + y",
+      "label": "wrong",
+      "mistake": "sumTakenAsSeparable"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 5,
+      "input": "y' = sin(xy)",
+      "label": "wrong",
+      "mistake": "insideFunctionTaken"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 5,
+      "input": "y' = xy + 2",
+      "label": "wrong",
+      "mistake": "constantTermIgnored"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 10,
+      "input": "y' = xy + 4x",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 10,
+      "input": "y' = 4x + y",
+      "label": "wrong",
+      "mistake": "sumTakenAsSeparable"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 10,
+      "input": "y' = sin(xy)",
+      "label": "wrong",
+      "mistake": "insideFunctionTaken"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 10,
+      "input": "y' = xy + 4",
+      "label": "wrong",
+      "mistake": "constantTermIgnored"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 16,
+      "input": "T' = -0.5(T - 20)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 16,
+      "input": "T' = 0.5(T - 20)",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 16,
+      "input": "T' = -0.5T",
+      "label": "wrong",
+      "mistake": "rateOfWrongAmount"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 16,
+      "input": "T' = -0.5(T + 20)",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 42,
+      "input": "y' = 0.5(500 - y)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 42,
+      "input": "y' = 0.5y",
+      "label": "wrong",
+      "mistake": "rateOfWrongAmount"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 42,
+      "input": "y' = 0.5(y - 500)",
+      "label": "wrong",
+      "mistake": "rateSignFlipped"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 1,
+      "seed": 42,
+      "input": "y' = 0.5t",
+      "label": "wrong",
+      "mistake": "rateProportionalToTime"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 1,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 1,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "rootTakenTermwise"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 1,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 2,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 2,
+      "input": "-1/3",
+      "label": "wrong",
+      "mistake": "domainEndpointSign"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "domainEndpointInverted"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 3,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 3,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "rootTakenTermwise"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 3,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 4,
+      "input": "-1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 4,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "domainEndpointSign"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 4,
+      "input": "-3",
+      "label": "wrong",
+      "mistake": "domainEndpointInverted"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 5,
+      "input": "-x - 2x^2",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 5,
+      "input": "(((-1) * 1) + ((-1) * (2 * x)))",
+      "label": "wrong",
+      "mistake": "homogeneousNoX"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 10,
+      "input": "-x + x^3",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 10,
+      "input": "(((-1) * 1) + (x)^(2))",
+      "label": "wrong",
+      "mistake": "homogeneousNoX"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 11,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 11,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "correctLineBlamed"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 11,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "correctLineBlamed"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 11,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "correctLineBlamed"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 16,
+      "input": "-13",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 16,
+      "input": "-7",
+      "label": "wrong",
+      "mistake": "rootTakenTermwise"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 16,
+      "input": "13",
+      "label": "wrong",
+      "mistake": "implicitBranchSign"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 16,
+      "input": "-6",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 17,
+      "input": "-10",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 17,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "rootTakenTermwise"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 17,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "implicitBranchSign"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 17,
+      "input": "-3",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 26,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 26,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "correctLineBlamed"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 26,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "correctLineBlamed"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 26,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "correctLineBlamed"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 78,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 78,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "domainEndpointSign"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 78,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 124,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 124,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "domainEndpointSign"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 2,
+      "seed": 124,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 1,
+      "input": "45",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 1,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "ambientLeftOut"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 1,
+      "input": "34",
+      "label": "wrong",
+      "mistake": "linearCooling"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 1,
+      "input": "52",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 2,
+      "input": "26",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "ambientLeftOut"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 2,
+      "input": "-14",
+      "label": "wrong",
+      "mistake": "linearCooling"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 2,
+      "input": "33",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 42,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 42,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "ambientLeftOut"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 42,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 145,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 145,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "ambientLeftOut"
+    },
+    {
+      "skill": "odeFirst",
+      "level": 3,
+      "seed": 145,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 1,
+      "input": "3/((s - 3)^2 + 9)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 1,
+      "input": "(3 * ((((s + 3))^(2) + 9))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 1,
+      "input": "(3 * (((s + ((-1) * 3)) * ((s)^(2) + 9)))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 2,
+      "input": "2/(s + 2)^3",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 2,
+      "input": "(2 * (((s + ((-1) * 2)))^(3))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 2,
+      "input": "(2 * (((s)^(3) * (s + 2)))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 2,
+      "input": "(1 * (((s + 2))^(3))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceNoFactorial"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 3,
+      "input": "(s + 3)/((s + 3)^2 + 9)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 3,
+      "input": "((s + ((-1) * 3)) * ((((s + ((-1) * 3)))^(2) + 9))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 3,
+      "input": "(s * (((s + 3) * ((s)^(2) + 9)))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 3,
+      "input": "(s * ((((s + 3))^(2) + 9))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftTopLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 4,
+      "input": "1/((s + 2)^2 + 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 4,
+      "input": "(1 * ((((s + ((-1) * 2)))^(2) + 1))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 4,
+      "input": "(1 * (((s + 2) * ((s)^(2) + 1)))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 5,
+      "input": "e^(-s)/s",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 5,
+      "input": "((e)^(s) * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 5,
+      "input": "(1 * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "delayLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 6,
+      "input": "(s - 1)/((s - 1)^2 + 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 6,
+      "input": "((s + 1) * ((((s + 1))^(2) + 1))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 6,
+      "input": "(s * (((s + ((-1) * 1)) * ((s)^(2) + 1)))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 6,
+      "input": "(s * ((((s + ((-1) * 1)))^(2) + 1))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftTopLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 10,
+      "input": "e^(-3s)/(s + 2)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 10,
+      "input": "((e)^((3 * s)) * ((s + 2))^((-1)))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 10,
+      "input": "(1 * ((s + 2))^((-1)))",
+      "label": "wrong",
+      "mistake": "delayLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 11,
+      "input": "27e^(-3s)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 11,
+      "input": "(e)^((((-1) * 3) * s))",
+      "label": "wrong",
+      "mistake": "siftedValueLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 11,
+      "input": "((27 * (e)^((((-1) * 3) * s))) * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 26,
+      "input": "27e^(-3s)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 26,
+      "input": "(e)^((((-1) * 3) * s))",
+      "label": "wrong",
+      "mistake": "siftedValueLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 26,
+      "input": "((27 * (e)^((((-1) * 3) * s))) * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 38,
+      "input": "e^(-s)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 38,
+      "input": "((e)^(((-1) * s)) * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 64,
+      "input": "6/(s - 1)^4",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 64,
+      "input": "(6 * (((s + 1))^(4))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 64,
+      "input": "(6 * (((s)^(4) * (s + ((-1) * 1))))^((-1)))",
+      "label": "wrong",
+      "mistake": "shiftAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 64,
+      "input": "(1 * (((s + ((-1) * 1)))^(4))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceNoFactorial"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 82,
+      "input": "e^(-3s)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 82,
+      "input": "((e)^((((-1) * 3) * s)) * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 82,
+      "input": "(e)^((3 * s))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 111,
+      "input": "e^(-s)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 111,
+      "input": "((e)^(((-1) * s)) * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 180,
+      "input": "e^(-3s)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 180,
+      "input": "((e)^((((-1) * 3) * s)) * (s)^((-1)))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 1,
+      "seed": 180,
+      "input": "(e)^((3 * s))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 1,
+      "input": "t^3/6",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 1,
+      "input": "(t)^(2)",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 2,
+      "input": "t^2/2",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 2,
+      "input": "t",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 4,
+      "input": "-(1/3)e^(-3t) + 1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 4,
+      "input": "(e)^((((-1) * 3) * t))",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 4,
+      "input": "(((-1) * (1 * (3)^((-1)))) * (e)^((((-1) * 3) * t)))",
+      "label": "wrong",
+      "mistake": "convolutionLowerEndLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 5,
+      "input": "2/((s^2 + 4)*(s + 2))",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 5,
+      "input": "((2 * (((s)^(2) + 4))^((-1))) + (1 * ((s + 2))^((-1))))",
+      "label": "wrong",
+      "mistake": "convolutionAsSum"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 10,
+      "input": "2/((s^2 + 4)*(s - 1))",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 10,
+      "input": "((2 * (((s)^(2) + 4))^((-1))) + (1 * ((s + ((-1) * 1)))^((-1))))",
+      "label": "wrong",
+      "mistake": "convolutionAsSum"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 13,
+      "input": "-(1/3)e^(-3t) + 1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 13,
+      "input": "(e)^((((-1) * 3) * t))",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 13,
+      "input": "(((-1) * (1 * (3)^((-1)))) * (e)^((((-1) * 3) * t)))",
+      "label": "wrong",
+      "mistake": "convolutionLowerEndLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 30,
+      "input": "2/(s^3*(s + 2))",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 30,
+      "input": "((2 * ((s)^(3))^((-1))) + (1 * ((s + 2))^((-1))))",
+      "label": "wrong",
+      "mistake": "convolutionAsSum"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 30,
+      "input": "(1 * (((s)^(3) * (s + 2)))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceNoFactorial"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 31,
+      "input": "2/(s^3*(s - 2))",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 31,
+      "input": "((2 * ((s)^(3))^((-1))) + (1 * ((s + ((-1) * 2)))^((-1))))",
+      "label": "wrong",
+      "mistake": "convolutionAsSum"
+    },
+    {
+      "skill": "laplace",
+      "level": 2,
+      "seed": 31,
+      "input": "(1 * (((s)^(3) * (s + ((-1) * 2))))^((-1)))",
+      "label": "wrong",
+      "mistake": "laplaceNoFactorial"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 1,
+      "input": "1/(s + 3) + 3e^(-s)/(s*(s + 3))",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 1,
+      "input": "((3 * (e)^(((-1) * s))) * ((s * (s + 3)))^((-1)))",
+      "label": "wrong",
+      "mistake": "initialValueDropped"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 1,
+      "input": "((1 * ((s + 3))^((-1))) + ((3 * (e)^(s)) * ((s * (s + 3)))^((-1))))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 2,
+      "input": "-1/(s - 2) + 3e^(-2s)/(s*(s - 2))",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 2,
+      "input": "((3 * (e)^((((-1) * 2) * s))) * ((s * (s + ((-1) * 2))))^((-1)))",
+      "label": "wrong",
+      "mistake": "initialValueDropped"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 2,
+      "input": "((((-1) * 1) * ((s + ((-1) * 2)))^((-1))) + ((3 * (e)^((2 * s))) * ((s * (s + ((-1) * 2))))^((-1))))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 3,
+      "input": "-2/(s - 3) + 2e^(-2s)/(s - 3)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 3,
+      "input": "((2 * (e)^((((-1) * 2) * s))) * ((s + ((-1) * 3)))^((-1)))",
+      "label": "wrong",
+      "mistake": "initialValueDropped"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 3,
+      "input": "((((-1) * 2) * ((s + ((-1) * 3)))^((-1))) + ((2 * (e)^((2 * s))) * ((s + ((-1) * 3)))^((-1))))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 3,
+      "input": "((((-1) * 2) * ((s + ((-1) * 3)))^((-1))) + ((2 * (e)^((((-1) * 2) * s))) * ((s * (s + ((-1) * 3))))^((-1))))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 5,
+      "input": "-(1/3)e^(-2t) + (1/3)e^(t)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 5,
+      "input": "(e)^(((-1) * t))",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 5,
+      "input": "(((-1) * (1 * (3)^((-1)))) * (e)^((((-1) * 2) * t)))",
+      "label": "wrong",
+      "mistake": "convolutionLowerEndLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 6,
+      "input": "-3/(s + 1) - 2e^(-2s)/(s + 1)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 6,
+      "input": "((((-1) * 2) * (e)^((((-1) * 2) * s))) * ((s + 1))^((-1)))",
+      "label": "wrong",
+      "mistake": "initialValueDropped"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 6,
+      "input": "((((-1) * 3) * ((s + 1))^((-1))) + ((-1) * ((2 * (e)^((2 * s))) * ((s + 1))^((-1)))))",
+      "label": "wrong",
+      "mistake": "delayShiftSign"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 6,
+      "input": "((((-1) * 3) * ((s + 1))^((-1))) + ((-1) * ((2 * (e)^((((-1) * 2) * s))) * ((s * (s + 1)))^((-1)))))",
+      "label": "wrong",
+      "mistake": "deltaAsStep"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 10,
+      "input": "(1/4)e^(t) - (1/4)e^(-3t)",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 10,
+      "input": "(e)^((((-1) * 2) * t))",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 10,
+      "input": "((1 * (4)^((-1))) * (e)^(t))",
+      "label": "wrong",
+      "mistake": "convolutionLowerEndLeftOut"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 33,
+      "input": "2e^(t) - 2",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 33,
+      "input": "(2 * (e)^(t))",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 109,
+      "input": "-e^(t) + 1",
+      "label": "correct"
+    },
+    {
+      "skill": "laplace",
+      "level": 3,
+      "seed": 109,
+      "input": "((-1) * (e)^(t))",
+      "label": "wrong",
+      "mistake": "convolutionAsProduct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 1,
+      "input": "2cos(2x) - sin(2x)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 1,
+      "input": "((3 * cos((2 * x))) + ((-1) * ((7 * (3)^((-1))) * sin((2 * x)))))",
+      "label": "wrong",
+      "mistake": "undeterminedNoDerivatives"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 1,
+      "input": "((8 * cos((2 * x))) + sin((2 * x)))",
+      "label": "wrong",
+      "mistake": "trigDerivativeSignSlip"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 2,
+      "input": "x^2 - 1",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 2,
+      "input": "((x)^(2) + ((1 * (3)^((-1))) * x) + ((-1) * (4 * (3)^((-1)))))",
+      "label": "wrong",
+      "mistake": "undeterminedNoDerivatives"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 2,
+      "input": "((x)^(2) + ((-1) * (4 * (3)^((-1)))))",
+      "label": "wrong",
+      "mistake": "secondDerivativeLeftOut"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 3,
+      "input": "-2cos(x) - 2sin(x)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 3,
+      "input": "((((-1) * 2) * cos(x)) + ((-1) * ((8 * (3)^((-1))) * sin(x))))",
+      "label": "wrong",
+      "mistake": "undeterminedNoDerivatives"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 3,
+      "input": "((((-1) * (38 * (13)^((-1)))) * cos(x)) + ((-1) * ((34 * (13)^((-1))) * sin(x))))",
+      "label": "wrong",
+      "mistake": "trigDerivativeSignSlip"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 4,
+      "input": "-x^2 - 3",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 4,
+      "input": "(((-1) * (x)^(2)) + ((-1) * ((5 * (3)^((-1))) * x)) + ((-1) * (10 * (3)^((-1)))))",
+      "label": "wrong",
+      "mistake": "undeterminedNoDerivatives"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 4,
+      "input": "(((-1) * (x)^(2)) + ((-1) * (10 * (3)^((-1)))))",
+      "label": "wrong",
+      "mistake": "secondDerivativeLeftOut"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 5,
+      "input": "3cos(2t)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 5,
+      "input": "((3 * (5)^((-1))) * cos((2 * t)))",
+      "label": "wrong",
+      "mistake": "naturalFrequencySign"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 10,
+      "input": "2cos(3t)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 10,
+      "input": "((2 * (37)^((-1))) * cos((3 * t)))",
+      "label": "wrong",
+      "mistake": "naturalFrequencySign"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 10,
+      "input": "((1 * (5)^((-1))) * cos((3 * t)))",
+      "label": "wrong",
+      "mistake": "massLeftOut"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 11,
+      "input": "e^(-2x) + 2x - 1",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 11,
+      "input": "(e)^((((-1) * 2) * x))",
+      "label": "wrong",
+      "mistake": "forcingPartLeftOut"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 11,
+      "input": "((6 * (e)^((((-1) * 2) * x))) + (2 * x) + ((-1) * 4))",
+      "label": "wrong",
+      "mistake": "undeterminedNoDerivatives"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 25,
+      "input": "-cos(3t)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 25,
+      "input": "((1 * (35)^((-1))) * cos((3 * t)))",
+      "label": "wrong",
+      "mistake": "naturalFrequencySign"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 25,
+      "input": "((1 * (8)^((-1))) * cos((3 * t)))",
+      "label": "wrong",
+      "mistake": "massLeftOut"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 26,
+      "input": "2e^(x) + 2x - 2",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 26,
+      "input": "(2 * (e)^(x))",
+      "label": "wrong",
+      "mistake": "forcingPartLeftOut"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 26,
+      "input": "(((4 * (3)^((-1))) * (e)^(x)) + (2 * x) + ((-1) * (7 * (3)^((-1)))))",
+      "label": "wrong",
+      "mistake": "undeterminedNoDerivatives"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 30,
+      "input": "2cos(t)",
+      "label": "correct"
+    },
+    {
+      "skill": "odeSecond",
+      "level": 3,
+      "seed": 30,
+      "input": "((10 * (7)^((-1))) * cos(t))",
+      "label": "wrong",
+      "mistake": "naturalFrequencySign"
     }
   ]
 }
