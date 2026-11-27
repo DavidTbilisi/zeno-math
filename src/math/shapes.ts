@@ -1582,6 +1582,16 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function cacheLabPreview(): Piece[] {
+  // Four cache lines beside a grid of memory blocks, each coloured by the line it may go in.
+  const colors = ["#d0ebff", "#d3f9d8", "#fff3bf", "#ffe3e3"];
+  return [
+    ...[0, 1, 2, 3].map((i) => rect(6, 8 + i * 23, 62, 19, { fill: colors[i], color: "#868e96", width: 1 })),
+    ...Array.from({ length: 16 }, (_, b) => rect(90 + (b % 4) * 24, 8 + Math.floor(b / 4) * 23, 20, 19, { fill: colors[b % 4], color: "#adb5bd", width: 1 })),
+    seg([70, 40], [88, 40], { color: "#1971c2", width: 2.5 }),
+  ];
+}
+
 function raidLabPreview(): Piece[] {
   // Three drives in a rack, the middle one pulled out grey; coloured blocks on the others, a grey parity block.
   const colors = ["#74c0fc", "#8ce99a", "#e9ecef"];
@@ -2986,6 +2996,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCpuLab", build: cpuLabPreview, live: "cpuLab" },
   { id: "liveSystemLab", build: systemLabPreview, live: "systemLab" },
   { id: "liveRaidLab", build: raidLabPreview, live: "raidLab" },
+  { id: "liveCacheLab", build: cacheLabPreview, live: "cacheLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
