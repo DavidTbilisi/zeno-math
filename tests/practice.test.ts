@@ -122,7 +122,8 @@ test("answers in other forms", () => {
   assert.equal(check(half, "0.5", w).ok, true, "decimal");
   assert.equal(check(half, "0,5", w).ok, true, "decimal comma");
 
-  const quad = find("quadratic", 1, (ex) => ex.answer.k === "set" && ex.answer.vs[0] < 0 && ex.answer.vs[1] > 0);
+  // A factorised one: the square-root kinds (#727) list their roots, so a missing one is not counted out to the student.
+  const quad = find("quadratic", 1, (ex) => !!ex.solution && ex.answer.k === "set" && ex.answer.vs[0] < 0 && ex.answer.vs[1] > 0);
   if (quad.answer.k !== "set") throw new Error();
   const [r1, r2] = quad.answer.vs;
   for (const s of [`${r2}; ${r1}`, `x = ${r1}, x = ${r2}`, `x=${r2}; x=${r1}`, `${r1} and ${r2}`, `x = ${r1} or x = ${r2}`, `${r1} или ${r2}`])

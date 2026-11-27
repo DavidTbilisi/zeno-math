@@ -9,7 +9,7 @@ export const COUNTS = {
   /** Tools, hands-on pieces and games in the library (library.ts). */
   pieces: 180,
   /** Mistakes the checker knows by name (math/mistakes.ts). */
-  mistakes: 1300,
+  mistakes: 1600,
 } as const;
 
 /** The topics of the page's path (the words' `path`), stage by stage in the same order: what each name links to.

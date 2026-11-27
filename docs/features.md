@@ -2017,6 +2017,16 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Quadratics by square roots and in stories (#727): x² = n² (also 3x² = 75 and x² + 9 = 58), √x = n, x³ = n³ and
+    ∛x = n; a(x − h)² = k by taking square roots, which equation square roots solve straight away, and the other
+    solution someone missed; and, in new settings, when a stone thrown from a cliff reaches the sea, a scarf's best
+    price and greatest profit from vertex form, and a garden's width from its area. y = a(x − h)² + k picked from its
+    graph, a fountain's jet read off its graph (when it lands, how high, when highest), and which of f, written, and
+    g, drawn, peaks higher. One root only, the square halved, the root not squared, the cube root taken as a third or
+    the cube as three times, a negative cube root's sign dropped, the bracket's sign kept, the root taken before
+    dividing, an x term ignored, the other root just negated, a negative root kept, the vertex's two numbers swapped,
+    the other side given, the parabola opening the wrong way, the top taken for the landing and vertices compared by x
+    are named
   - Graph families: step, piecewise, absolute value, roots, logs, even and odd (#726): the equation of a square or
     cube root graph and of an exponential graph through (0, a) and (1, ab), even, odd or neither from a table or a
     graph, and h read off the graph of y = log₂(x − h) beside its dashed asymptote. A parking fee read off its step
