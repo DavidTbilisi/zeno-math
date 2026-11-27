@@ -85,12 +85,15 @@ test("bases: the coordinates rebuild w", () => {
 });
 
 test("rank and nullity agree with row reduction, and the null vector is killed by A", () => {
-  each("rankNullity", 1, (ex, where) => assert.equal(ex.answer.k === "num" && ex.answer.v, rankOf(matrices(ex.q)[0]), where));
+  // Since #754 half the questions are other kinds (tests/subspacesDepth.test.ts); these are the first ones.
+  each("rankNullity", 1, (ex, where) => ex.prompt === w.linalg.prompt.rank && assert.equal(ex.answer.k === "num" && ex.answer.v, rankOf(matrices(ex.q)[0]), where));
   each("rankNullity", 2, (ex, where) => {
+    if (ex.prompt !== w.linalg.prompt.nullity) return;
     const [A] = matrices(ex.q);
     assert.equal(ex.answer.k === "num" && ex.answer.v, A[0].length - rankOf(A), where);
   });
   each("rankNullity", 3, (ex, where) => {
+    if (ex.prompt !== w.linalg.prompt.nullVector) return;
     const [A] = matrices(ex.q);
     if (ex.answer.k !== "dir") throw new Error(where);
     const x = ex.answer.vs;
@@ -124,7 +127,9 @@ test("inner products: k makes u ⊥ v, u₂ is orthogonal to v₁, and (a, b) so
     const v = /\\mathbf\{v\} = \((-?\d+), (-?\d+), k\)/.exec(ex.q)!.slice(1).map(Number);
     assert.ok(Math.abs(u[0] * v[0] + u[1] * v[1] + u[2] * ex.answer.v) < 1e-9, where);
   });
+  // Since #754 half the questions are other kinds (tests/subspacesDepth.test.ts).
   each("innerProducts", 2, (ex, where) => {
+    if (ex.prompt !== w.linalg.prompt.gramSchmidt) return;
     if (ex.answer.k !== "tuple") throw new Error(where);
     const [v1, v2] = tuples(ex.q);
     const u2 = ex.answer.vs;
@@ -134,6 +139,7 @@ test("inner products: k makes u ⊥ v, u₂ is orthogonal to v₁, and (a, b) so
     assert.ok(v1.every((x, i) => v1.every((y, j) => Math.abs(d[i] * y - d[j] * x) < 1e-9)), where);
   });
   each("innerProducts", 3, (ex, where) => {
+    if (ex.prompt !== w.linalg.prompt.leastSquares) return;
     if (ex.answer.k !== "tuple") throw new Error(where);
     const pts = [...ex.q.matchAll(/\((-?\d+), (-?\d+)\)/g)].map((m) => [Number(m[1]), Number(m[2])]);
     const [a, b] = ex.answer.vs;

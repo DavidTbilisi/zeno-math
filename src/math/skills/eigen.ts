@@ -1,6 +1,11 @@
-// Practice: Eigenvalues and eigenvectors.
+// Practice: Eigenvalues and eigenvectors. Easy is the eigenvalues of a 2 × 2 matrix; medium is an eigenvector of a
+// 2 × 2 matrix, or the dimension of the eigenspace of a double eigenvalue of a 3 × 3 matrix (the rank of A − λI, or
+// the multiplicity, given, named); hard is the other two eigenvalues of a 3 × 3 matrix from the trace and determinant,
+// or an eigenvector of a 3 × 3 matrix (one for another eigenvalue, or a row of A − λI, named).
 import { fill } from "../chart";
 import { det, gaussJordan, type Mat, mul, texM } from "../matrix";
+import { cross, rref } from "../linearAlgebra";
+import { exact, F } from "../calculusTwo";
 import type { SpaceSpec } from "../vectorspace";
 import { colTex, fr, gcd, M, plainFrac, polyStr } from "../practiceKit";
 import type { Exercise, Gen } from "../practiceTypes";
@@ -40,6 +45,54 @@ const gen: Gen = (r, L, w) => {
     }
   };
   const eigenOf = (A: Mat): Exercise["solution"] => ({ kind: "matrix", spec: { type: "space", op: "eigen", A: A.map((row) => row.map(plainFrac)), w: A.map(() => "0"), steps: true } satisfies SpaceSpec });
+  const short = (v: number[]) => {
+    const g = v.reduce((a, x) => gcd(a, x), 0) * Math.sign(v.find((x) => x !== 0)!);
+    return v.map((x) => x / g || 0);
+  };
+  // A − λI written out: A + I, A − 2I, or A itself for λ = 0.
+  const less = (l: number) => (l === 0 ? "A" : `A ${l < 0 ? "+" : "-"} ${Math.abs(l) === 1 ? "" : Math.abs(l)}I`);
+  const shift = (A: Mat, l: number) => A.map((row, i) => row.map((x, j) => (i === j ? x.sub(fr(l)) : x)));
+  // Half of medium and hard asks about a 3 × 3 matrix's eigenspaces.
+  const more = L > 1 && r.int(0, 9) >= 5;
+  if (L === 2 && more) {
+    for (;;) {
+      const P = shears(3);
+      const [l, m] = [r.int(-3, 4), r.int(-3, 4)];
+      if (l === m) continue;
+      // A Jordan block for l (one eigenvector) or l twice on the diagonal (a plane of them).
+      const jordan = r.next() < 0.5;
+      const A = mul(mul(P, M([[l, jordan ? 1 : 0, 0], [0, l, 0], [0, 0, m]])), inverse(P));
+      if (A.flat().filter((x) => x.isZero()).length > 2 || A.flat().some((x) => Math.abs(x.n) > 15)) continue;
+      const S = shift(A, l);
+      const { R, rank } = rref(S);
+      const dim = 3 - rank;
+      return {
+        prompt: fill(w.egK.dimQ, { l }),
+        q: `A = ${texM(A)}`,
+        ...exact(F(dim), jordan ? [["eigenspaceDimAsMultiplicity", 2]] : [["eigenspaceDimAsRank", rank]]),
+        steps: [`${less(l)} = ${texM(S)} \\to ${texM(R)}`, `\\dim E_{${l}} = 3 - \\operatorname{rank}(${less(l)}) = 3 - ${rank} = ${dim}`],
+      };
+    }
+  }
+  if (L === 3 && more) {
+    const { A, P, ls } = make(3);
+    const i = r.int(0, 2);
+    const j = (i + r.int(1, 2)) % 3;
+    const col = (k: number) => short(P.map((row) => row[k].n));
+    const u = col(i);
+    const S = shift(A, ls[i]);
+    // Every row of A − λI is perpendicular to u; take one that is not 0.
+    const row = S.map((x) => x.map((t) => t.n)).find((x) => x.some((t) => t !== 0) && cross(x, u).some((t) => t !== 0))!;
+    return {
+      prompt: fill(w.prompts.eigVector, { l: ls[i] }),
+      q: `A = ${texM(A)}`,
+      answer: { k: "dir", vs: u, traps: [{ id: "eigvecOfOtherValue", a: { k: "dir", vs: col(j) } }, { id: "rowOfShiftedMatrix", a: { k: "dir", vs: short(row) } }] },
+      show: colTex(u.map(String)),
+      plain: `(${u.join("; ")})`,
+      format: "eigvec",
+      steps: [`${less(ls[i])} = ${texM(S)} \\to ${texM(rref(S).R)}`, `(A - \\lambda I)\\mathbf{x} = \\mathbf{0}: \\quad \\mathbf{x} = t${colTex(u.map(String))}`],
+    };
+  }
   if (L === 1) {
     const { A, ls } = make(2);
     return { prompt: w.prompts.eigValues, q: `A = ${texM(A)}`, answer: { k: "set", vs: ls, tol: 1e-9 }, show: `\\lambda = ${ls.join(", \\; ")}`, plain: ls.join("; "), format: "roots", solution: eigenOf(A) };
