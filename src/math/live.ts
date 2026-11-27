@@ -145,6 +145,7 @@ import { CPU_START_STATE, type LiveCpu } from "./cpuLab";
 import { SYSTEM_START, type LiveSystem } from "./systemLab";
 import { RAID_START, type LiveRaid } from "./raidLab";
 import { CACHE_START, type LiveCache } from "./cacheLab";
+import { IO_START, type LiveIo } from "./ioLab";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
@@ -757,6 +758,7 @@ export type LiveStates = {
   systemLab: LiveSystem;
   raidLab: LiveRaid;
   cacheLab: LiveCache;
+  ioLab: LiveIo;
   surface: LiveSurface;
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
@@ -949,6 +951,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   systemLab: [720, 790],
   raidLab: [720, 700],
   cacheLab: [700, 700],
+  ioLab: [700, 680],
   surface: [680, 790],
   pcaLab: [660, 720],
   softmaxLab: [660, 780],
@@ -1143,6 +1146,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     systemLab: SYSTEM_START,
     raidLab: RAID_START,
     cacheLab: CACHE_START,
+    ioLab: IO_START,
     surface: SURFACE_START,
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,

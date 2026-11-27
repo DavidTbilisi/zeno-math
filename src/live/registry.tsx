@@ -158,6 +158,7 @@ import { CpuLab } from "./CpuLab";
 import { SystemLab } from "./SystemLab";
 import { RaidLab } from "./RaidLab";
 import { CacheLab } from "./CacheLab";
+import { IoLab } from "./IoLab";
 import { DescentLab } from "./DescentLab";
 import { Surface } from "./Surface";
 import { PcaLab } from "./PcaLab";
@@ -357,6 +358,7 @@ export const PIECES: { [K in LiveKind]: ComponentType<PieceProps<K>> } = {
   systemLab: SystemLab,
   raidLab: RaidLab,
   cacheLab: CacheLab,
+  ioLab: IoLab,
   surface: Surface,
   pcaLab: PcaLab,
   softmaxLab: SoftmaxLab,

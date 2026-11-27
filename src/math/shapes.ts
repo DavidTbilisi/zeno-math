@@ -1582,6 +1582,16 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function ioLabPreview(): Piece[] {
+  // A timeline: the device's bytes above, the CPU's ticks below, green work broken by orange interrupts.
+  const acts = ["#b2f2bb", "#b2f2bb", "#ffd8a8", "#a5d8ff", "#ffd8a8", "#b2f2bb", "#b2f2bb", "#ffd8a8", "#a5d8ff", "#ffd8a8", "#b2f2bb", "#b2f2bb"];
+  return [
+    ...acts.map((c, t) => rect(6 + t * 15, 60, 13, 22, { fill: c, color: "#ced4da", width: 1 })),
+    ...[2, 7].map((t) => rect(8 + t * 15, 30, 9, 9, { fill: "#212529", color: "#212529", width: 1 }, true)),
+    rect(6, 86, 178, 10, { fill: "#f8f9fa", color: "#e9ecef", width: 1 }),
+  ];
+}
+
 function cacheLabPreview(): Piece[] {
   // Four cache lines beside a grid of memory blocks, each coloured by the line it may go in.
   const colors = ["#d0ebff", "#d3f9d8", "#fff3bf", "#ffe3e3"];
@@ -2997,6 +3007,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveSystemLab", build: systemLabPreview, live: "systemLab" },
   { id: "liveRaidLab", build: raidLabPreview, live: "raidLab" },
   { id: "liveCacheLab", build: cacheLabPreview, live: "cacheLab" },
+  { id: "liveIoLab", build: ioLabPreview, live: "ioLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },

@@ -2841,6 +2841,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     bit. Five puzzles: rebuild a mirror; a dead RAID 5 drive worked out by hand with four bit switches; rebuild RAID 5
     on four drives; and two design puzzles, where the file must live through losing any one drive with as few drives as
     can hold it (RAID 5 on three when a drive holds half the file, a two-drive mirror when it holds all of it).
+  - *Talking to devices* (#856; Discrete → Computer, and the Computer stage of the Software engineer goal): a disk,
+    an interrupt bell, a DMA controller, the CPU and memory above a timeline of twenty ticks. The clock steps one tick;
+    at the right tick the learner acts instead: takes the byte when the disk's light is on (polling), answers the bell
+    (interrupts: save, take, return), or sets up the DMA controller first (DMA). Acting too early or stepping past is
+    explained. At the end the ticks each way leaves for the program are compared (5, 11 and 16 of 20; Stallings
+    7.2–7.5). A fourth puzzle polls a keyboard every k ticks and finds the slowest polling that loses no key.
   - *The cache* (#855; Discrete → Computer, and the Computer stage of the Software engineer goal): the CPU's requests
     in a row, a cache of four lines, and main memory's sixteen blocks coloured by the line or set each may go in. Each
     request is answered by tapping a cache line (or dragging the block from memory onto it): the line that holds it, a
