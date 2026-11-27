@@ -3,17 +3,64 @@
 // tank's water from its rate of flow. Hard: an average value, distance against displacement, and, in a new setting,
 // where a braking cyclist stops. The other end's sum, the width forgotten, too much and too little swapped, the left
 // ends for the middles, g for g′, the chain rule forgotten, the start forgotten, the end rate times the time, the
-// integral for the average, net for total and total for net, and a rectangle for a triangle are slips.
+// integral for the average, net for total and total for net, and a rectangle for a triangle are slips. Since #748 four
+// in ten medium and hard seeds read g(x) = ∫ from 0 to x of f from a drawn graph of f: where g turns, where it rises
+// or falls (L2), where it bends up or down (L3).
 import { fill } from "../chart";
+import { limitPic } from "../limitGraph";
 import { num } from "../practiceKit";
-import type { Gen, Part, Trap } from "../practiceTypes";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 import { sgn } from "../readFunction";
 import { pickPart } from "../tTails";
 
 const r4 = (v: number) => Math.round(v * 10000) / 10000;
 const plus = (c: number, v = "") => (c === 0 ? "" : ` ${c < 0 ? "−" : "+"} ${Math.abs(c)}${v}`);
 
+const sgn0 = (v: number) => String(v).replace("-", "−");
+
+/** g(x) = ∫ from 0 to x of f(t) dt read from a drawn f = k(t − p)(t − q) (#748). */
+function accumulated(r: Rng, L: 2 | 3, w: PracticeWords): Part {
+  const K = w.acK;
+  const gap = r.pick([2, 4, 6]);
+  const p = r.int(-5, 5 - gap);
+  const q = p + gap;
+  const h = (p + q) / 2;
+  const k = r.pick([0.5, -0.5]);
+  const pic = limitPic({ pieces: [{ f: (t: number) => k * (t - p) * (t - q), from: -6, to: 6 }], closed: [[p, 0], [q, 0]], label: "f" });
+  const out = `x < ${sgn0(p)} or x > ${sgn0(q)}`;
+  const inside = `${sgn0(p)} < x < ${sgn0(q)}`;
+  const steps = [`g'(x) = f(x)`, `f(${sgn0(p)}) = f(${sgn0(q)}) = 0`];
+  if (L === 2 && r.next() < 0.5) {
+    // f goes + to − at p when k > 0, so g has a maximum at p and a minimum at q.
+    const askMax = r.next() < 0.5;
+    const right = (k > 0) === askMax ? p : q;
+    return {
+      prompt: `${K.given} ${askMax ? K.gMaxQ : K.gMinQ}`, q: "g(x) = \\int_{0}^{x} f(t)\\,dt",
+      answer: { ...num(right), traps: [{ id: "gTurnSwapped", a: num(right === p ? q : p) }, { id: "gMaxAtFMax", a: num(h), vars: { p: sgn0(p), q: sgn0(q) } }] },
+      show: sgn0(right), plain: String(right), format: "number", pic,
+      steps: [...steps, `x = ${sgn0(right)}: \\ f \\ ${(k > 0) === (right === p) ? "+ \\to -" : "- \\to +"}`],
+    };
+  }
+  if (L === 2) {
+    const askDec = r.next() < 0.5;
+    // g rises where f > 0: outside (p, q) when k > 0.
+    const rightIn = (k > 0) === askDec;
+    const fFalls = k > 0 ? `x < ${sgn0(h)}` : `x > ${sgn0(h)}`;
+    const fRises = k > 0 ? `x > ${sgn0(h)}` : `x < ${sgn0(h)}`;
+    return { ...pickPart(r, [rightIn ? inside : out, rightIn ? out : inside, askDec ? fFalls : fRises], 0, [{ id: "gIntervalsSwapped", at: 1 }, { id: "gFollowsFShape", at: 2 }],
+      `${K.given} ${askDec ? K.gDecQ : K.gIncQ}`, [...steps, askDec ? "g'(x) = f(x) < 0" : "g'(x) = f(x) > 0"]), q: "g(x) = \\int_{0}^{x} f(t)\\,dt", pic };
+  }
+  // g bends up where f rises: right of the vertex when k > 0.
+  const askUp = r.next() < 0.5;
+  const right = (k > 0) === askUp ? `x > ${sgn0(h)}` : `x < ${sgn0(h)}`;
+  const other = (k > 0) === askUp ? `x < ${sgn0(h)}` : `x > ${sgn0(h)}`;
+  const rises = (k > 0) === askUp ? out : inside;
+  return { ...pickPart(r, [right, other, rises], 0, [{ id: "gConcavitySwapped", at: 1 }, { id: "gIncreasingForConcave", at: 2 }],
+    `${K.given} ${askUp ? K.gUpQ : K.gDownQ}`, [`g''(x) = f'(x)`, `x = ${sgn0(h)}: \\ f \\ ${k > 0 ? "\\text{lowest}" : "\\text{highest}"}`]), q: "g(x) = \\int_{0}^{x} f(t)\\,dt", pic };
+}
+
 const gen: Gen = (r, L, w) => {
+  if (L > 1 && r.int(0, 9) >= 6) return accumulated(r, L as 2 | 3, w);
   const W = w.qac;
   const numQ = (prompt: string, v: number, traps: (Trap | false)[], steps: string[]): Part => ({
     prompt, q: "", answer: { ...num(v), traps: traps.filter((t): t is Trap => !!t && t.a.k === "num" && Math.abs(t.a.v - v) > 1e-6) }, show: sgn(v), plain: String(v), format: "number", steps,

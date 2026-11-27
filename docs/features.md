@@ -1373,6 +1373,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     where a braking cyclist stops. Twelve slips are named, among them the width forgotten, the start forgotten and
     net change given for distance. The piece *Fill under the curve* (Insert → Calculus, grades 12–13): left, right
     and middle rectangles under a rising curve, against the true area, as their number grows
+  - Definite integrals read other ways (grades 10–12; #748, in the definite integrals skill): the area under a drawn
+    line as a trapezoid, the value of a Σ sum and a net area from the triangles above and below the axis; then the
+    integral's algebraic properties, adjacent intervals and a function with a jump; then which Σ is the right Riemann
+    sum for an integral and which integral a limit of sums is. Since #748 the accumulation skill also reads
+    g(x) = ∫ f from a drawn f: where g turns, rises or falls, and bends. Fourteen slips are named for the definite
+    integral, among them the area below the axis added, the limits swapped without the sign, the constant of a Σ added
+    once and the strips started at 0; six for g, among them g's turn put at f's peak and g's bending read from f's sign
   - Slope fields, exponential and logistic models (grade 12; #669): the slope at a point and which equation a field
     fits; then y(t) for dy/dt = ky, a constant solution and checking a solution; then a logistic model's carrying
     capacity and where it grows fastest and, in a new setting, how fast the fish in a lake multiply. Nine slips are
@@ -1574,7 +1581,9 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     grades 12–13): drag the foot of a ladder to where its top slides down at 3/4 or 4/3 of the foot's speed, with
     faint ladders at equal steps showing the drops grow; then the speed is hidden and x and y must do, and the end
     states dy/dt = −(x/y)·dx/dt), techniques of integration (a substitution, by parts, partial fractions or a squared
-    sine, typed as an antiderivative and judged up to its constant), improper integrals (∫ 1/xᵖ converges or not
+    sine, typed as an antiderivative and judged up to its constant; since #748 also which u a substitution needs, a
+    definite integral by substitution, also of an exponential, with the limits left in x named, dividing first, a
+    definite integral by parts, completing the square for an arctangent and which trigonometric substitution fits), improper integrals (∫ 1/xᵖ converges or not
     at infinity and at 0, their values, ∫ 1/(1 + x²) to π), area, volume and arc length (between a parabola and a
     line, a solid of revolution as a multiple of π, curves whose length is an integral done by hand), Taylor series
     (four Maclaurin coefficients, a value approximated to 3 places, a coefficient about a ≠ 0), power series (a
