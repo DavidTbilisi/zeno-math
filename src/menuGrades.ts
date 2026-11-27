@@ -58,7 +58,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   sohcahtoa: [10, 12], trigDiscover: [10, 12], pythDiscover: [8, 10], circleDiscover: [10, 12], tessellate: [3, 7],
   views3d: [4, 8], cubeNet: [4, 7],
   // chart sense
-  plotPoint: [5, 8], barChart: [2, 6], makeDiagram: [2, 7], boxSplit: [7, 10], tableShares: [8, 10], fitLine: [8, 12], sampleField: [7, 10], tTails: [12, 13], secantRate: [8, 10], testPoints: [8, 10], ineqFind: [6, 10], cxPlane: [12, 13], matPlane: [10, 13], growthRace: [10, 12], completeSquare: [8, 10], polyShape: [10, 12], asymptoteWalk: [10, 12], squareCheck: [10, 12], moveGraph: [10, 12], graphStory: [6, 10], slopeLine: [8, 10],
+  plotPoint: [5, 8], barChart: [2, 6], makeDiagram: [2, 7], meanBalance: [6, 8], boxSplit: [7, 10], tableShares: [8, 10], fitLine: [8, 12], sampleField: [7, 10], tTails: [12, 13], secantRate: [8, 10], testPoints: [8, 10], ineqFind: [6, 10], cxPlane: [12, 13], matPlane: [10, 13], growthRace: [10, 12], completeSquare: [8, 10], polyShape: [10, 12], asymptoteWalk: [10, 12], squareCheck: [10, 12], moveGraph: [10, 12], graphStory: [6, 10], slopeLine: [8, 10],
   // graph puzzles: no syllabus teaches them, and any class can play them
   oneStroke: [3, 13], colourMap: [3, 13], shortestPath: [4, 13], connectTowns: [5, 13],
   // algorithms, data structures and systems

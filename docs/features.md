@@ -2017,6 +2017,19 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Centre, spread and shape (#736): in averages, which questions are statistical, the mean read off a dot plot or a
+    table of counts, a missing value from the mean (grade 6), the median of a table of counts or a histogram's bar,
+    a range puzzle, what a shift does to the mean and the range, the mean after one more value (grade 7), the variance,
+    σ against s, and which dot plot has the larger standard deviation by eye (grade 10); in spread, a distribution's
+    shape (skewed right, left or symmetric), where its gap is, which pair describes the centre and spread, and two
+    classes compared by their medians; the slips (one answer taken as statistical, the different values averaged,
+    the total shared among the rows, the mean taken for the missing value, the middle of the counts, the tallest bar,
+    a shift ignored or multiplied, the sample and population swapped, a low stack as a gap, the mean for skewed data,
+    the largest values compared) are named. Line plots and frequency tables are #735's; box plots are built from the
+    existing quartile and IQR questions. The piece "Mean: find where the dots balance": tap the line to set a
+    balance point under a beam of dots; it tips towards the side whose distances add up to more, the middle dot and
+    halfway between the ends are named when they don't balance, and once level the rule is said: the distances
+    below the mean add up to those above it, and it is the total shared equally
   - Building and reading displays (#735): in bar charts, a bar graph built from a table of counts (how many lines of a
     scale in 2s, 5s or 10s a bar reaches) and two-step questions of a bar graph or a picture graph, two together
     against a third (grade 3); in diagrams, line plots of fractions of a litre (how many above a value, the most less

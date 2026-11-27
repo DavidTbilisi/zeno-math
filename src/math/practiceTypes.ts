@@ -501,6 +501,8 @@ export type PracticeWords = {
   rcK: Record<"buildQ" | "fruit" | "count" | "twoStepQ" | "pictoQ", string>;
   dgK: Record<"buildQ" | "water" | "aboveQ" | "diffQ" | "totalQ" | "quantQ" | "quantWhy" | "discQ" | "discrete" | "continuous" | "discWhy" | "contWhy" | "s0" | "v00" | "v01" | "v02" | "v03" | "s1" | "v10" | "v11" | "v12" | "v13" | "s2" | "v20" | "v21" | "v22" | "v23" | "shareQ" | "red" | "blue" | "green" | "yellow" | "histQ" | "dotQ" | "dotWhy", string>;
   twK: Record<"buildQ" | "margQ" | "condSay" | "margSay" | "kindQ" | "marginal" | "conditional" | "mosaicQ" | "mosaicWhy" | "trendQ" | "up" | "down", string>;
+  avK: Record<"statQ" | "statWhy" | "many0" | "many1" | "many2" | "many3" | "one0" | "one1" | "one2" | "one3" | "dotMeanQ" | "pets" | "tableMeanQ" | "petsHead" | "pupils" | "missingQ" | "tableMedianQ" | "goals" | "matches" | "medianWhy" | "histMedianQ" | "histWhy" | "minutes" | "puzzleQ" | "shiftMeanQ" | "shiftRangeQ" | "addQ" | "varianceQ" | "popQ" | "sampleQ" | "visualQ" | "plotA" | "plotB", string>;
+  spK: Record<"right" | "left" | "skewRight" | "skewLeft" | "symmetric" | "shapeQ" | "whyRight" | "whyLeft" | "whySym" | "score" | "gapQ" | "gapBetween" | "gapAt" | "noGap" | "gapWhy" | "medIqr" | "meanSd" | "centreQ" | "whyMedian" | "whyMean" | "classA" | "classB" | "compareQ" | "medians", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
