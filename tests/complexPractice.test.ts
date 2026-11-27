@@ -67,8 +67,16 @@ test("every complex question accepts its own answer, in the other form too, and 
       }
 });
 
+const ex2 = (seed: number) => {
+  const a = exercise("complex", 3, seed, w).answer;
+  return a.k === "complex" && a.vs.length === 2;
+};
+
 test("the right count of roots is asked for", () => {
-  const ex = exercise("complex", 3, 1, w);
+  // The first level 3 question with two roots (since #732 half are other kinds).
+  let seed = 1;
+  while (!ex2(seed)) seed++;
+  const ex = exercise("complex", 3, seed, w);
   const v = check(ex, ex.plain.split("; ")[0], w);
   assert.equal(v.ok, false);
   assert.match(v.why ?? "", /2/);

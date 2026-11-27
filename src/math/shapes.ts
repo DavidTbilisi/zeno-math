@@ -2317,6 +2317,19 @@ function powerFindPreview(): Piece[] {
   return [...out, seg([-4, 1.6 * k], [5.4 * k, 1.6 * k], { color: "#1e1e1e", width: 2 })];
 }
 
+function cxPlanePreview(): Piece[] {
+  // Axes, z as an arrow from 0 and i·z a quarter turn on from it, with the corner of the turn.
+  const k = 12;
+  const out: Piece[] = [seg([0, 5 * k], [10 * k, 5 * k], { color: "#1e1e1e", width: 2 }), seg([5 * k, 0], [5 * k, 10 * k], { color: "#1e1e1e", width: 2 })];
+  return [
+    ...out,
+    seg([5 * k, 5 * k], [8 * k, 4 * k], { color: "#1971c2", width: 3 }),
+    seg([5 * k, 5 * k], [6 * k, 2 * k], { color: "#2f9e44", width: 3 }),
+    seg([6 * k, 4.67 * k], [6.33 * k, 3.67 * k], { color: "#2f9e44", width: 1.5 }),
+    seg([6.33 * k, 3.67 * k], [5.33 * k, 4 * k], { color: "#2f9e44", width: 1.5 }),
+  ];
+}
+
 function vecFindPreview(): Piece[] {
   // Two vectors tip to tail on a grid and their sum from the start of the first to the end of the second.
   const k = 12;
@@ -2732,6 +2745,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveVecFind", build: vecFindPreview, live: "vecFind" },
   { id: "livePowerFind", build: powerFindPreview, live: "powerFind" },
   { id: "liveIneqFind", build: ineqFindPreview, live: "ineqFind" },
+  { id: "liveCxPlane", build: cxPlanePreview, live: "cxPlane" },
   { id: "liveAreaBlocks", build: areaBlocksPreview, live: "areaBlocks" },
   { id: "liveCounters", build: countersPreview, live: "counters" },
   { id: "liveSignArrow", build: signArrowPreview, live: "signArrow" },

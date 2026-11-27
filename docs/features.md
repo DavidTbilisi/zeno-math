@@ -2017,6 +2017,17 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     too, a negative's sign dropped, the coefficient squared, xy read as x + y, a square taken as bigger, the rate
     mixed with the fixed charge, brackets left out, only the first term divided, nothing left for a term that was all
     the factor, and unlike terms combined are named
+  - Complex numbers and the complex plane (#732): the root of a negative number, a power of i, the real or imaginary
+    part of a number, and whether it is real, purely imaginary or neither; a difference, the distance and the midpoint
+    of two numbers on the plane, a conjugate and z times its conjugate; then x² + k² and x⁴ − k⁴ factorised over the
+    complex numbers and i times a number. The root left real, the powers of i taken two at a time, the parts swapped,
+    a minus dropped, a zero part misread, the second bracket's sign kept on the i part, the midpoint not halved, the
+    real part's sign changed, a² − b² for z times its conjugate, real brackets for a sum of squares, one bracket
+    squared, a sum of squares left whole and the quarter turn taken clockwise are named. The piece *Complex plane:
+    find the rules by tapping points* (Insert → Algebra → matrices & complex numbers, grades 12–13): a point of the
+    plane is tapped (or reached with Tab and Enter) for 3 + 2i, for z + w, for i · z and for a conjugate; a wrong
+    point is said back as a number with what it got wrong, and the right one draws what it shows (the parts across and
+    up, the arrows end to end, the quarter turn, the mirror in the real axis) before the rule is said
   - Models in words: several variables, combined rates (#731): in formulae, what a number in a taxi's or a gym's
     formula stands for, which letter goes on which axis of a tank's, a ball's or a ticket's graph, a year at a gym
     written in three letters, and a bakery's profit written as R(x) − C(x); in algebraic fractions, someone's working
