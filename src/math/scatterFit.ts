@@ -24,6 +24,17 @@ export const residuals = (pts: readonly Pt[], l: Line) => pts.map(([x, y]) => y 
 /** The sum of the squared residuals. */
 export const sse = (pts: readonly Pt[], l: Line) => residuals(pts, l).reduce((s, r) => s + r * r, 0);
 
+/** The correlation coefficient r of the points. */
+export function corr(pts: readonly Pt[]): number {
+  const n = pts.length;
+  const mx = pts.reduce((s, p) => s + p[0], 0) / n;
+  const my = pts.reduce((s, p) => s + p[1], 0) / n;
+  const sxy = pts.reduce((s, p) => s + (p[0] - mx) * (p[1] - my), 0);
+  const sxx = pts.reduce((s, p) => s + (p[0] - mx) ** 2, 0);
+  const syy = pts.reduce((s, p) => s + (p[1] - my) ** 2, 0);
+  return sxy / Math.sqrt(sxx * syy);
+}
+
 /** A number as written, to two decimal places at most. */
 export const short = (v: number) => String(Math.round(v * 100) / 100).replace("-", "−");
 /** y = mx + c written out: y = 2.5x + 10, y = −3x + 40, y = x − 2. */
@@ -93,3 +104,20 @@ export const isBest = (s: LiveFitLine) => {
   const pts = FIT_SETS[s.set];
   return sse(pts, lineOf(s)) <= sse(pts, bestLine(pts)) * 1.03 + 0.05;
 };
+
+/** A residual plot: each point's residual against x, from −top to top, with the zero line dashed across. */
+export function residualSvg(pts: readonly Pt[], xMax: number, top: number, yLabel: string) {
+  const [pw, ph, x0, y0] = [300, 180, 44, 12];
+  const X = (x: number) => x0 + (x / xMax) * pw;
+  const Y = (y: number) => y0 + ph / 2 - (y / top) * (ph / 2);
+  const out: string[] = [];
+  for (const v of [-top, -top / 2, 0, top / 2, top]) {
+    out.push(`<line x1="${x0}" y1="${Y(v)}" x2="${x0 + pw}" y2="${Y(v)}" stroke="${v ? "#e9ecef" : C.ink}"${v ? "" : ` stroke-dasharray="5 4" stroke-width="1.5"`}/>`);
+    out.push(`<text x="${x0 - 6}" y="${Y(v) + 4}" font-size="11" text-anchor="end" ${font} fill="${C.ink}">${short(v)}</text>`);
+  }
+  for (let v = 0; v <= xMax; v += 2) out.push(`<text x="${X(v)}" y="${y0 + ph + 16}" font-size="11" text-anchor="middle" ${font} fill="${C.ink}">${v}</text>`);
+  out.push(`<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y0 + ph}" stroke="${C.ink}" stroke-width="1.5"/>`);
+  for (const [x, y] of pts) out.push(`<circle cx="${X(x)}" cy="${Y(y)}" r="4.5" fill="${C.ink}"/>`);
+  out.push(`<text x="12" y="${y0 + ph / 2}" font-size="12" text-anchor="middle" ${font} fill="${C.grey}" transform="rotate(-90 12 ${y0 + ph / 2})">${yLabel}</text>`);
+  return { body: out.join(""), w: x0 + pw + 20, h: y0 + ph + 26 };
+}
