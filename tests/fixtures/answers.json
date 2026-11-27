@@ -8612,14 +8612,14 @@
     {
       "skill": "limits",
       "level": 1,
-      "seed": 7,
+      "seed": 2062,
       "input": "11/2",
       "label": "correct"
     },
     {
       "skill": "limits",
       "level": 1,
-      "seed": 7,
+      "seed": 2062,
       "input": "0",
       "label": "wrong",
       "note": "0/0 read as 0",
@@ -8628,21 +8628,21 @@
     {
       "skill": "limits",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "e^-9",
       "label": "correct"
     },
     {
       "skill": "limits",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "1/e^9",
       "label": "correct"
     },
     {
       "skill": "limits",
       "level": 2,
-      "seed": 7,
+      "seed": 68,
       "input": "1",
       "label": "wrong",
       "note": "1 to any power taken as 1",
@@ -8651,14 +8651,14 @@
     {
       "skill": "limits",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "0.4",
       "label": "correct"
     },
     {
       "skill": "limits",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "1/5",
       "label": "wrong",
       "note": "the inner 2 of ln(1 + 2x) left out",
@@ -26178,14 +26178,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 1,
+      "seed": 8026,
       "input": "-4",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 1,
+      "seed": 8026,
       "input": "12",
       "label": "wrong",
       "mistake": "sidesSwapped"
@@ -26193,21 +26193,21 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 1,
+      "seed": 8026,
       "input": "3",
       "label": "wrong"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 2,
+      "seed": 5490,
       "input": "There is no limit",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 2,
+      "seed": 5490,
       "input": "It is −2",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -26215,7 +26215,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 2,
+      "seed": 5490,
       "input": "It is 1",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -26223,14 +26223,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 3,
+      "seed": 338,
       "input": "It is 0",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 3,
+      "seed": 338,
       "input": "It is 2",
       "label": "wrong",
       "mistake": "limitAsValue"
@@ -26238,7 +26238,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 3,
+      "seed": 338,
       "input": "There is no limit",
       "label": "wrong",
       "mistake": "valueBreaksLimit"
@@ -26246,14 +26246,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 4,
+      "seed": 363,
       "input": "It is −3",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 4,
+      "seed": 363,
       "input": "It is −5",
       "label": "wrong",
       "mistake": "limitAsValue"
@@ -26261,7 +26261,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 4,
+      "seed": 363,
       "input": "There is no limit",
       "label": "wrong",
       "mistake": "valueBreaksLimit"
@@ -26269,14 +26269,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 5,
+      "seed": 14100,
       "input": "There is no limit",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 5,
+      "seed": 14100,
       "input": "It is −3",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -26284,7 +26284,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 5,
+      "seed": 14100,
       "input": "It is −6",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -26292,21 +26292,21 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "An asymptote (infinite)",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 2,
+      "seed": 202,
       "input": "A jump",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 2,
+      "seed": 202,
       "input": "A hole (removable)",
       "label": "wrong",
       "mistake": "jumpCalledRemovable"
@@ -26314,14 +26314,14 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 4,
+      "seed": 24,
       "input": "A hole (removable)",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 4,
+      "seed": 24,
       "input": "An asymptote (infinite)",
       "label": "wrong",
       "mistake": "denominatorZeroInfinite"
@@ -26329,14 +26329,14 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "-2",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "-8",
       "label": "wrong",
       "mistake": "kNotDivided"
@@ -26344,7 +26344,7 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "8",
       "label": "wrong",
       "mistake": "slopesMatched"
@@ -26352,21 +26352,21 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "5",
       "label": "wrong"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 7,
+      "seed": 807,
       "input": "No break: continuous",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 7,
+      "seed": 807,
       "input": "A jump",
       "label": "wrong",
       "mistake": "piecesAlwaysJump"
@@ -26374,14 +26374,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "0",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "It does not exist: cos(1 ÷ x) keeps swinging",
       "label": "wrong",
       "mistake": "swingNotSqueezed"
@@ -26389,14 +26389,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 2,
+      "seed": 285,
       "input": "9",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 2,
+      "seed": 285,
       "input": "6",
       "label": "wrong",
       "mistake": "sidesSwapped"
@@ -26404,21 +26404,21 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 2,
+      "seed": 285,
       "input": "16",
       "label": "wrong"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 7,
+      "seed": 269,
       "input": "No: f is not continuous there",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 7,
+      "seed": 269,
       "input": "Yes",
       "label": "wrong",
       "mistake": "ivtNoContinuity"
@@ -26426,14 +26426,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 8,
+      "seed": 9653,
       "input": "Yes",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 8,
+      "seed": 9653,
       "input": "No: f does not keep rising or keep falling",
       "label": "wrong",
       "mistake": "ivtNeedsMonotone"
@@ -26441,14 +26441,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 10,
+      "seed": 35,
       "input": "0",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 10,
+      "seed": 35,
       "input": "It does not exist: cos(1 ÷ x) keeps swinging",
       "label": "wrong",
       "mistake": "swingNotSqueezed"
@@ -27277,14 +27277,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 1,
+      "seed": 8026,
       "input": "-4",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 1,
+      "seed": 8026,
       "input": "12",
       "label": "wrong",
       "mistake": "sidesSwapped"
@@ -27292,21 +27292,21 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 1,
+      "seed": 8026,
       "input": "3",
       "label": "wrong"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 2,
+      "seed": 5490,
       "input": "There is no limit",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 2,
+      "seed": 5490,
       "input": "It is −2",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -27314,7 +27314,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 2,
+      "seed": 5490,
       "input": "It is 1",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -27322,14 +27322,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 3,
+      "seed": 338,
       "input": "It is 0",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 3,
+      "seed": 338,
       "input": "It is 2",
       "label": "wrong",
       "mistake": "limitAsValue"
@@ -27337,7 +27337,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 3,
+      "seed": 338,
       "input": "There is no limit",
       "label": "wrong",
       "mistake": "valueBreaksLimit"
@@ -27345,14 +27345,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 4,
+      "seed": 363,
       "input": "It is −3",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 4,
+      "seed": 363,
       "input": "It is −5",
       "label": "wrong",
       "mistake": "limitAsValue"
@@ -27360,7 +27360,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 4,
+      "seed": 363,
       "input": "There is no limit",
       "label": "wrong",
       "mistake": "valueBreaksLimit"
@@ -27368,14 +27368,14 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 5,
+      "seed": 14100,
       "input": "There is no limit",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 5,
+      "seed": 14100,
       "input": "It is −3",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -27383,7 +27383,7 @@
     {
       "skill": "continuity",
       "level": 1,
-      "seed": 5,
+      "seed": 14100,
       "input": "It is −6",
       "label": "wrong",
       "mistake": "oneSideTaken"
@@ -27391,21 +27391,21 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "An asymptote (infinite)",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 2,
+      "seed": 202,
       "input": "A jump",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 2,
+      "seed": 202,
       "input": "A hole (removable)",
       "label": "wrong",
       "mistake": "jumpCalledRemovable"
@@ -27413,14 +27413,14 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 4,
+      "seed": 24,
       "input": "A hole (removable)",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 4,
+      "seed": 24,
       "input": "An asymptote (infinite)",
       "label": "wrong",
       "mistake": "denominatorZeroInfinite"
@@ -27428,14 +27428,14 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "-2",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "-8",
       "label": "wrong",
       "mistake": "kNotDivided"
@@ -27443,7 +27443,7 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "8",
       "label": "wrong",
       "mistake": "slopesMatched"
@@ -27451,21 +27451,21 @@
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 5,
+      "seed": 76,
       "input": "5",
       "label": "wrong"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 7,
+      "seed": 807,
       "input": "No break: continuous",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 2,
-      "seed": 7,
+      "seed": 807,
       "input": "A jump",
       "label": "wrong",
       "mistake": "piecesAlwaysJump"
@@ -27473,14 +27473,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "0",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "It does not exist: cos(1 ÷ x) keeps swinging",
       "label": "wrong",
       "mistake": "swingNotSqueezed"
@@ -27488,14 +27488,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 2,
+      "seed": 285,
       "input": "9",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 2,
+      "seed": 285,
       "input": "6",
       "label": "wrong",
       "mistake": "sidesSwapped"
@@ -27503,21 +27503,21 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 2,
+      "seed": 285,
       "input": "16",
       "label": "wrong"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 7,
+      "seed": 269,
       "input": "No: f is not continuous there",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 7,
+      "seed": 269,
       "input": "Yes",
       "label": "wrong",
       "mistake": "ivtNoContinuity"
@@ -27525,14 +27525,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 8,
+      "seed": 9653,
       "input": "Yes",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 8,
+      "seed": 9653,
       "input": "No: f does not keep rising or keep falling",
       "label": "wrong",
       "mistake": "ivtNeedsMonotone"
@@ -27540,14 +27540,14 @@
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 10,
+      "seed": 35,
       "input": "0",
       "label": "correct"
     },
     {
       "skill": "continuity",
       "level": 3,
-      "seed": 10,
+      "seed": 35,
       "input": "It does not exist: cos(1 ÷ x) keeps swinging",
       "label": "wrong",
       "mistake": "swingNotSqueezed"
@@ -79377,6 +79377,1532 @@
       "input": "0.019226172227517328",
       "label": "wrong",
       "mistake": "zTailNotDoubled"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 1,
+      "input": "-12",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 1,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "limitCoefficientLost"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 1,
+      "input": "-5",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 2,
+      "input": "7",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "compositeAtPoint"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 2,
+      "input": "14",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 3,
+      "input": "-15",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 3,
+      "input": "-9",
+      "label": "wrong",
+      "mistake": "limitCoefficientLost"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 3,
+      "input": "-8",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 4,
+      "input": "-3",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 4,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "compositeAtPoint"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 4,
+      "input": "4",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 5,
+      "input": "−3.1; −3.01; −3.001; −2.999; −2.99; −2.9",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 5,
+      "input": "−5; −4; −3; −2; −1",
+      "label": "wrong",
+      "mistake": "tableIncludesPoint"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 5,
+      "input": "−2.9; −2.99; −2.999",
+      "label": "wrong",
+      "mistake": "tableOneSide"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 5,
+      "input": "−2; 7; 97",
+      "label": "wrong",
+      "mistake": "tableFarAway"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 10,
+      "input": "1.9; 1.99; 1.999; 2.001; 2.01; 2.1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 10,
+      "input": "0; 1; 2; 3; 4",
+      "label": "wrong",
+      "mistake": "tableIncludesPoint"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 10,
+      "input": "2.1; 2.01; 2.001",
+      "label": "wrong",
+      "mistake": "tableOneSide"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 10,
+      "input": "3; 12; 102",
+      "label": "wrong",
+      "mistake": "tableFarAway"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 11,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 11,
+      "input": "-1",
+      "label": "wrong",
+      "mistake": "sinCosSwapped"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 11,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 17,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 17,
+      "input": "-9",
+      "label": "wrong",
+      "mistake": "limitsAddedForProduct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 17,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 22,
+      "input": "8",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 22,
+      "input": "-6",
+      "label": "wrong",
+      "mistake": "limitsAddedForProduct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 22,
+      "input": "15",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 26,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 26,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "sinCosSwapped"
+    },
+    {
+      "skill": "limits",
+      "level": 1,
+      "seed": 26,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 1,
+      "input": "1/10",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 1,
+      "input": "1/5",
+      "label": "wrong",
+      "mistake": "conjugateNotDoubled"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 1,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "conjugateSkipped"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 2,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 2,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "identitySkipped"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 3,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 3,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "conjugateNotDoubled"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 3,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "conjugateSkipped"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 4,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 4,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "identitySkipped"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 4,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 5,
+      "input": "-3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 5,
+      "input": "does not exist",
+      "label": "wrong",
+      "mistake": "oscillationNoLimit"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 10,
+      "input": "Rewrite it with a trigonometric identity",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 10,
+      "input": "Stop: the limit is 0",
+      "label": "wrong",
+      "mistake": "indeterminateAsZero"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 10,
+      "input": "Stop: the limit does not exist",
+      "label": "wrong",
+      "mistake": "indeterminateAsDne"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 11,
+      "input": "3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 11,
+      "input": "9/4",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 13,
+      "input": "-∞",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 13,
+      "input": "∞",
+      "label": "wrong",
+      "mistake": "infiniteSignMissed"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 17,
+      "input": "2/3",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 17,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "identitySkipped"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 20,
+      "input": "-∞",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 20,
+      "input": "∞",
+      "label": "wrong",
+      "mistake": "infiniteSignMissed"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 25,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 25,
+      "input": "does not exist",
+      "label": "wrong",
+      "mistake": "oscillationNoLimit"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 30,
+      "input": "Multiply the top and the bottom by the conjugate",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 30,
+      "input": "Stop: the limit is 0",
+      "label": "wrong",
+      "mistake": "indeterminateAsZero"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 30,
+      "input": "Stop: the limit does not exist",
+      "label": "wrong",
+      "mistake": "indeterminateAsDne"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 41,
+      "input": "-3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 41,
+      "input": "3/4",
+      "label": "wrong",
+      "mistake": "sqrtNegativeInfinity"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 41,
+      "input": "-9/4",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 43,
+      "input": "2/3",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 43,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "identitySkipped"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 48,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 48,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "sqrtNegativeInfinity"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 48,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 48,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 64,
+      "input": "-∞",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 64,
+      "input": "does not exist",
+      "label": "wrong",
+      "mistake": "infiniteCalledNoLimit"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 102,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 102,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 102,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 142,
+      "input": "3/4",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 142,
+      "input": "9/4",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 145,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 145,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "sqrtNegativeInfinity"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 145,
+      "input": "-8",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 145,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 165,
+      "input": "∞",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 165,
+      "input": "does not exist",
+      "label": "wrong",
+      "mistake": "infiniteCalledNoLimit"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 180,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 180,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 180,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 195,
+      "input": "-2/3",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 195,
+      "input": "2/3",
+      "label": "wrong",
+      "mistake": "sqrtNegativeInfinity"
+    },
+    {
+      "skill": "limits",
+      "level": 2,
+      "seed": 195,
+      "input": "-4/3",
+      "label": "wrong",
+      "mistake": "rootNotTaken"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 1,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 1,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "infinityOverInfinityOne"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 1,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 2,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "infinityOverInfinityOne"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 2,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 5,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 5,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "leadingTermsWrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 5,
+      "input": "14",
+      "label": "wrong",
+      "mistake": "concentrationTimesRate"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 5,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 6,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 6,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "lnArgsDivided"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 6,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 10,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 10,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "degreesIgnored"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 10,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 11,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 11,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "degreesIgnored"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 11,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 16,
+      "input": "5/3",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 16,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "infinityOverInfinityOne"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 17,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 17,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "lnArgsDivided"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 17,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 20,
+      "input": "4/3",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 20,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "infinityOverInfinityOne"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 30,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 30,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "leadingTermsWrong"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 30,
+      "input": "15",
+      "label": "wrong",
+      "mistake": "concentrationTimesRate"
+    },
+    {
+      "skill": "limits",
+      "level": 3,
+      "seed": 30,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "limitAsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 2,
+      "input": "7",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "-4",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "limitAsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "f(x) gets as close to 1 as we like when x is close enough to −2, but not equal to it",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "f(−2) = 1",
+      "label": "wrong",
+      "mistake": "limitNeedsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 5,
+      "input": "f(−2) is defined",
+      "label": "wrong",
+      "mistake": "limitNeedsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 10,
+      "input": "f(x) gets as close to 3 as we like when x is close enough to 1, but not equal to it",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 10,
+      "input": "f(1) = 3",
+      "label": "wrong",
+      "mistake": "limitNeedsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 10,
+      "input": "f(1) is defined",
+      "label": "wrong",
+      "mistake": "limitNeedsValue"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 11,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 11,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "sidesSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 11,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 13,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 13,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "sidesSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 1,
+      "seed": 13,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 1,
+      "input": "No: f(0) is not the limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 1,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "breakMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 2,
+      "input": "No: f(−1) is not the limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 2,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "breakMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "x ≥ −2, x ≠ 2",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "x > −2, x ≠ 2",
+      "label": "wrong",
+      "mistake": "endpointWrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "x ≠ 2",
+      "label": "wrong",
+      "mistake": "domainMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 5,
+      "input": "x ≥ −2",
+      "label": "wrong",
+      "mistake": "poleMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 6,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 6,
+      "input": "No: the limit at 1 does not exist",
+      "label": "wrong",
+      "mistake": "cornerAsBreak"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 10,
+      "input": "x ≥ 1, x ≠ 6",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 10,
+      "input": "x > 1, x ≠ 6",
+      "label": "wrong",
+      "mistake": "endpointWrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 10,
+      "input": "x ≠ 6",
+      "label": "wrong",
+      "mistake": "domainMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 10,
+      "input": "x ≥ 1",
+      "label": "wrong",
+      "mistake": "poleMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 11,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 11,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "endpointBreakCounted"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 13,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 13,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "endpointBreakCounted"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 20,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 20,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "breakInsideMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 41,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 41,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "breakOutsideCounted"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 43,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 43,
+      "input": "No: the limit at 0 does not exist",
+      "label": "wrong",
+      "mistake": "cornerAsBreak"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 48,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 48,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "endpointValueMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 64,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 64,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "endpointValueMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 107,
+      "input": "Yes",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 107,
+      "input": "No",
+      "label": "wrong",
+      "mistake": "breakOutsideCounted"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 137,
+      "input": "No",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 2,
+      "seed": 137,
+      "input": "Yes",
+      "label": "wrong",
+      "mistake": "breakInsideMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 1,
+      "input": "∞",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 1,
+      "input": "−∞",
+      "label": "wrong",
+      "mistake": "infiniteSignMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "∞",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 2,
+      "input": "−∞",
+      "label": "wrong",
+      "mistake": "infiniteSignMissed"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 5,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 5,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "tableSamplesMisled"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 10,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 10,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "tableSamplesMisled"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 11,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 11,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "asymptoteSideSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 11,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 13,
+      "input": "-1",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 13,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "asymptoteSideSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 13,
+      "input": "6",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 20,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 20,
+      "input": "-2",
+      "label": "wrong",
+      "mistake": "asymptoteSideSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 20,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 42,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 42,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "asymptoteSideSwapped"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 42,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 47,
+      "input": "∞",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 47,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "infiniteCalledNoLimit"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 62,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 62,
+      "input": "∞",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 62,
+      "input": "−∞",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 81,
+      "input": "There is no limit",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 81,
+      "input": "∞",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 81,
+      "input": "−∞",
+      "label": "wrong",
+      "mistake": "oneSideTaken"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 123,
+      "input": "−∞",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 123,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "infiniteCalledNoLimit"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 203,
+      "input": "∞",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 203,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "infiniteCalledNoLimit"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 464,
+      "input": "∞",
+      "label": "correct"
+    },
+    {
+      "skill": "continuity",
+      "level": 3,
+      "seed": 464,
+      "input": "There is no limit",
+      "label": "wrong",
+      "mistake": "infiniteCalledNoLimit"
     }
   ]
 }

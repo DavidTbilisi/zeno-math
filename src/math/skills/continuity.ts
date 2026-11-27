@@ -5,8 +5,9 @@
 // sides swapped, a zero denominator always called an asymptote, a jump called a hole, two pieces assumed to break,
 // k not divided, the slopes matched instead of the values, and the theorem's conditions misread are slips.
 import { fill } from "../chart";
+import { HI, limitPic, LO, type LimitGraph } from "../limitGraph";
 import { num } from "../practiceKit";
-import type { Gen, Part, Trap } from "../practiceTypes";
+import type { Gen, Part, PracticeWords, Rng, Trap } from "../practiceTypes";
 import { sgn } from "../readFunction";
 import { pickPart } from "../tTails";
 
@@ -14,7 +15,129 @@ const m = (v: number) => String(v).replace("-", "−");
 const plus = (c: number, v = "") => (c === 0 ? "" : ` ${c < 0 ? "−" : "+"} ${Math.abs(c)}${v}`);
 const r4 = (v: number) => Math.round(v * 10000) / 10000;
 
+const numQ = (prompt: string, v: number, traps: (Trap | false)[], steps: string[]): Part => ({
+  prompt, q: "", answer: { ...num(v), traps: traps.filter((t): t is Trap => !!t && t.a.k === "num" && Math.abs(t.a.v - v) > 1e-6) }, show: sgn(v), plain: String(v), format: "number", steps,
+});
+const slip = (id: Trap["id"], v: number, vars?: Record<string, string | number>): Trap => ({ id, a: num(v), vars });
+const through = (x0: number, y0: number, s: number) => (x: number) => y0 + s * (x - x0);
+const minusW = (a: number) => (a === 0 ? "x" : `x ${a > 0 ? "−" : "+"} ${Math.abs(a)}`);
+const sup = { "-": "⁻", "+": "⁺", "": "" } as const;
+
+/** Limits and continuity read from a drawn graph, and where common functions are continuous (#744), on half the seeds. */
+function more(r: Rng, L: 1 | 2 | 3, w: PracticeWords): Part {
+  const K = w.lgK;
+  const withPic = (p: Part, g: LimitGraph): Part => ({ ...p, pic: limitPic(g) });
+  const two = (lo: number, hi: number) => {
+    const a = r.int(lo, hi);
+    let b = r.int(lo, hi);
+    while (b === a) b = r.int(lo, hi);
+    return [a, b];
+  };
+  const slope = () => r.pick([-1, -0.5, 0.5, 1]);
+  if (L === 1) {
+    const t = r.pick(["hole", "side", "meaning"] as const);
+    const a = r.int(-3, 3);
+    if (t === "hole") {
+      const [l, v] = two(-4, 4);
+      const c = r.pick([-0.5, 0.5]);
+      const f = r.next() < 0.5 ? through(a, l, slope()) : (x: number) => l + c * (x - a) ** 2;
+      return withPic(numQ(fill(K.graphQ, { a: minus(a), s: "" }), l, [slip("limitAsValue", v, { v: minus(v), a: minus(a) })], [`x \\to ${a}: \\quad f(x) \\to ${l}`, `f(${a}) = ${v} \\ne ${l}`]),
+        { pieces: [{ f, from: LO, to: HI }], open: [[a, l]], closed: [[a, v]] });
+    }
+    if (t === "side") {
+      const [p, q] = two(-4, 4);
+      const side = r.pick(["-", "+"] as const);
+      const [v, o] = side === "-" ? [p, q] : [q, p];
+      return withPic(numQ(fill(K.graphQ, { a: minus(a), s: sup[side] }), v, [slip("sidesSwapped", o, { a: minus(a) })], [`x \\to ${a}^{${side}}: \\quad f(x) \\to ${v}`]),
+        { pieces: [{ f: through(a, p, slope()), from: LO, to: a }, { f: through(a, q, slope()), from: a, to: HI }], open: [[a, p]], closed: [[a, q]] });
+    }
+    const l = r.int(-5, 5);
+    const vars = { a: minus(a), l: minus(l) };
+    return pickPart(r, [fill(K.mNear, vars), fill(K.mValue, vars), fill(K.mDefined, vars)], 0, [{ id: "limitNeedsValue", at: 1, vars }, { id: "limitNeedsValue", at: 2, vars }], fill(K.meanQ, vars),
+      [`x \\to ${a}, \\ x \\ne ${a}: \\quad f(x) \\to ${l}`]);
+  }
+  if (L === 2) {
+    const t = r.pick(["point", "interval", "common"] as const);
+    if (t === "point") {
+      const a = r.int(-2, 2);
+      const [l, q] = two(-3, 3);
+      const kind = r.pick(["corner", "jump", "moved", "missing"] as const);
+      const opts = [K.cYes, K.cNoLim, K.cNoMatch, K.cNoValue].map((o) => fill(o, { a: minus(a) }));
+      const prompt = fill(K.pointQ, { a: minus(a) });
+      const broke = [{ id: "breakMissed" as const, at: 0, vars: { a: minus(a) } }];
+      if (kind === "corner") {
+        const s = r.pick([-1, 1]);
+        return withPic(pickPart(r, opts, 0, [{ id: "cornerAsBreak", at: 1, vars: { a: minus(a), v: minus(l) } }], prompt, [`\\lim_{x \\to ${a}} f(x) = ${l} = f(${a})`]),
+          { pieces: [{ f: (x) => l + s * Math.abs(x - a), from: LO, to: HI }], closed: [[a, l]] });
+      }
+      if (kind === "jump")
+        return withPic(pickPart(r, opts, 1, broke, prompt, [`x \\to ${a}^{-}: \\ ${l}, \\quad x \\to ${a}^{+}: \\ ${q}`]),
+          { pieces: [{ f: through(a, l, slope()), from: LO, to: a }, { f: through(a, q, slope()), from: a, to: HI }], open: [[a, l]], closed: [[a, q]] });
+      const f = through(a, l, slope());
+      if (kind === "moved")
+        return withPic(pickPart(r, opts, 2, broke, prompt, [`\\lim_{x \\to ${a}} f(x) = ${l} \\ne ${q} = f(${a})`]), { pieces: [{ f, from: LO, to: HI }], open: [[a, l]], closed: [[a, q]] });
+      return withPic(pickPart(r, opts, 3, broke, prompt, [`\\lim_{x \\to ${a}} f(x) = ${l}, \\quad f(${a}) = \\,?`]), { pieces: [{ f, from: LO, to: HI }], open: [[a, l]] });
+    }
+    if (t === "interval") {
+      const c = r.int(-2, 2);
+      const [p, q] = two(-4, 4);
+      const kind = r.pick(["inside", "outside", "endClosed", "endOpen"] as const);
+      const k = r.int(2, 4);
+      const [lo, hi] = kind === "inside" ? [c - r.int(1, 3), c + r.int(1, 3)] : kind === "outside" ? (r.next() < 0.5 ? [c + 1, c + k] : [c - k, c - 1]) : kind === "endClosed" ? [c - k, c] : [c, c + k];
+      const right = kind === "inside" || kind === "endOpen" ? 1 : 0;
+      const vars = { c: minus(c), v: minus(p), q: minus(q) };
+      const id = ({ inside: "breakInsideMissed", outside: "breakOutsideCounted", endClosed: "endpointBreakCounted", endOpen: "endpointValueMissed" } as const)[kind];
+      return withPic(pickPart(r, [K.iYes, K.iNo], right, [{ id, at: 1 - right, vars }], fill(K.intervalQ, { lo: minus(lo), hi: minus(hi) }),
+        [`x = ${c}: \\quad f(${c}) = ${p}, \\quad x \\to ${c}^{+}: \\ f(x) \\to ${q}`]),
+        { pieces: [{ f: through(c, p, slope()), from: LO, to: c }, { f: through(c, q, slope()), from: c, to: HI }], closed: [[c, p]], open: [[c, q]] });
+    }
+    const a = r.int(-3, 2);
+    const b = a + r.int(2, 5);
+    const root = r.next() < 0.5;
+    const [A, B] = [minus(a), minus(b)];
+    const opts = root ? [`x ≥ ${A}, x ≠ ${B}`, `x ≠ ${B}`, `x ≥ ${A}`, `x > ${A}, x ≠ ${B}`] : [`x ≥ ${A}, x ≠ ${B}`, `x ≠ ${B}`, `x > ${A}`, `x > ${A}, x ≠ ${B}`];
+    const f = `${root ? "√" : "ln"}(${minusW(a)}) ÷ (${minusW(b)})`;
+    return pickPart(r, opts, root ? 0 : 3, [{ id: "endpointWrong", at: root ? 3 : 0, vars: { a: A } }, { id: "domainMissed", at: 1, vars: { a: A } }, { id: "poleMissed", at: 2, vars: { b: B } }], fill(K.commonQ, { f }),
+      [`${root ? `x - ${br(a)} \\ge 0` : `x - ${br(a)} > 0`}, \\quad x - ${br(b)} \\ne 0`]);
+  }
+  const t = r.pick(["vertical", "horizontal", "swing"] as const);
+  if (t === "vertical") {
+    const a = r.int(-2, 2);
+    const [k, p] = [r.pick([1, 2, 3]) * r.pick([-1, 1]), r.pick([1, 2])];
+    const side = r.pick(["-", "+", ""] as const);
+    const sR = Math.sign(k);
+    const sL = p === 2 ? sR : -sR;
+    const at = (s: number) => (s > 0 ? 0 : 1);
+    const one = side === "+" ? sR : sL;
+    const [right, traps] = side
+      ? [at(one), [{ id: "infiniteSignMissed" as const, at: at(-one), vars: { a: minus(a) } }]]
+      : sL === sR
+        ? [at(sR), [{ id: "infiniteCalledNoLimit" as const, at: 2, vars: { a: minus(a), v: sR > 0 ? "∞" : "−∞" } }]]
+        : [2, [{ id: "oneSideTaken" as const, at: 0, vars: { o: "−∞" } }, { id: "oneSideTaken" as const, at: 1, vars: { o: "∞" } }]];
+    const inf = (s: number) => (s > 0 ? "+\\infty" : "-\\infty");
+    const f = (x: number) => k / (x - a) ** p;
+    return withPic(pickPart(r, ["∞", "−∞", w.qct.noLimit], right, traps, fill(K.graphQ, { a: minus(a), s: sup[side] }), [`x \\to ${a}^{-}: \\ ${inf(sL)}, \\quad x \\to ${a}^{+}: \\ ${inf(sR)}`]),
+      { pieces: [{ f, from: LO, to: a - 0.01 }, { f, from: a + 0.01, to: HI }], vert: [a] });
+  }
+  if (t === "horizontal") {
+    const [up, down] = two(-4, 4);
+    const bump = r.pick([-1.5, 1.5]);
+    const f = (x: number) => (up + down) / 2 + ((up - down) / 2) * Math.tanh(x / 1.5) + bump * Math.exp(-((x - 1) ** 2) / 2);
+    const plusSide = r.next() < 0.5;
+    const [v, o] = plusSide ? [up, down] : [down, up];
+    return withPic(numQ(fill(K.graphQ, { a: plusSide ? "∞" : "−∞", s: "" }), v, [slip("asymptoteSideSwapped", o, { o: minus(o) })], [`x \\to ${plusSide ? "" : "-"}\\infty: \\quad f(x) \\to ${v}`]),
+      { pieces: [{ f, from: LO, to: HI }], horiz: [up, down] });
+  }
+  const sin = r.next() < 0.5;
+  const v = sin ? 0 : 1;
+  return pickPart(r, [String(v), w.qct.noLimit, String(1 - v)], 1, [{ id: "tableSamplesMisled", at: 0, vars: { v } }], fill(K.oscQ, { f: sin ? "sin(π ÷ x)" : "cos(2π ÷ x)", v }),
+    sin ? [`x = \\tfrac{1}{n}: \\ \\sin \\tfrac{\\pi}{x} = 0, \\quad x = \\tfrac{2}{4n + 1}: \\ \\sin \\tfrac{\\pi}{x} = 1`] : [`x = \\tfrac{1}{n}: \\ \\cos \\tfrac{2\\pi}{x} = 1, \\quad x = \\tfrac{2}{2n + 1}: \\ \\cos \\tfrac{2\\pi}{x} = -1`]);
+}
+const br = (v: number) => (v < 0 ? `(${v})` : String(v));
+const minus = (v: number) => String(v).replace("-", "−");
+
 const gen: Gen = (r, L, w) => {
+  if (r.int(0, 9) >= 5) return more(r, L, w);
   const W = w.qct;
   const numQ = (prompt: string, v: number, traps: (Trap | false)[], steps: string[]): Part => ({
     prompt, q: "", answer: { ...num(v), traps: traps.filter((t): t is Trap => !!t && t.a.k === "num" && Math.abs(t.a.v - v) > 1e-6) }, show: sgn(v), plain: String(v), format: "number", steps,
