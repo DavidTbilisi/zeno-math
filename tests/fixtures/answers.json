@@ -8809,14 +8809,14 @@
     {
       "skill": "intApplications",
       "level": 1,
-      "seed": 7,
+      "seed": 66,
       "input": "1/3",
       "label": "correct"
     },
     {
       "skill": "intApplications",
       "level": 1,
-      "seed": 7,
+      "seed": 66,
       "input": "13",
       "label": "wrong",
       "note": "the area under the line alone",
@@ -8825,14 +8825,14 @@
     {
       "skill": "intApplications",
       "level": 2,
-      "seed": 7,
+      "seed": 66,
       "input": "9π",
       "label": "correct"
     },
     {
       "skill": "intApplications",
       "level": 2,
-      "seed": 7,
+      "seed": 66,
       "input": "9",
       "label": "wrong",
       "note": "π left out",
@@ -8841,7 +8841,7 @@
     {
       "skill": "intApplications",
       "level": 2,
-      "seed": 7,
+      "seed": 66,
       "input": "81pi/4",
       "label": "wrong",
       "note": "the integral of y squared",
@@ -8850,14 +8850,14 @@
     {
       "skill": "intApplications",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "14/3",
       "label": "correct"
     },
     {
       "skill": "intApplications",
       "level": 3,
-      "seed": 7,
+      "seed": 27,
       "input": "2sqrt(3)",
       "label": "wrong",
       "note": "the 1 + left out: just the rise",
@@ -85853,6 +85853,766 @@
       "input": "x = 4 tan θ",
       "label": "wrong",
       "mistake": "trigSubMismatched"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 1,
+      "input": "32/3",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 1,
+      "input": "-32/3",
+      "label": "wrong",
+      "mistake": "rightMinusLeftSwapped"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 1,
+      "input": "-416/3",
+      "label": "wrong",
+      "mistake": "xValuesAsLimits"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 2,
+      "input": "9/2",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 2,
+      "input": "-9/2",
+      "label": "wrong",
+      "mistake": "rightMinusLeftSwapped"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 2,
+      "input": "-45/2",
+      "label": "wrong",
+      "mistake": "xValuesAsLimits"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 5,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 5,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "loopsCancel"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 5,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "oneLoopOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 5,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 6,
+      "input": "1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 6,
+      "input": "-1/6",
+      "label": "wrong",
+      "mistake": "rightMinusLeftSwapped"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 10,
+      "input": "81",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 10,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "loopsCancel"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 10,
+      "input": "81/2",
+      "label": "wrong",
+      "mistake": "oneLoopOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 10,
+      "input": "88",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 11,
+      "input": "11/2",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 11,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "oneRegionOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 11,
+      "input": "64",
+      "label": "wrong",
+      "mistake": "curveThroughout"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 13,
+      "input": "5/6",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 13,
+      "input": "1/3",
+      "label": "wrong",
+      "mistake": "oneRegionOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 13,
+      "input": "8/3",
+      "label": "wrong",
+      "mistake": "curveThroughout"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 20,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 20,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "oneRegionOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 20,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "curveThroughout"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 20,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 31,
+      "input": "81/2",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 31,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "loopsCancel"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 31,
+      "input": "81/4",
+      "label": "wrong",
+      "mistake": "oneLoopOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 34,
+      "input": "1/2",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 34,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "loopsCancel"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 34,
+      "input": "1/4",
+      "label": "wrong",
+      "mistake": "oneLoopOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 64,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 64,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "oneRegionOnly"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 64,
+      "input": "27",
+      "label": "wrong",
+      "mistake": "curveThroughout"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 64,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 187,
+      "input": "1/6",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 1,
+      "seed": 187,
+      "input": "-1/6",
+      "label": "wrong",
+      "mistake": "rightMinusLeftSwapped"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 1,
+      "input": "27/2",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 1,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "sideNotSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 1,
+      "input": "42.411500823462205",
+      "label": "wrong",
+      "mistake": "piForSquares"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 2,
+      "input": "9pi/2",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 2,
+      "input": "56.548667764616276",
+      "label": "wrong",
+      "mistake": "semicircleRadiusAsDiameter"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 3,
+      "input": "9pi/16",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 3,
+      "input": "7.0685834705770345",
+      "label": "wrong",
+      "mistake": "semicircleRadiusAsDiameter"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 5,
+      "input": "2pi/15",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 5,
+      "input": "0.10471975511965977",
+      "label": "wrong",
+      "mistake": "differenceSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 5,
+      "input": "1.0471975511965976",
+      "label": "wrong",
+      "mistake": "innerLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 6,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 6,
+      "input": "1.8856180831641267",
+      "label": "wrong",
+      "mistake": "sideNotSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 6,
+      "input": "6.283185307179586",
+      "label": "wrong",
+      "mistake": "piForSquares"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 6,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 10,
+      "input": "162pi/5",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 10,
+      "input": "25.446900494077322",
+      "label": "wrong",
+      "mistake": "differenceSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 10,
+      "input": "254.46900494077323",
+      "label": "wrong",
+      "mistake": "innerLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 13,
+      "input": "1/3",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 13,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "sideNotSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 13,
+      "input": "1.0471975511965976",
+      "label": "wrong",
+      "mistake": "piForSquares"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 16,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 16,
+      "input": "9/2",
+      "label": "wrong",
+      "mistake": "sideNotSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 16,
+      "input": "28.274333882308138",
+      "label": "wrong",
+      "mistake": "piForSquares"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 16,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 17,
+      "input": "1/4",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 17,
+      "input": "1/2",
+      "label": "wrong",
+      "mistake": "triangleHalfLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 22,
+      "input": "4/3",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 22,
+      "input": "8/3",
+      "label": "wrong",
+      "mistake": "triangleHalfLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 70,
+      "input": "18",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 70,
+      "input": "36",
+      "label": "wrong",
+      "mistake": "triangleHalfLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 70,
+      "input": "25",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 123,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 123,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "triangleHalfLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 2,
+      "seed": 123,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 1,
+      "input": "512pi/15",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 1,
+      "input": "160.8495438637974",
+      "label": "wrong",
+      "mistake": "axisDistanceLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 2,
+      "input": "4pi/5",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 2,
+      "input": "0.41887902047863906",
+      "label": "wrong",
+      "mistake": "axisShiftLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 2,
+      "input": "-1.6755160819145563",
+      "label": "wrong",
+      "mistake": "shiftSubtracted"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 2,
+      "input": "0.10471975511965977",
+      "label": "wrong",
+      "mistake": "differenceSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 3,
+      "input": "16pi/15",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 3,
+      "input": "5.026548245743669",
+      "label": "wrong",
+      "mistake": "axisDistanceLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 4,
+      "input": "7pi/15",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 4,
+      "input": "0.41887902047863906",
+      "label": "wrong",
+      "mistake": "axisShiftLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 4,
+      "input": "-0.6283185307179586",
+      "label": "wrong",
+      "mistake": "shiftSubtracted"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 4,
+      "input": "0.10471975511965977",
+      "label": "wrong",
+      "mistake": "differenceSquared"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 5,
+      "input": "4.721632",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 5,
+      "input": "1.8195919791379003",
+      "label": "wrong",
+      "mistake": "rateAtTimeGiven"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 5,
+      "input": "-7.278367916551601",
+      "label": "wrong",
+      "mistake": "lowerLimitLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 5,
+      "input": "1.1804080208620997",
+      "label": "wrong",
+      "mistake": "divisorLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 10,
+      "input": "19.273486",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 10,
+      "input": "3.145302748820551",
+      "label": "wrong",
+      "mistake": "rateAtTimeGiven"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 10,
+      "input": "-15.726513744102755",
+      "label": "wrong",
+      "mistake": "lowerLimitLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 10,
+      "input": "3.854697251179449",
+      "label": "wrong",
+      "mistake": "divisorLeftOut"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 11,
+      "input": "The car goes 80 metres between second 3 and second 8",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 11,
+      "input": "The car's velocity is 80 m/s at second 8",
+      "label": "wrong",
+      "mistake": "integralAsRate"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 11,
+      "input": "The car is 80 metres from its start at second 8",
+      "label": "wrong",
+      "mistake": "integralAsAmount"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 11,
+      "input": "The car's average velocity from second 3 to 8 is 80 m/s",
+      "label": "wrong",
+      "mistake": "integralAsAverage"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 26,
+      "input": "The car goes 80 metres between second 1 and second 6",
+      "label": "correct"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 26,
+      "input": "The car's velocity is 80 m/s at second 6",
+      "label": "wrong",
+      "mistake": "integralAsRate"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 26,
+      "input": "The car is 80 metres from its start at second 6",
+      "label": "wrong",
+      "mistake": "integralAsAmount"
+    },
+    {
+      "skill": "intApplications",
+      "level": 3,
+      "seed": 26,
+      "input": "The car's average velocity from second 1 to 6 is 80 m/s",
+      "label": "wrong",
+      "mistake": "integralAsAverage"
     }
   ]
 }

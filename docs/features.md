@@ -1583,9 +1583,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     states dy/dt = −(x/y)·dx/dt), techniques of integration (a substitution, by parts, partial fractions or a squared
     sine, typed as an antiderivative and judged up to its constant; since #748 also which u a substitution needs, a
     definite integral by substitution, also of an exponential, with the limits left in x named, dividing first, a
-    definite integral by parts, completing the square for an arctangent and which trigonometric substitution fits), improper integrals (∫ 1/xᵖ converges or not
-    at infinity and at 0, their values, ∫ 1/(1 + x²) to π), area, volume and arc length (between a parabola and a
-    line, a solid of revolution as a multiple of π, curves whose length is an integral done by hand), Taylor series
+    definite integral by parts, completing the square for an arctangent and which trigonometric substitution fits),
+    improper integrals (∫ 1/xᵖ converges or not at infinity and at 0, their values, ∫ 1/(1 + x²) to π), area, volume
+    and arc length (between a parabola and a line, a solid of revolution as a multiple of π, curves whose length is an
+    integral done by hand; since #749 also an area integrated in y, a region whose top edge changes from a parabola to
+    a line, two curves that cross three times, solids of square, semicircle or triangle cross-sections, a washer about
+    the x-axis, a disc or washer about another line, and in new settings what an integral of a rate means and how much
+    leaks from a tank; the right minus the left curve swapped, the loops cancelled, π for squares and a washer's radii
+    subtracted before squaring among the 21 slips named), Taylor series
     (four Maclaurin coefficients, a value approximated to 3 places, a coefficient about a ≠ 0), power series (a
     radius, an interval with each end tried) and convergence tests (geometric and p-series, which test settles a
     series, absolute or conditional). Every integral is made from its answer, so each is right by construction.
