@@ -4002,14 +4002,14 @@
     {
       "skill": "readChart",
       "level": 2,
-      "seed": 7,
+      "seed": 146973,
       "input": "2",
       "label": "correct"
     },
     {
       "skill": "readChart",
       "level": 2,
-      "seed": 7,
+      "seed": 146973,
       "input": "1",
       "label": "wrong",
       "mistake": "countedLines"
@@ -4017,7 +4017,7 @@
     {
       "skill": "readChart",
       "level": 2,
-      "seed": 7,
+      "seed": 146973,
       "input": "12",
       "label": "wrong",
       "mistake": "notDifference"
@@ -4025,7 +4025,7 @@
     {
       "skill": "readChart",
       "level": 2,
-      "seed": 7,
+      "seed": 146973,
       "input": "22",
       "label": "wrong",
       "note": "the two added"
@@ -4033,14 +4033,14 @@
     {
       "skill": "readChart",
       "level": 3,
-      "seed": 7,
+      "seed": 146973,
       "input": "110",
       "label": "correct"
     },
     {
       "skill": "readChart",
       "level": 3,
-      "seed": 7,
+      "seed": 146973,
       "input": "11",
       "label": "wrong",
       "mistake": "countedLines"
@@ -4048,7 +4048,7 @@
     {
       "skill": "readChart",
       "level": 3,
-      "seed": 7,
+      "seed": 146973,
       "input": "10",
       "label": "wrong",
       "note": "the difference, not the total"
@@ -4079,23 +4079,23 @@
     {
       "skill": "diagrams",
       "level": 2,
-      "seed": 7,
-      "input": "2",
+      "seed": 8,
+      "input": "10",
       "label": "correct"
     },
     {
       "skill": "diagrams",
       "level": 2,
-      "seed": 7,
-      "input": "2 °C",
+      "seed": 8,
+      "input": "10 °C",
       "label": "correct",
       "note": "with the unit"
     },
     {
       "skill": "diagrams",
       "level": 2,
-      "seed": 7,
-      "input": "11",
+      "seed": 8,
+      "input": "25",
       "label": "wrong",
       "note": "the highest temperature, not the rise",
       "mistake": "valueNotChange"
@@ -4103,21 +4103,21 @@
     {
       "skill": "diagrams",
       "level": 2,
-      "seed": 7,
-      "input": "3",
+      "seed": 8,
+      "input": "11",
       "label": "wrong"
     },
     {
       "skill": "diagrams",
       "level": 3,
-      "seed": 7,
+      "seed": 2174,
       "input": "45",
       "label": "correct"
     },
     {
       "skill": "diagrams",
       "level": 3,
-      "seed": 7,
+      "seed": 2174,
       "input": "45°",
       "label": "correct",
       "note": "with the degree sign"
@@ -4125,7 +4125,7 @@
     {
       "skill": "diagrams",
       "level": 3,
-      "seed": 7,
+      "seed": 2174,
       "input": "10",
       "label": "wrong",
       "note": "the number of children for the angle",
@@ -4134,7 +4134,7 @@
     {
       "skill": "diagrams",
       "level": 3,
-      "seed": 7,
+      "seed": 2174,
       "input": "90",
       "label": "wrong"
     },
@@ -21643,44 +21643,44 @@
     {
       "skill": "twoWay",
       "level": 1,
-      "seed": 1,
-      "input": "72",
+      "seed": 9,
+      "input": "82",
       "label": "correct"
     },
     {
       "skill": "twoWay",
       "level": 1,
-      "seed": 1,
-      "input": "24",
+      "seed": 9,
+      "input": "33",
       "label": "wrong",
       "mistake": "grandOneRow"
     },
     {
       "skill": "twoWay",
       "level": 1,
-      "seed": 1,
-      "input": "48",
+      "seed": 9,
+      "input": "49",
       "label": "wrong",
       "mistake": "grandOneRow"
     },
     {
       "skill": "twoWay",
       "level": 1,
-      "seed": 1,
-      "input": "79",
+      "seed": 9,
+      "input": "89",
       "label": "wrong"
     },
     {
       "skill": "twoWay",
       "level": 1,
-      "seed": 4,
+      "seed": 68805,
       "input": "9",
       "label": "correct"
     },
     {
       "skill": "twoWay",
       "level": 1,
-      "seed": 4,
+      "seed": 68805,
       "input": "31",
       "label": "wrong",
       "mistake": "cellWrongTotal"
@@ -21688,51 +21688,51 @@
     {
       "skill": "twoWay",
       "level": 1,
-      "seed": 4,
+      "seed": 68805,
       "input": "16",
       "label": "wrong"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 1,
-      "input": "92.5",
+      "seed": 8,
+      "input": "57.5",
       "label": "correct"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 1,
-      "input": "3700/67",
+      "seed": 8,
+      "input": "1150/19",
       "label": "wrong",
       "mistake": "shareOfRow"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 1,
-      "input": "185/4",
+      "seed": 8,
+      "input": "115/4",
       "label": "wrong",
       "mistake": "shareOfAll"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 1,
-      "input": "99.5",
+      "seed": 8,
+      "input": "64.5",
       "label": "wrong"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 2,
+      "seed": 9439,
       "input": "30",
       "label": "correct"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 2,
+      "seed": 9439,
       "input": "500/11",
       "label": "wrong",
       "mistake": "shareOfRow"
@@ -21740,7 +21740,7 @@
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 2,
+      "seed": 9439,
       "input": "750/11",
       "label": "wrong",
       "mistake": "shareOfColumn"
@@ -21748,51 +21748,51 @@
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 2,
+      "seed": 9439,
       "input": "37",
       "label": "wrong"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 7,
-      "input": "68",
+      "seed": 12,
+      "input": "18",
       "label": "correct"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 7,
-      "input": "200/3",
+      "seed": 12,
+      "input": "75",
       "label": "wrong",
       "mistake": "shareOfColumn"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 7,
-      "input": "3400/81",
+      "seed": 12,
+      "input": "12",
       "label": "wrong",
       "mistake": "shareOfAll"
     },
     {
       "skill": "twoWay",
       "level": 2,
-      "seed": 7,
-      "input": "75",
+      "seed": 12,
+      "input": "25",
       "label": "wrong"
     },
     {
       "skill": "twoWay",
       "level": 3,
-      "seed": 1,
+      "seed": 16202,
       "input": "Those who walk",
       "label": "correct"
     },
     {
       "skill": "twoWay",
       "level": 3,
-      "seed": 1,
+      "seed": 16202,
       "input": "Those who take the bus",
       "label": "wrong",
       "mistake": "likelyByCount"
@@ -21800,14 +21800,14 @@
     {
       "skill": "twoWay",
       "level": 3,
-      "seed": 7,
+      "seed": 224,
       "input": "No: the shares who play are the same",
       "label": "correct"
     },
     {
       "skill": "twoWay",
       "level": 3,
-      "seed": 7,
+      "seed": 224,
       "input": "Yes: the shares who play differ",
       "label": "wrong",
       "mistake": "assocByCounts"
@@ -68655,6 +68655,1062 @@
       "level": 2,
       "seed": 245,
       "input": "61",
+      "label": "wrong"
+    },
+    {
+      "skill": "readChart",
+      "level": 2,
+      "seed": 1,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "readChart",
+      "level": 2,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "scaleStepIgnored"
+    },
+    {
+      "skill": "readChart",
+      "level": 2,
+      "seed": 1,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "readChart",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "readChart",
+      "level": 2,
+      "seed": 2,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "scaleStepIgnored"
+    },
+    {
+      "skill": "readChart",
+      "level": 2,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 1,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 1,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "picturesCounted"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 1,
+      "input": "30",
+      "label": "wrong",
+      "mistake": "stoppedAtOneStep"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 1,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "allThreeAdded"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 1,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 2,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 2,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "picturesCounted"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 2,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "stoppedAtOneStep"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 2,
+      "input": "28",
+      "label": "wrong",
+      "mistake": "allThreeAdded"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 2,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 5,
+      "input": "300",
+      "label": "correct"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 5,
+      "input": "310",
+      "label": "wrong",
+      "mistake": "stoppedAtOneStep"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 5,
+      "input": "320",
+      "label": "wrong",
+      "mistake": "allThreeAdded"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 5,
+      "input": "307",
+      "label": "wrong"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 11,
+      "input": "90",
+      "label": "correct"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 11,
+      "input": "220",
+      "label": "wrong",
+      "mistake": "stoppedAtOneStep"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 11,
+      "input": "350",
+      "label": "wrong",
+      "mistake": "allThreeAdded"
+    },
+    {
+      "skill": "readChart",
+      "level": 3,
+      "seed": 11,
+      "input": "97",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 1,
+      "input": "9",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 1,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "dotIncludesEqual"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 1,
+      "input": "16",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 2,
+      "input": "5/2",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "longestAsDifference"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 3,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 3,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "dotIncludesEqual"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 3,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 4,
+      "input": "5/2",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 4,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "longestAsDifference"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 10,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 10,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "equivFractionMissed"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 10,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "equivFractionMissed"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 10,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 11,
+      "input": "7/2",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 11,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "countNotTimesValue"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 25,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 25,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "equivFractionMissed"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 25,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "equivFractionMissed"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 25,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 26,
+      "input": "21/4",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 26,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "countNotTimesValue"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 61,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 61,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "countNotTimesValue"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 61,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 69,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 69,
+      "input": "5/4",
+      "label": "wrong",
+      "mistake": "longestAsDifference"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 69,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 88,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 88,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "countNotTimesValue"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 88,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 104,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 104,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "equivFractionMissed"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 104,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 109,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 109,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "equivFractionMissed"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 109,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 122,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 122,
+      "input": "9/8",
+      "label": "wrong",
+      "mistake": "longestAsDifference"
+    },
+    {
+      "skill": "diagrams",
+      "level": 2,
+      "seed": 122,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 1,
+      "input": "number of brothers and sisters",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 1,
+      "input": "locker number",
+      "label": "wrong",
+      "mistake": "codeAsQuantitative"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 1,
+      "input": "favourite sport",
+      "label": "wrong",
+      "mistake": "categoryAsQuantitative"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 2,
+      "input": "Discrete",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 2,
+      "input": "Continuous",
+      "label": "wrong",
+      "mistake": "countAsContinuous"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 3,
+      "input": "height in cm",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 3,
+      "input": "locker number",
+      "label": "wrong",
+      "mistake": "codeAsQuantitative"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 3,
+      "input": "favourite sport",
+      "label": "wrong",
+      "mistake": "categoryAsQuantitative"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 4,
+      "input": "Continuous",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 4,
+      "input": "Discrete",
+      "label": "wrong",
+      "mistake": "measureAsDiscrete"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 5,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 5,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "binEdgeBoth"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 5,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 10,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 10,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "modeAsCount"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 10,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 11,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 11,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "countForShare"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 11,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 13,
+      "input": "Continuous",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 13,
+      "input": "Discrete",
+      "label": "wrong",
+      "mistake": "measureAsDiscrete"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 25,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 25,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "modeAsCount"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 25,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 26,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 26,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "binEdgeBoth"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 26,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 38,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 38,
+      "input": "4",
+      "label": "wrong",
+      "mistake": "countForShare"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 38,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 57,
+      "input": "Discrete",
+      "label": "correct"
+    },
+    {
+      "skill": "diagrams",
+      "level": 3,
+      "seed": 57,
+      "input": "Continuous",
+      "label": "wrong",
+      "mistake": "countAsContinuous"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "wholeForRow"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "wrongRowSubtracted"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 1,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 2,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 2,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "wholeForRow"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 2,
+      "input": "21",
+      "label": "wrong",
+      "mistake": "wrongRowSubtracted"
+    },
+    {
+      "skill": "twoWay",
+      "level": 1,
+      "seed": 2,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 1,
+      "input": "14",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 1,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "marginalFromCell"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 1,
+      "input": "21",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 2,
+      "input": "64",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 2,
+      "input": "52",
+      "label": "wrong",
+      "mistake": "marginalFromCell"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 2,
+      "input": "71",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 5,
+      "input": "Conditional",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 5,
+      "input": "Marginal",
+      "label": "wrong",
+      "mistake": "marginalCondSwapped"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 16,
+      "input": "Marginal",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 16,
+      "input": "Conditional",
+      "label": "wrong",
+      "mistake": "marginalCondSwapped"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 20,
+      "input": "Marginal",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 20,
+      "input": "Conditional",
+      "label": "wrong",
+      "mistake": "marginalCondSwapped"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 30,
+      "input": "Conditional",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 2,
+      "seed": 30,
+      "input": "Marginal",
+      "label": "wrong",
+      "mistake": "marginalCondSwapped"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 1,
+      "input": "40",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 1,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "mosaicOtherPart"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 1,
+      "input": "47",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 2,
+      "input": "80",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 2,
+      "input": "60",
+      "label": "wrong",
+      "mistake": "mosaicWidthRead"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 2,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "mosaicOtherPart"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 2,
+      "input": "87",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 3,
+      "input": "10",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 3,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "mosaicWidthRead"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 3,
+      "input": "90",
+      "label": "wrong",
+      "mistake": "mosaicOtherPart"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 3,
+      "input": "17",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 4,
+      "input": "30",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 4,
+      "input": "70",
+      "label": "wrong",
+      "mistake": "mosaicWidthRead"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 4,
+      "input": "37",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 5,
+      "input": "Down",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 5,
+      "input": "Up",
+      "label": "wrong",
+      "mistake": "trendByCounts"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 10,
+      "input": "Up",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 10,
+      "input": "Down",
+      "label": "wrong",
+      "mistake": "trendByCounts"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 56,
+      "input": "50",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 56,
+      "input": "70",
+      "label": "wrong",
+      "mistake": "mosaicWidthRead"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 56,
+      "input": "57",
+      "label": "wrong"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 83,
+      "input": "60",
+      "label": "correct"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 83,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "mosaicOtherPart"
+    },
+    {
+      "skill": "twoWay",
+      "level": 3,
+      "seed": 83,
+      "input": "67",
       "label": "wrong"
     }
   ]

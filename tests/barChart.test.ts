@@ -73,7 +73,10 @@ test("the questions: read off the chart, never of a fruit there is none of; the 
 
 test("in practice: the number typed, the slips named, the bars marked; the server agrees", async () => {
   for (const level of LEVELS) {
-    const ex = exercise("readChart", level, 7, w);
+    // Since #735 half the medium and hard questions are other kinds, without a bar chart's worked solution.
+    let seed = 7;
+    while (!exercise("readChart", level, seed, w).solution) seed++;
+    const ex = exercise("readChart", level, seed, w);
     assert.ok(ex.pic && !ex.pic.svg(0, 0).includes("NaN"));
     assert.deepEqual(check(ex, ex.plain, w), { ok: true });
     const r = await renderSolution(ex.solution!, en);
@@ -82,7 +85,7 @@ test("in practice: the number typed, the slips named, the bars marked; the serve
   for (const [id, levels] of [["countedLines", [2, 3]], ["notDifference", [1, 2, 3]]] as const)
     for (const level of levels) {
       let found = 0;
-      for (let seed = 1; seed <= 40; seed++) {
+      for (let seed = 1; seed <= 120; seed++) {
         const ex = exercise("readChart", level, seed, w);
         const trap = trapInputs(ex).find((x) => x.id === id);
         if (!trap) continue;

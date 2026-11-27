@@ -78,13 +78,19 @@ test("stem-and-leaf plots: the marks in order, an odd number of them, median and
 });
 
 test("the diagrams skill: each level's diagram, the answer a number, the worked solution drawn", () => {
-  for (const level of [1, 2, 3] as const)
-    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+  for (const level of [1, 2, 3] as const) {
+    // Since #735 half the medium and hard questions are other kinds (tests/displays.test.ts).
+    let drawn = 0;
+    for (let seed = 1; seed <= 20; seed++) {
       const ex = exercise("diagrams", level, seed, en.pracWords);
+      if (!ex.solution) continue;
+      drawn++;
       assert.equal(ex.format, "number");
       assert.ok(ex.pic && ex.pic.w > 0 && ex.pic.h > 0);
       assert.equal(ex.solution?.kind, "diagram");
       const r = renderDiagram(ex.solution!.spec as Parameters<typeof renderDiagram>[0], null);
       assert.ok(r.svg.startsWith("<svg") && !r.svg.includes("NaN"));
     }
+    assert.ok(drawn >= 5, `${drawn} diagrams at level ${level}`);
+  }
 });
