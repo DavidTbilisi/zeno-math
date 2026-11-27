@@ -3,7 +3,7 @@
 // pin takes its place, and a gate taken away takes its wires.
 import assert from "node:assert/strict";
 import test from "node:test";
-import { CIRCUIT_LADDER, circuitStars, joined, settle, tableOf, without, type Circuit, type GateKind } from "../src/math/circuitLab.ts";
+import { CIRCUIT_LADDER, MAX_GATES, circuitStars, freeKinds, joined, settle, tableOf, without, type Circuit, type GateKind } from "../src/math/circuitLab.ts";
 
 /** A circuit from gates "g1:nand" and wires "i0>g1.0" (a lamp is "o0.0"). */
 function circuit(gates: string[], wires: string[]): Circuit {
@@ -41,6 +41,31 @@ const SOLUTIONS: Circuit[] = [
     "i0>g1.0", "g9>g2.0", "g1>g2.1", "g8>g3.0", "g1>g3.1", "g3>g4.0", "g5>g4.1", "g2>g5.0", "g4>g5.1",
     "g4>g6.0", "i0>g6.1", "g5>g7.0", "i0>g7.1", "g7>g8.0", "g9>g8.1", "g6>g9.0", "g8>g9.1", "g8>o0.0",
   ]),
+  // 4-bit adder: four full adders, each carry out into the next carry in.
+  circuit(["g1:fa", "g2:fa", "g3:fa", "g4:fa"], [
+    "i3>g1.0", "i7>g1.1", "i8>g1.2", "g1>o4.0", "g1.1>g2.2", "i2>g2.0", "i6>g2.1", "g2>o3.0", "g2.1>g3.2",
+    "i1>g3.0", "i5>g3.1", "g3>o2.0", "g3.1>g4.2", "i0>g4.0", "i4>g4.1", "g4>o1.0", "g4.1>o0.0",
+  ]),
+  // A − B = A + (not B) + 1: the 4-bit adder, four NOTs, and a 1 into the carry.
+  circuit(["g1:add4", "g2:not", "g3:not", "g4:not", "g5:not", "g6:one"], [
+    "i0>g1.0", "i1>g1.1", "i2>g1.2", "i3>g1.3", "i4>g2.0", "g2>g1.4", "i5>g3.0", "g3>g1.5", "i6>g4.0", "g4>g1.6",
+    "i7>g5.0", "g5>g1.7", "g6>g1.8", "g1.1>o0.0", "g1.2>o1.0", "g1.3>o2.0", "g1.4>o3.0",
+  ]),
+  // ALU slice: B turned over for subtract, a full adder, AND and OR, two selectors picking by Op₀ then Op₁.
+  circuit(["g1:and", "g2:xor", "g3:fa", "g4:and", "g5:or", "g6:mux", "g7:mux"], [
+    "i3>g1.0", "i4>g1.1", "i1>g2.0", "g1>g2.1", "i0>g3.0", "g2>g3.1", "i2>g3.2", "i0>g4.0", "i1>g4.1", "i0>g5.0", "i1>g5.1",
+    "g4>g6.0", "g5>g6.1", "i4>g6.2", "g6>g7.0", "g3>g7.1", "i3>g7.2", "g7>o0.0", "g3.1>o1.0",
+  ]),
+  // 4-bit ALU: four slices in a row, a carry in of 1 to subtract, and Z = NOR of the result bits.
+  circuit(["g1:alu1", "g2:alu1", "g3:alu1", "g4:alu1", "g5:and", "g6:or", "g7:or", "g8:nor"], [
+    ...[1, 2, 3, 4].flatMap((g, k) => [`i${3 - k}>g${g}.0`, `i${7 - k}>g${g}.1`, `i8>g${g}.3`, `i9>g${g}.4`, `g${g}>o${3 - k}.0`, ...(g < 4 ? [`g${g}.1>g${g + 1}.2`] : [])]),
+    "i8>g5.0", "i9>g5.1", "g5>g1.2", "g4>g6.0", "g3>g6.1", "g2>g7.0", "g1>g7.1", "g6>g8.0", "g7>g8.1", "g8>o4.0",
+  ]),
+  // Register: each bit a flip-flop fed by a selector, its own Q while Load is off and D while it's on.
+  circuit(["g1:mux", "g2:mux", "g3:mux", "g4:mux", "g5:dff", "g6:dff", "g7:dff", "g8:dff"],
+    [0, 1, 2, 3].flatMap((j) => [`g${5 + j}>g${1 + j}.0`, `i${j}>g${1 + j}.1`, `i4>g${1 + j}.2`, `g${1 + j}>g${5 + j}.0`, `i5>g${5 + j}.1`, `g${5 + j}>o${j}.0`])),
+  // Counter: three counter bits, each next one clocked as the one before falls (through a NOT).
+  circuit(["g1:tff", "g2:not", "g3:tff", "g4:not", "g5:tff"], ["i0>g1.0", "g1>o2.0", "g1>g2.0", "g2>g3.0", "g3>o1.0", "g3>g4.0", "g4>g5.0", "g5>o0.0"]),
 ];
 
 test("every puzzle is solved by a circuit of its fewest gates, of the kinds it allows; an empty board solves none", () => {
@@ -49,9 +74,10 @@ test("every puzzle is solved by a circuit of its fewest gates, of the kinds it a
     const c = SOLUTIONS[i];
     assert.equal(c.gates.length, p.best, `puzzle ${i + 1}`);
     assert.ok(c.gates.every((g) => p.gates.includes(g.kind)), `puzzle ${i + 1} gates`);
+    assert.ok(c.gates.length <= MAX_GATES);
     const rows = tableOf(c, p, p);
     assert.equal(rows.length, p.steps?.length ?? 2 ** p.ins.length);
-    assert.ok(rows.every((r) => r.ok), `puzzle ${i + 1}: ${JSON.stringify(rows)}`);
+    assert.ok(rows.every((r) => r.ok), `puzzle ${i + 1}: ${JSON.stringify(rows.filter((r) => !r.ok).slice(0, 2).map(({ val, ...r }) => r))}`);
     assert.equal(circuitStars(p, c.gates.length), 3);
     assert.ok(!tableOf({ gates: [], wires: [] }, p, p).every((r) => r.ok), `puzzle ${i + 1} empty`);
   });
@@ -84,4 +110,15 @@ test("a new wire into a used pin replaces the old one; a gate taken away takes i
   assert.deepEqual(without(c, "g1"), { gates: [c.gates[1]], wires: [] });
   assert.equal(circuitStars(CIRCUIT_LADDER[0], 3), 2);
   assert.equal(circuitStars(CIRCUIT_LADDER[0], 4), 1);
+});
+
+test("chips: a 4-bit register keeps its number until Load and a rising Clk; the counter counts; free play earns chips", () => {
+  const reg = CIRCUIT_LADDER[15];
+  // Without the selectors, the flip-flops load on every tick, Load or not.
+  const noLoad = circuit(["g5:dff", "g6:dff", "g7:dff", "g8:dff"], [0, 1, 2, 3].flatMap((j) => [`i${j}>g${5 + j}.0`, `i5>g${5 + j}.1`, `g${5 + j}>o${j}.0`]));
+  assert.ok(!tableOf(noLoad, reg, reg).every((r) => r.ok));
+  const counts = tableOf(SOLUTIONS[16], CIRCUIT_LADDER[16], CIRCUIT_LADDER[16]).map((r) => r.got.reduce((n, b) => 2 * n + (b ? 1 : 0), 0));
+  assert.deepEqual(counts.slice(1).map((v, k) => (v - counts[k] + 8) % 8), [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]);
+  assert.deepEqual(freeKinds([]).slice(-1), ["one"]);
+  assert.ok(freeKinds(CIRCUIT_LADDER.map(() => 3)).includes("alu1"));
 });
