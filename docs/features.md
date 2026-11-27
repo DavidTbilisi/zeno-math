@@ -2841,6 +2841,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     bit. Five puzzles: rebuild a mirror; a dead RAID 5 drive worked out by hand with four bit switches; rebuild RAID 5
     on four drives; and two design puzzles, where the file must live through losing any one drive with as few drives as
     can hold it (RAID 5 on three when a drive holds half the file, a two-drive mirror when it holds all of it).
+  - *Hamming code* (#857; Discrete → Computer, and the Computer stage of the Software engineer goal): seven bits in
+    three overlapping circles, or twelve in a row with one line of dots per check. Tap a bit to flip it; every check
+    with an odd count of 1s turns red, and the red checks added up (in binary) name the bad bit's place. Five puzzles:
+    fill in the check bits of the circles and of the row (data bits stay fixed), find the flipped bit in each, and flip
+    two bits yourself to see the code point at a third and "fix" the word into the wrong one (Stallings 5.2;
+    Tanenbaum 2.2.4).
   - *Talking to devices* (#856; Discrete → Computer, and the Computer stage of the Software engineer goal): a disk,
     an interrupt bell, a DMA controller, the CPU and memory above a timeline of twenty ticks. The clock steps one tick;
     at the right tick the learner acts instead: takes the byte when the disk's light is on (polling), answers the bell

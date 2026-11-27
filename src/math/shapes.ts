@@ -1582,6 +1582,15 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function hammingLabPreview(): Piece[] {
+  // Three overlapping circles, one red: the check that fails.
+  return [
+    ellipse(70, 48, 34, 34, { color: "#1971c2", width: 2 }),
+    ellipse(112, 48, 34, 34, { color: "#e03131", width: 2.5 }),
+    ellipse(91, 82, 34, 34, { color: "#e8590c", width: 2 }),
+  ];
+}
+
 function ioLabPreview(): Piece[] {
   // A timeline: the device's bytes above, the CPU's ticks below, green work broken by orange interrupts.
   const acts = ["#b2f2bb", "#b2f2bb", "#ffd8a8", "#a5d8ff", "#ffd8a8", "#b2f2bb", "#b2f2bb", "#ffd8a8", "#a5d8ff", "#ffd8a8", "#b2f2bb", "#b2f2bb"];
@@ -3008,6 +3017,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveRaidLab", build: raidLabPreview, live: "raidLab" },
   { id: "liveCacheLab", build: cacheLabPreview, live: "cacheLab" },
   { id: "liveIoLab", build: ioLabPreview, live: "ioLab" },
+  { id: "liveHammingLab", build: hammingLabPreview, live: "hammingLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
