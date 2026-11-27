@@ -1572,6 +1572,21 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function circuitLabPreview(): Piece[] {
+  // Two switches, one on, wired into an AND gate whose lamp stays dark; a lit wire is green.
+  const on = { color: "#2f9e44", width: 3 };
+  const off = { color: "#adb5bd", width: 2.5 };
+  return [
+    rect(4, 14, 34, 22, { fill: "#2f9e44", color: "#2f9e44", width: 1 }),
+    rect(4, 74, 34, 22, { fill: "#e9ecef", color: "#ced4da", width: 1 }),
+    path([[38, 25], [70, 25], [80, 45], [96, 45]], on),
+    path([[38, 85], [70, 85], [80, 65], [96, 65]], off),
+    path([[96, 35], [118, 35], [128, 38], [134, 45], [136, 55], [134, 65], [128, 72], [118, 75], [96, 75], [96, 35]], { color: "#1e1e1e", width: 2.5, fill: "#ffffff" }),
+    seg([136, 55], [168, 55], off),
+    ellipse(184, 55, 15, 15, { fill: "#f1f3f5", color: "#868e96", width: 2 }),
+  ];
+}
+
 function descentLabPreview(): Piece[] {
   // A valley, the ball's hops down one side of it, and a flag at the bottom.
   const at = (x: number): Pt => [x, 140 - 130 * ((x - 100) / 100) ** 2];
@@ -2919,6 +2934,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCruxWord", build: cruxWordPreview, live: "cruxWord" },
   { id: "liveCruxEq", build: cruxEqPreview, live: "cruxEq" },
   { id: "liveDescentLab", build: descentLabPreview, live: "descentLab" },
+  { id: "liveCircuitLab", build: circuitLabPreview, live: "circuitLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
