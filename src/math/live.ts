@@ -140,6 +140,7 @@ import type { LiveBeTopo } from "./beTopo";
 import type { LiveBeName } from "./beName";
 import { whichStart, type LiveWhich } from "./whichTool";
 import { cruxStart, type LiveCrux } from "./crux";
+import { CIRCUIT_START, type LiveCircuit } from "./circuitLab";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
@@ -747,6 +748,7 @@ export type LiveStates = {
   cruxWord: LiveCrux;
   cruxEq: LiveCrux;
   descentLab: LiveDescent;
+  circuitLab: LiveCircuit;
   surface: LiveSurface;
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
@@ -934,6 +936,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   cruxWord: [600, 780],
   cruxEq: [600, 620],
   descentLab: [660, 650],
+  circuitLab: [660, 600],
   surface: [680, 790],
   pcaLab: [660, 720],
   softmaxLab: [660, 780],
@@ -1123,6 +1126,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     cruxWord: cruxStart("word"),
     cruxEq: cruxStart("eq"),
     descentLab: DESCENT_START,
+    circuitLab: CIRCUIT_START,
     surface: SURFACE_START,
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,

@@ -6,7 +6,7 @@ import { expect, test } from "@playwright/test";
 test("a roadmap opens as rooms, the list is one click away, and walk-it is answered by keyboard", async ({ page }) => {
   await page.goto("/#/roadmaps/software");
   const map = page.locator(".rm-map");
-  await expect(map.locator(".rm-room")).toHaveCount(8);
+  await expect(map.locator(".rm-room")).toHaveCount(9);
   const first = map.locator(".rm-room").first();
   await expect(first.getByRole("heading", { level: 2 })).toContainText("How computers hold numbers");
   // The room's picture reads out its places in order.

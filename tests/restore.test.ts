@@ -30,6 +30,12 @@ test("a backup comes back whole; a damaged one, or one from a newer Zeno, is cau
     await call("POST", `/api/classes/${code}/phase`, { phase: "pretest" }, teacher);
     await call("POST", "/api/tests", { clientId: `restore-t-${Date.now()}`, student: a, phase: "pre", item: 0, input: "1", verdict: "wrong", retries: 0, ms: 9000 });
     await call("POST", "/api/boards", { title: "Kept" }, teacher);
+    // A board of an account in no class: only its owner may open it, so the drill must open it as them.
+    const made = await fetch(server.base + "/api/account", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: "owner@school.example", name: "Owner", password: "long enough" }),
+    });
+    const cookie = String(made.headers.get("set-cookie")).split(";")[0];
+    await call("POST", "/api/boards", { title: "Mine" }, { Cookie: cookie });
     // As server/backup.ts makes one: a snapshot of the live database while the server runs.
     new DatabaseSync(join(dir, "data", "boards.db")).exec(`VACUUM INTO '${backup}'`);
   } finally {
@@ -39,7 +45,7 @@ test("a backup comes back whole; a damaged one, or one from a newer Zeno, is cau
   const before = readFileSync(backup);
   const whole = await restoreCheck(backup);
   assert.ok(whole.checks.every((c) => c.ok), JSON.stringify(whole.checks));
-  assert.deepEqual(whole.counts, { classes: 1, students: 2, attempts: 1, tests: 1, boards: 1 });
+  assert.deepEqual(whole.counts, { classes: 1, students: 2, attempts: 1, tests: 1, boards: 2 });
   assert.ok(readFileSync(backup).equals(before), "the backup itself is left as it was");
 
   // Pages overwritten in the middle of the file.

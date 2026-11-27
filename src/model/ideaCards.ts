@@ -48,7 +48,7 @@ export const IDEA_CARDS: Readonly<Record<IdeaNode, IdeaCard>> = {
   toImproper: { glyph: "2¾→", home: "fractions", like: "toMixed", trap: "wholeTimesTop" },
   toMixed: { glyph: "→2¾", home: "fractions", like: "toImproper" },
   // signed numbers
-  negLine: { glyph: "←0→", home: "integers", trap: "jumpDirection" },
+  negLine: { glyph: "←0→", home: "integers", trap: "riseAdds" },
   addNeg: { glyph: "+(−)", home: "integers", like: "minusNeg", trap: "sumSign" },
   minusNeg: { glyph: "−(−)", home: "integers", like: "addNeg", trap: "subNeg" },
   signTimes: { glyph: "−×−", home: "integers", like: "addNeg", trap: "unlikeSigns" },

@@ -17,7 +17,7 @@ export const cards = {
       essence: "Adding puts amounts together and taking away finds what is left, place by place, carrying and borrowing tens.",
       like: "multiplying",
       test: "Adding joins two amounts once: 4 + 3 = 7. Multiplying repeats one amount: 4 × 3 = 4 + 4 + 4 = 12.",
-      failure: "The number added, not taken away, to undo a sum: □ + 5 = 12 answered 17, not 7.",
+      failure: "Adding to undo an addition: −1 + □ = 8 answered 7, not 8 − (−1) = 9.",
     },
     multiplyFacts: {
       essence: "Any two numbers up to 12 multiplied, known by heart: 7 × 8 = 56.",
@@ -113,7 +113,7 @@ export const cards = {
       essence: "Numbers below zero: count on and back past zero, as on a number line, and further left is smaller.",
       like: "how big the number looks",
       test: "On the line −5 lies left of −2, so −5 < −2, though 5 > 2: below zero, further from zero is smaller.",
-      failure: "The direction on the line misread: a jump from −3 to 2 written −3 − 5, not −3 + 5.",
+      failure: "Moving the wrong way on the line: a diver at −40 m who rises 15 m put at −55 m, not −25 m.",
     },
     addNeg: {
       essence: "Adding a negative number takes its size away: 5 + (−3) = 5 − 3 = 2.",
