@@ -1997,7 +1997,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     rows counted before reducing, the rows taken for the columns, a row of A for a null vector, an affine map
     called linear, the images as rows, PAP⁻¹, the plain dot product, divided by the length, the line through two
     points, a repeated eigenvalue taken as not diagonalisable, eigenvalues counted, D in the wrong order, the
-    entries powered, the square root forgotten, only the next singular value, v₁u₁ᵀ for u₁v₁ᵀ
+    entries powered, the square root forgotten, only the next singular value, v₁u₁ᵀ for u₁v₁ᵀ. Since #754 also
+    whether b lies in the column space, the rank of Aᵀ and the dimensions of the row space and the left null space,
+    which columns of A make a basis of C(A) given its reduced form, the coordinates of x in an orthonormal basis, the
+    vector that spans the orthogonal complement of a plane, the projection onto a plane with an orthogonal basis, the
+    matrix of the projection onto a line and onto the column space of a 3 × 2 matrix, the inverse of an orthogonal
+    matrix, the dimension of the eigenspace of a double eigenvalue and an eigenvector of a 3 × 3 matrix
   - Complex numbers (H2 Mathematics 9758; OpenStax Precalculus; Needham), three skills in algebra: arithmetic (a
     product, a quotient through the conjugate, a modulus, both roots of a real quadratic with Δ < 0), the polar form
     (re^{iθ} as a + bi, a product or quotient in polar form, a + bi of the second or third quadrant as re^{iθ}) and De
