@@ -5,11 +5,13 @@
 // in it doesn't come back.
 //
 //   npm run restore-check -- ~/.local/share/zeno-math/backups/boards-2026-11-02T03-30-00.db
+import { createHash, randomBytes } from "node:crypto";
 import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { parseCsv } from "../src/model/evaluate.ts";
+import { SESSION_COOKIE } from "../server/accounts.ts";
 import { startServer, type Check } from "./dry-run-study.ts";
 
 export type RestoreResult = { checks: Check[]; counts: Record<string, number> };
@@ -26,13 +28,15 @@ export async function restoreCheck(backupFile: string): Promise<RestoreResult> {
     // What the file holds, read before Zeno has touched the copy.
     type ClassRow = { code: string; students: number; attempts: number; tests: number };
     let classes: ClassRow[] = [];
-    let boards: string[] = [];
+    // A board an account owns opens only for that account (a teacher reads it only through a class): it is read as its owner.
+    let boards: { id: string; account: number | null }[] = [];
     try {
       const db = new DatabaseSync(join(data, "boards.db"), { readOnly: true });
       const integrity = (db.prepare("PRAGMA integrity_check").get() as { integrity_check: string }).integrity_check;
       checks.push({ name: "the file is a whole SQLite database", ok: integrity === "ok", detail: integrity === "ok" ? "" : integrity });
       const has = (table: string) => !!db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?").get(table);
-      boards = (db.prepare("SELECT id FROM boards").all() as { id: string }[]).map((b) => b.id);
+      const owned = (db.prepare("PRAGMA table_info(boards)").all() as { name: string }[]).some((c) => c.name === "account_id");
+      boards = db.prepare(`SELECT id, ${owned ? "account_id" : "NULL"} AS account FROM boards`).all() as typeof boards;
       if (has("classes"))
         classes = db.prepare(`
           SELECT c.code,
@@ -62,8 +66,8 @@ export async function restoreCheck(backupFile: string): Promise<RestoreResult> {
       return { checks, counts };
     }
     try {
-      const get = async (path: string) => {
-        const res = await fetch(server.base + path, { headers: { "X-Teacher-Password": teacher } });
+      const get = async (path: string, cookie?: string) => {
+        const res = await fetch(server.base + path, { headers: cookie ? { Cookie: cookie } : { "X-Teacher-Password": teacher } });
         return { status: res.status, text: await res.text() };
       };
       checks.push({ name: "Zeno opens it", ok: (await get("/api/health")).status === 200, detail: "" });
@@ -80,8 +84,23 @@ export async function restoreCheck(backupFile: string): Promise<RestoreResult> {
       }
       checks.push({ name: "every practice question and test answer in the exports", ok: !missing.length, detail: missing.length ? `short: ${missing.join(", ")}` : `${counts.tests} test answers` });
 
+      // A session for each owner, written into the throw-away copy after Zeno has made its tables.
+      const cookies = new Map<number, string>();
+      const owners = [...new Set(boards.flatMap((b) => (b.account === null ? [] : [b.account])))];
+      if (owners.length) {
+        const db = new DatabaseSync(join(data, "boards.db"));
+        const now = Date.now();
+        for (const account of owners) {
+          const token = randomBytes(32).toString("base64url");
+          db.prepare("INSERT INTO sessions (token, account_id, created_at, seen_at, expires_at) VALUES (?, ?, ?, ?, ?)")
+            .run(createHash("sha256").update(token).digest("hex"), account, now, now, now + 3_600_000);
+          cookies.set(account, `${SESSION_COOKIE}=${token}`);
+        }
+        db.close();
+      }
       let opened = 0;
-      for (const id of boards) if ((await get(`/api/boards/${id}`)).status === 200) opened++;
+      for (const b of boards)
+        if ((await get(`/api/boards/${b.id}`, b.account === null ? undefined : cookies.get(b.account))).status === 200) opened++;
       checks.push({ name: "every board opens", ok: opened === boards.length, detail: `${opened} of ${boards.length}` });
     } finally {
       await server.stop();
