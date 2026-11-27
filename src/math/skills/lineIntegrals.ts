@@ -1,7 +1,7 @@
 // Practice: Line integrals. Easy asks whether a field in the plane is conservative (∂P/∂x set against ∂Q/∂y instead
 // of ∂P/∂y against ∂Q/∂x, named); medium is the work a conservative field does between two points, through its
-// potential (only the potential at the end, named); hard is ∫ F · dr along a curve r(t) = (t, tᵐ) (r′(t) left out,
-// named).
+// potential (only the potential at the end, named), or the integral of a function along a segment by arc length (the
+// speed left out, or not rooted, named); hard is ∫ F · dr along a curve r(t) = (t, tᵐ) (r′(t) left out, named).
 import { exact, F, pickOf, word } from "../calculusTwo";
 import { fill } from "../text";
 import { at, d, par, type Poly, polyTex, term } from "../vectorCalculus";
@@ -81,6 +81,29 @@ function curvePart(r: Rng, w: PracticeWords): Part {
   }
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? conservativePart(r, w) : L === 2 ? workPart(r, w) : curvePart(r, w));
+const TRIPLES = [[3, 4, 5], [6, 8, 10], [5, 12, 13]] as const;
+
+/** ∫_C (px + qy) ds along the segment from (0, 0) to (a, b): |(a, b)|·(pa + qb)/2. */
+function scalarPart(r: Rng, w: PracticeWords): Part {
+  for (;;) {
+    const [u, v, L] = r.pick(TRIPLES);
+    const [a, b] = (r.next() < 0.5 ? [u, v] : [v, u]).map((c) => c * r.sign());
+    const [p, q] = [r.nz(-3, 3), r.nz(-3, 3)];
+    const s = p * a + q * b;
+    if (s === 0) continue;
+    const val = F(s * L, 2);
+    return {
+      prompt: fill(w.mvK.scalarLineQ, { a, b }),
+      q: `\\int_{C} \\left(${polyTex([term(p, 1), term(q, 0, 1)])}\\right) ds`,
+      ...exact(val, [["dsLeftOut", F(s, 2)], ["speedNotRooted", F(s * L * L, 2), { s: L * L }]]),
+      steps: [
+        `\\mathbf{r}(t) = (${a}t, ${b}t), \\; 0 \\le t \\le 1, \\quad ds = |\\mathbf{r}'(t)| \\, dt = \\sqrt{${a * a} + ${b * b}} \\, dt = ${L} \\, dt`,
+        `\\int_{0}^{1} ${s}t \\cdot ${L} \\, dt = \\frac{${s * L}}{2} = ${val.tex()}`,
+      ],
+    };
+  }
+}
+
+const gen: Gen = (r, L, w) => (L === 1 ? conservativePart(r, w) : L === 2 ? (r.int(0, 9) >= 5 ? scalarPart(r, w) : workPart(r, w)) : curvePart(r, w));
 
 export default gen;

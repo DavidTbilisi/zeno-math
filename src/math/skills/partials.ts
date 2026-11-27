@@ -1,8 +1,10 @@
 // Practice: Partial derivatives. Easy is the gradient of a polynomial in x and y at a point (a term with the other
-// letter taken as 0 rather than as a constant, or the two parts swapped, named); medium the directional derivative
-// towards a vector that is not of length 1 (not divided by its length, named); hard the tangent plane z = ax + by + c
-// (c taken as f(a, b), named).
-import { exact, F } from "../calculusTwo";
+// letter taken as 0 rather than as a constant, or the two parts swapped, named), or a picture of level lines to pick
+// the arrow along ∇f (the downhill arrow, or one along a level line, named); medium the directional derivative towards
+// a vector that is not of length 1 (not divided by its length, named), or a mixed second partial at a point (f_xx or
+// f_yy given, or f_x times f_y, named); hard the tangent plane z = ax + by + c (c taken as f(a, b), named).
+import { exact, F, pickOf, word } from "../calculusTwo";
+import { gradientSvg, picOf } from "../fieldPics";
 import { vecOf, tup } from "../linearAlgebra";
 import { fill } from "../text";
 import { at, d, par, type Poly, polyTex, term } from "../vectorCalculus";
@@ -79,6 +81,43 @@ function planePart(r: Rng, w: PracticeWords): Part {
   };
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? gradientPart(r, w) : L === 2 ? directionalPart(r, w) : planePart(r, w));
+/** Level lines of f = ax + by and four arrows: which one is ∇f? */
+function gradPicPart(r: Rng, w: PracticeWords): Part {
+  const [a, b] = [r.nz(-3, 3), r.nz(-3, 3)];
+  const kinds: [number, number][] = [[a, b], [-a, -b], [-b, a], [b, -a]];
+  const order = [0, 1, 2, 3].sort(() => r.next() - 0.5);
+  const labels = ["A", "B", "C", "D"];
+  const at0 = (k: number) => order.indexOf(k);
+  return {
+    prompt: w.mvK.gradPicQ,
+    q: "",
+    pic: picOf(gradientSvg(a, b, order.map((k) => kinds[k]), labels)),
+    ...pickOf(labels.map(word), at0(0), [["gradientDownhill", at0(1)], ["gradientAlongLevel", at0(2)], ["gradientAlongLevel", at0(3)]]),
+    steps: [`\\text{${w.mvK.gradWhy}}`, `\\text{${labels[at0(0)]}}`],
+  };
+}
+
+/** The mixed partial f_xy at a point. */
+function secondPart(r: Rng, w: PracticeWords): Part {
+  const f = poly(r);
+  const [x, y] = [r.nz(-2, 2), r.nz(-2, 2)];
+  const fxy = d(d(f, 0), 1);
+  const v = at(fxy, x, y);
+  return {
+    prompt: fill(w.mvK.secondQ, { x, y }),
+    q: `f(x, y) = ${polyTex(f)}`,
+    ...exact(F(v), [
+      ["mixedPartialSameLetter", at(d(d(f, 0), 0), x, y)],
+      ["mixedPartialSameLetter", at(d(d(f, 1), 1), x, y)],
+      ["mixedPartialAsProduct", at(d(f, 0), x, y) * at(d(f, 1), x, y)],
+    ]),
+    steps: [
+      `f_{x} = ${polyTex(d(f, 0))}, \\quad f_{xy} = \\frac{\\partial}{\\partial y} f_{x} = ${polyTex(fxy)}`,
+      `f_{xy}(${x}, ${y}) = ${v}`,
+    ],
+  };
+}
+
+const gen: Gen = (r, L, w) => (L === 1 ? (r.int(0, 9) >= 5 ? gradPicPart(r, w) : gradientPart(r, w)) : L === 2 ? (r.int(0, 9) >= 5 ? secondPart(r, w) : directionalPart(r, w)) : planePart(r, w));
 
 export default gen;

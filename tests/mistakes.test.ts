@@ -1823,6 +1823,39 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   forcingPartLeftOut: ["odeSecond", [3]],
   massLeftOut: ["odeSecond", [3]],
   naturalFrequencySign: ["odeSecond", [3]],
+  tripleWidthsLeftOut: ["multipleIntegrals", [1]],
+  boundsCurvesSwapped: ["multipleIntegrals", [2]],
+  outerLimitAsHeight: ["multipleIntegrals", [2]],
+  innerVariableMismatch: ["multipleIntegrals", [2]],
+  surfaceOneLeftOut: ["multipleIntegrals", [3]],
+  surfaceAsShadow: ["multipleIntegrals", [3]],
+  jacobianFactorLeftOut: ["changeVariables", [2]],
+  jacobianInverted: ["changeVariables", [2]],
+  dsLeftOut: ["lineIntegrals", [2]],
+  greenCirculationForFlux: ["vectorTheorems", [1]],
+  cornersBreakCurve: ["vectorTheorems", [1]],
+  selfCrossingCalledSimple: ["vectorTheorems", [1]],
+  openCurveCalledClosed: ["vectorTheorems", [1]],
+  orientationIgnored: ["vectorTheorems", [2]],
+  gradientDownhill: ["partials", [1]],
+  gradientAlongLevel: ["partials", [1]],
+  mixedPartialSameLetter: ["partials", [2]],
+  mixedPartialAsProduct: ["partials", [2]],
+  hessianMixedDoubled: ["extremaMulti", [2]],
+  hessianAtOrigin: ["extremaMulti", [2]],
+  detDiagonalOnly: ["chainMulti", [2]],
+  inflowOutflowSwapped: ["divCurl", [1]],
+  flowCalledDivergence: ["divCurl", [1]],
+  divergenceWrongLetters: ["divCurl", [1]],
+  divergencePartLeftOut: ["divCurl", [1]],
+  spinDirectionSwapped: ["divCurl", [2]],
+  shearCalledCurlFree: ["divCurl", [2]],
+  spreadCalledSpin: ["divCurl", [2]],
+  divergenceForCurl: ["divCurl", [2]],
+  curlMiddleSignFlipped: ["divCurl", [3]],
+  curlOrderReversed: ["divCurl", [3]],
+  laplacianFirstDerivatives: ["divCurl", [3]],
+  laplacianPartLeftOut: ["divCurl", [3]],
   wholesIgnored: ["compareFractions", [3]],
   digitNotValue: ["placeValue", [1, 2, 3]],
   zeroPlaceSkipped: ["placeValue", [1, 2, 3]],
@@ -2211,7 +2244,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
 });
 
 test("no trap is the right answer, and every trap is named, in every question that has one", () => {
-  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "densities", "jointDist", "mgf", "limitTheorems", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "norms", "operatorNorms", "hilbertSpaces", "curves", "surfaces", "nonEuclidean", "projective", "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision", "placeValue", "addSubtract", "tables", "divide", "squares", "convert", "areaPerimeter", "stackedFractions", "skipCount", "columnSums", "longDivide", "decimalTimes", "fractionSums", "shapeKinds", "parallelAngles", "pythagoras", "transformations", "congruence", "constructions", "scale", "crossSections", "realNumbers", "absoluteValue", "moneySense", "spread", "twoWay", "scatter", "sampling", "tTests", "twoSample", "readFunction", "regions", "exponential", "quadraticGraph", "polyGraph", "rationalFn", "rootEquations", "fnTransform", "trigGraphs", "trigEquations", "conics", "parametric", "continuity", "derivContext", "accumulation", "slopeFields"];
+  const skills: SkillId[] = ["fractions", "expand", "indices", "integers", "order", "rounding", "inequalities", "compare", "compareFractions", "money", "time", "measure", "diagrams", "trigRules", "arcs", "proportion", "algFractions", "formulae", "bases", "modular", "triangleInequality", "powerPoint", "barModels", "ordinals", "shapePatterns", "proofs", "logic", "quantifiers", "sets", "mappings", "relations", "induction", "cardinality", "limits", "implicit", "intTechniques", "improper", "intApplications", "taylor", "powerSeries", "convergence", "partials", "chainMulti", "extremaMulti", "multipleIntegrals", "changeVariables", "lineIntegrals", "divCurl", "vectorTheorems", "odeFirst", "odeSecond", "odeSystems", "laplace", "stability", "bifurcations", "iteratedMaps", "lyapunov", "supInf", "seqLimits", "epsilonDelta", "mvt", "riemann", "uniform", "analytic", "contour", "laurent", "residueCalc", "subspaces", "basis", "rankNullity", "linearMaps", "innerProducts", "spectral", "svd", "complex", "polarForm", "deMoivre", "bezout", "congruences", "crt", "fermatEuler", "rsa", "residues", "discreteLog", "elGamal", "ellipticCurves", "densities", "jointDist", "mgf", "limitTheorems", "markov", "randomWalks", "poissonProcess", "brownian", "interestRates", "amortisation", "npv", "bonds", "binomialPricing", "optionPricing", "recurrences", "generating", "inclusionExclusion", "pigeonhole", "graphTheory", "normalForms", "structures", "ordinalArith", "groups", "elementOrder", "subgroups", "permutations", "homomorphisms", "rings", "polyRings", "fieldExt", "finiteFields", "galois", "metrics", "openClosed", "compactness", "connected", "topologies", "estimators", "mle", "regression", "chiSquared", "anova", "bayes", "floatingPoint", "interpolation", "numericalOde", "linearSolvers", "convergenceOrder", "fourier", "pdeClassify", "separation", "lebesgueMeasure", "simpleIntegrals", "convergenceTheorems", "norms", "operatorNorms", "hilbertSpaces", "curves", "surfaces", "nonEuclidean", "projective", "linearProgramming", "simplex", "convex", "normalForm", "mixedNash", "backwardInduction", "decimals", "ratio", "rate", "descent", "backprop", "softmax", "overfitting", "precision", "placeValue", "addSubtract", "tables", "divide", "squares", "convert", "areaPerimeter", "stackedFractions", "skipCount", "columnSums", "longDivide", "decimalTimes", "fractionSums", "shapeKinds", "parallelAngles", "pythagoras", "transformations", "congruence", "constructions", "scale", "crossSections", "realNumbers", "absoluteValue", "moneySense", "spread", "twoWay", "scatter", "sampling", "tTests", "twoSample", "readFunction", "regions", "exponential", "quadraticGraph", "polyGraph", "rationalFn", "rootEquations", "fnTransform", "trigGraphs", "trigEquations", "conics", "parametric", "continuity", "derivContext", "accumulation", "slopeFields"];
   for (const skill of skills)
     for (const level of LEVELS)
       for (let seed = 1; seed <= 150; seed++) {

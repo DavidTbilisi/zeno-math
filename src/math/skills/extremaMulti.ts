@@ -1,9 +1,11 @@
 // Practice: Extrema in several variables. Easy finds the critical point of a quadratic in x and y (the xy term left
 // out of both derivatives, named); medium classifies a critical point by the second-derivative test (the sign of fₓₓ
-// read before D, or max and min swapped, named); hard is a largest value under a constraint by Lagrange multipliers
+// read before D, or max and min swapped, named), or the Hessian matrix at a point (the mixed entries doubled, or the
+// cubic terms read at the origin, named); hard is a largest value under a constraint by Lagrange multipliers
 // (λ given for the value, or the smallest value, named).
 import { exact, pickOf, word, F } from "../calculusTwo";
-import { tup, vecOf } from "../linearAlgebra";
+import { matOf, tup, vecOf } from "../linearAlgebra";
+import { M } from "../practiceKit";
 import type { MistakeId } from "../mistakes";
 import { fill } from "../text";
 import { par, type Poly, polyTex, term } from "../vectorCalculus";
@@ -104,6 +106,26 @@ function lagrangePart(r: Rng, w: PracticeWords): Part {
   };
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? criticalPart(r, w) : L === 2 ? classifyPart(r, w) : lagrangePart(r, w));
+/** The Hessian of px³ + ax² + bxy + cy² + qy³ at a point. */
+function hessianPart(r: Rng, w: PracticeWords): Part {
+  for (;;) {
+    const [p, a, b, c, q] = [r.nz(-2, 2), r.nz(-3, 3), r.nz(-4, 4), r.nz(-3, 3), r.nz(-2, 2)];
+    const [x, y] = [r.nz(-2, 2), r.nz(-2, 2)];
+    const [fxx, fyy] = [6 * p * x + 2 * a, 6 * q * y + 2 * c];
+    if (fxx === 2 * a && fyy === 2 * c) continue;
+    const f: Poly = [term(p, 3), term(a, 2), term(b, 1, 1), term(c, 0, 2), term(q, 0, 3)];
+    return {
+      prompt: fill(w.mvK.hessianQ, { x, y }),
+      q: `f(x, y) = ${polyTex(f)}`,
+      ...matOf(M([[fxx, b], [b, fyy]]), [["hessianMixedDoubled", M([[fxx, 2 * b], [2 * b, fyy]])], ["hessianAtOrigin", M([[2 * a, b], [b, 2 * c]])]]),
+      steps: [
+        `f_{xx} = ${polyTex([term(6 * p, 1), term(2 * a, 0)])}, \\quad f_{xy} = ${b}, \\quad f_{yy} = ${polyTex([term(6 * q, 0, 1), term(2 * c, 0)])}`,
+        `H(${x}, ${y}) = \\begin{pmatrix} ${fxx} & ${b} \\\\ ${b} & ${fyy} \\end{pmatrix}`,
+      ],
+    };
+  }
+}
+
+const gen: Gen = (r, L, w) => (L === 1 ? criticalPart(r, w) : L === 2 ? (r.int(0, 9) >= 5 ? hessianPart(r, w) : classifyPart(r, w)) : lagrangePart(r, w));
 
 export default gen;

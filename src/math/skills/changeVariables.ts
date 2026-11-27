@@ -1,10 +1,14 @@
 // Practice: Changing variables in an integral. Easy integrates a power of the distance over a disc in polar
-// coordinates (dA taken as dr dθ, the r left out, named); medium is the volume under a paraboloid in cylindrical
-// coordinates (the same r left out, named); hard integrates a power of the distance over a ball in spherical
-// coordinates (the sin φ left out, or the ρ², named).
-import { F, piTimes } from "../calculusTwo";
+// coordinates (dA taken as dr dθ, the r left out, named), or finds the area element of a linear change of variables
+// (the determinant's sign kept, or its minus read as plus, named); medium is the volume under a paraboloid in
+// cylindrical coordinates (the same r left out, named), or an integral over a parallelogram that becomes a rectangle
+// in u and v (the factor left out, or turned upside down, named); hard integrates a power of the distance over a ball
+// in spherical coordinates (the sin φ left out, or the ρ², named).
+import { exact, F, piTimes } from "../calculusTwo";
 import type { Frac } from "../fraction";
 import type { Gen, Part, PracticeWords, Rng } from "../practiceTypes";
+import { fill } from "../text";
+import { par, polyTex, term } from "../vectorCalculus";
 
 /** (x² + y²)^{p/2} as LaTeX, and r^p. */
 const RADIAL: Record<number, string> = { 1: "\\sqrt{x^{2} + y^{2}}", 2: "x^{2} + y^{2}", 4: "\\left(x^{2} + y^{2}\\right)^{2}" };
@@ -67,6 +71,49 @@ function spherePart(r: Rng, w: PracticeWords): Part {
   };
 }
 
-const gen: Gen = (r, L, w) => (L === 1 ? polarPart(r, w) : L === 2 ? cylinderPart(r, w) : spherePart(r, w));
+/** x = au + bv, y = cu + dv: dA = |ad − bc| du dv. */
+function areaElementPart(r: Rng, w: PracticeWords): Part {
+  for (;;) {
+    const [a, b, c, e] = [r.nz(-3, 3), r.nz(-3, 3), r.nz(-3, 3), r.nz(-3, 3)];
+    const det = a * e - b * c;
+    if (det === 0) continue;
+    const uv = ["u", "v"];
+    return {
+      prompt: w.mvK.areaElQ,
+      q: `x = ${polyTex([term(a, 1), term(b, 0, 1)], uv)}, \\quad y = ${polyTex([term(c, 1), term(e, 0, 1)], uv)}`,
+      ...exact(F(Math.abs(det)), [["areaSignKept", det, { d: det, v: Math.abs(det) }], ["detPlusUsed", Math.abs(a * e + b * c), { b, c, v: Math.abs(det) }]]),
+      steps: [
+        `\\frac{\\partial(x, y)}{\\partial(u, v)} = \\det\\begin{pmatrix} ${a} & ${b} \\\\ ${c} & ${e} \\end{pmatrix} = ${a} \\cdot ${par(e)} - ${par(b)} \\cdot ${par(c)} = ${det}`,
+        `dA = \\left|${det}\\right| du \\, dv = ${Math.abs(det)} \\, du \\, dv`,
+      ],
+    };
+  }
+}
+
+/** ∬ (x + ky) dA over a ≤ x + ky ≤ b, c ≤ x − y ≤ e: in u = x + ky, v = x − y, dA = du dv/(k + 1). */
+function parallelogramPart(r: Rng, w: PracticeWords): Part {
+  for (;;) {
+    const k = r.int(1, 3);
+    const a = r.int(-2, 1);
+    const b = a + r.int(1, 3);
+    const c = r.int(-2, 1);
+    const e = c + r.int(1, 3);
+    if (b * b === a * a) continue;
+    const top = (b * b - a * a) * (e - c);
+    const u = k === 1 ? "x + y" : `x + ${k}y`;
+    const v = F(top, 2 * (k + 1));
+    return {
+      prompt: fill(w.mvK.boundQ, { u }),
+      q: `\\iint_{R} (${u}) \\, dA, \\quad R: ${a} \\le ${u} \\le ${b}, \\; ${c} \\le x - y \\le ${e}`,
+      ...exact(v, [["jacobianFactorLeftOut", top / 2], ["jacobianInverted", (top * (k + 1)) / 2]]),
+      steps: [
+        `\\frac{\\partial(u, v)}{\\partial(x, y)} = \\det\\begin{pmatrix} 1 & ${k} \\\\ 1 & -1 \\end{pmatrix} = ${-1 - k}, \\quad dA = \\frac{1}{${k + 1}} \\, du \\, dv`,
+        `\\int_{${c}}^{${e}} \\int_{${a}}^{${b}} \\frac{u}{${k + 1}} \\, du \\, dv = \\frac{\\left(${b}^{2} - ${par(a)}^{2}\\right) \\cdot ${e - c}}{${2 * (k + 1)}} = ${v.tex()}`,
+      ],
+    };
+  }
+}
+
+const gen: Gen = (r, L, w) => (L === 1 ? (r.int(0, 9) >= 5 ? areaElementPart(r, w) : polarPart(r, w)) : L === 2 ? (r.int(0, 9) >= 5 ? parallelogramPart(r, w) : cylinderPart(r, w)) : spherePart(r, w));
 
 export default gen;
