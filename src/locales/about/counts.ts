@@ -7,7 +7,7 @@ export const COUNTS = {
   /** Topics on the Learn page. */
   topics: 20,
   /** Tools, hands-on pieces and games in the library (library.ts). */
-  pieces: 180,
+  pieces: 220,
   /** Mistakes the checker knows by name (math/mistakes.ts). */
   mistakes: 2000,
 } as const;

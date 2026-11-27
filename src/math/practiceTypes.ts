@@ -520,6 +520,7 @@ export type PracticeWords = {
   tgK: Record<"asLimitQ" | "estimateQ" | "secantQ" | "diffGraphQ" | "dYes" | "dCorner" | "dBreak" | "dVertical" | "diffAlgQ" | "aBoth" | "aCont" | "aNeither", string>;
   dvK: Record<"ruleTableQ" | "errorQ" | "eLower" | "eConst" | "eCoef" | "eNone" | "eProd" | "eChain" | "eQuot" | "compQ" | "whichQ" | "secondQ", string>;
   imK: Record<"inverseQ" | "secondQ", string>;
+  stK: Record<"either" | "incQ" | "decQ" | "chartMaxQ" | "chartMinQ" | "cUp" | "cDown" | "concQ" | "jNegPos" | "jPosNeg" | "jZero" | "justMinQ" | "justMaxQ" | "absMinQ" | "absMaxQ" | "noMax" | "maxAt0" | "upQ" | "downQ" | "inflQ" | "inflPickQ" | "tMax" | "tMin" | "tInfl" | "tNone" | "testQ" | "f2Neg" | "f2Pos" | "f1Neg" | "f1Pos" | "j2DownQ" | "j2UpQ" | "countMaxQ" | "countMinQ" | "whichF1Q" | "whichF2Q" | "salesQ" | "rumourQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;

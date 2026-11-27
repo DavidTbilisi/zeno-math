@@ -1695,21 +1695,21 @@
     {
       "skill": "stationary",
       "level": 2,
-      "seed": 7,
+      "seed": 56,
       "input": "0; 2",
       "label": "correct"
     },
     {
       "skill": "stationary",
       "level": 2,
-      "seed": 7,
+      "seed": 56,
       "input": "x = 0, x = 2",
       "label": "correct"
     },
     {
       "skill": "stationary",
       "level": 2,
-      "seed": 7,
+      "seed": 56,
       "input": "2",
       "label": "form",
       "note": "a root missing"
@@ -1717,7 +1717,7 @@
     {
       "skill": "stationary",
       "level": 2,
-      "seed": 7,
+      "seed": 56,
       "input": "0; -2",
       "label": "wrong",
       "mistake": "sign"
@@ -82501,6 +82501,1062 @@
       "input": "-1/12",
       "label": "wrong",
       "mistake": "implicitSecondYConstant"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 1,
+      "input": "−1 < x < 3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 1,
+      "input": "x < −1 or x > 3",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 2,
+      "input": "x = −4",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 2,
+      "input": "x = 4",
+      "label": "wrong",
+      "mistake": "extremumKindSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 2,
+      "input": "x = 0",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 3,
+      "input": "−1 < x < 0",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 3,
+      "input": "x < −1 or x > 0",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 4,
+      "input": "x = 1",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 4,
+      "input": "x = −4",
+      "label": "wrong",
+      "mistake": "extremumKindSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 4,
+      "input": "x = −2",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 5,
+      "input": "f′ changes from positive to negative at x = −3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 5,
+      "input": "f′(−3) = 0",
+      "label": "wrong",
+      "mistake": "zeroAloneJustifies"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 5,
+      "input": "f′ changes from negative to positive at x = −3",
+      "label": "wrong",
+      "mistake": "signChangeReversed"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 10,
+      "input": "f′ changes from positive to negative at x = 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 10,
+      "input": "f′(2) = 0",
+      "label": "wrong",
+      "mistake": "zeroAloneJustifies"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 10,
+      "input": "f′ changes from negative to positive at x = 2",
+      "label": "wrong",
+      "mistake": "signChangeReversed"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 11,
+      "input": "Concave down at x = 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 13,
+      "input": "x = −2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 13,
+      "input": "x = 0",
+      "label": "wrong",
+      "mistake": "extremumKindSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 13,
+      "input": "x = −4",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 16,
+      "input": "x < 1 or x > 3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 16,
+      "input": "1 < x < 3",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 16,
+      "input": "x > 3",
+      "label": "wrong",
+      "mistake": "oneIntervalOnly"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 17,
+      "input": "−1 < x < 0",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 17,
+      "input": "x < −1 or x > 0",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 20,
+      "input": "x = −1",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 20,
+      "input": "x = 2",
+      "label": "wrong",
+      "mistake": "extremumKindSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 20,
+      "input": "x = −3",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 22,
+      "input": "−3 < x < −2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 22,
+      "input": "x < −3 or x > −2",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 26,
+      "input": "Concave up at x = −3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 26,
+      "input": "Concave down at x = −3",
+      "label": "wrong",
+      "mistake": "concavityFromSlope"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 30,
+      "input": "f′ changes from negative to positive at x = −1",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 30,
+      "input": "f′(−1) = 0",
+      "label": "wrong",
+      "mistake": "zeroAloneJustifies"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 30,
+      "input": "f′ changes from positive to negative at x = −1",
+      "label": "wrong",
+      "mistake": "signChangeReversed"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 31,
+      "input": "f′ changes from negative to positive at x = 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 31,
+      "input": "f′(2) = 0",
+      "label": "wrong",
+      "mistake": "zeroAloneJustifies"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 31,
+      "input": "f′ changes from positive to negative at x = 2",
+      "label": "wrong",
+      "mistake": "signChangeReversed"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 33,
+      "input": "Concave down at x = −3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 33,
+      "input": "Concave up at x = −3",
+      "label": "wrong",
+      "mistake": "concavityFromSlope"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 41,
+      "input": "Concave down at x = 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 47,
+      "input": "x < −1 or x > 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 47,
+      "input": "−1 < x < 2",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 47,
+      "input": "x > 2",
+      "label": "wrong",
+      "mistake": "oneIntervalOnly"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 62,
+      "input": "x < −3 or x > −1",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 62,
+      "input": "−3 < x < −1",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 62,
+      "input": "x > −1",
+      "label": "wrong",
+      "mistake": "oneIntervalOnly"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 120,
+      "input": "x < −1 or x > 0",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 120,
+      "input": "−1 < x < 0",
+      "label": "wrong",
+      "mistake": "intervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 1,
+      "seed": 120,
+      "input": "x > 0",
+      "label": "wrong",
+      "mistake": "oneIntervalOnly"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 1,
+      "input": "There is none: f grows without bound",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 1,
+      "input": "5, at x = 0",
+      "label": "wrong",
+      "mistake": "localMaxAsAbsolute"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 2,
+      "input": "x > −2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 2,
+      "input": "x < −2",
+      "label": "wrong",
+      "mistake": "concavityIntervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 3,
+      "input": "There is none: f grows without bound",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 3,
+      "input": "−5, at x = 0",
+      "label": "wrong",
+      "mistake": "localMaxAsAbsolute"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 4,
+      "input": "x > −2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 4,
+      "input": "x < −2",
+      "label": "wrong",
+      "mistake": "concavityIntervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 5,
+      "input": "A relative maximum",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 5,
+      "input": "A relative minimum",
+      "label": "wrong",
+      "mistake": "secondTestSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 10,
+      "input": "f″(x) < 0 for 0 < x < 4",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 10,
+      "input": "f′(x) < 0 for 0 < x < 4",
+      "label": "wrong",
+      "mistake": "slopeForBending"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 10,
+      "input": "f″(x) > 0 for 0 < x < 4",
+      "label": "wrong",
+      "mistake": "concavitySignSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 11,
+      "input": "x = 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 11,
+      "input": "x = 1",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 11,
+      "input": "x = 1; x = 2",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 13,
+      "input": "x > −3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 13,
+      "input": "x < −3",
+      "label": "wrong",
+      "mistake": "concavityIntervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 16,
+      "input": "-17",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 16,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "extremeXForValue"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 16,
+      "input": "-10",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 17,
+      "input": "-20",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 17,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "extremeXForValue"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 17,
+      "input": "-13",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 25,
+      "input": "f″(x) < 0 for −1 < x < 3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 25,
+      "input": "f′(x) < 0 for −1 < x < 3",
+      "label": "wrong",
+      "mistake": "slopeForBending"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 25,
+      "input": "f″(x) > 0 for −1 < x < 3",
+      "label": "wrong",
+      "mistake": "concavitySignSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 26,
+      "input": "The second derivative test does not decide",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 26,
+      "input": "A point of inflection",
+      "label": "wrong",
+      "mistake": "zeroSecondMeansInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 33,
+      "input": "The second derivative test does not decide",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 33,
+      "input": "A point of inflection",
+      "label": "wrong",
+      "mistake": "zeroSecondMeansInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 36,
+      "input": "f″(x) > 0 for −3 < x < −1",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 36,
+      "input": "f′(x) > 0 for −3 < x < −1",
+      "label": "wrong",
+      "mistake": "slopeForBending"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 36,
+      "input": "f″(x) < 0 for −3 < x < −1",
+      "label": "wrong",
+      "mistake": "concavitySignSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 38,
+      "input": "f″(x) > 0 for −4 < x < 0",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 38,
+      "input": "f′(x) > 0 for −4 < x < 0",
+      "label": "wrong",
+      "mistake": "slopeForBending"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 38,
+      "input": "f″(x) < 0 for −4 < x < 0",
+      "label": "wrong",
+      "mistake": "concavitySignSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 41,
+      "input": "x = 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 41,
+      "input": "x = 0",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 41,
+      "input": "x = 0; x = 2",
+      "label": "wrong",
+      "mistake": "zeroWithoutSignChange"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 48,
+      "input": "-2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 48,
+      "input": "-4",
+      "label": "wrong",
+      "mistake": "stationaryForInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 48,
+      "input": "5",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 61,
+      "input": "A relative maximum",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 61,
+      "input": "A relative minimum",
+      "label": "wrong",
+      "mistake": "secondTestSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 69,
+      "input": "x > 2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 69,
+      "input": "x < 2",
+      "label": "wrong",
+      "mistake": "concavityIntervalsSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 143,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 143,
+      "input": "0",
+      "label": "wrong",
+      "mistake": "stationaryForInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 2,
+      "seed": 143,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 1,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 1,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "allZerosCounted"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 1,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "countSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 1,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 2,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "allZerosCounted"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 2,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "countSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 2,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 3,
+      "input": "1",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 3,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "allZerosCounted"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 3,
+      "input": "2",
+      "label": "wrong",
+      "mistake": "countSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 3,
+      "input": "8",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 5,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 5,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "stationaryForInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 5,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 10,
+      "input": "5",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 10,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "stationaryForInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 10,
+      "input": "12",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 11,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 11,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "derivativeOrderSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 11,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "fForDerivative"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 13,
+      "input": "B",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 13,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "derivativeOrderSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 13,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "fForDerivative"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 16,
+      "input": "2",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 16,
+      "input": "3",
+      "label": "wrong",
+      "mistake": "allZerosCounted"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 16,
+      "input": "1",
+      "label": "wrong",
+      "mistake": "countSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 16,
+      "input": "9",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 20,
+      "input": "C",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 20,
+      "input": "A",
+      "label": "wrong",
+      "mistake": "derivativeOrderSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 20,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "fForDerivative"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 26,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 26,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "stationaryForInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 26,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 30,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 30,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "stationaryForInflection"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 30,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 41,
+      "input": "A",
+      "label": "correct"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 41,
+      "input": "C",
+      "label": "wrong",
+      "mistake": "derivativeOrderSwapped"
+    },
+    {
+      "skill": "stationary",
+      "level": 3,
+      "seed": 41,
+      "input": "B",
+      "label": "wrong",
+      "mistake": "fForDerivative"
     }
   ]
 }

@@ -1379,6 +1379,17 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     named, among them growth taken as linear, a constant added freely and the logistic brake left out. The piece
     *Drop a point* (Insert → Calculus, grades 12–13): tap a slope field of growth, logistic growth or y′ = x − y,
     and the dropped point traces the solution through it
+  - The shape of a graph from f′ and f″ (grade 10; #746, in the stationary points skill): where f increases from f′
+    factored, the relative extremes from a sign chart of f′, concave up or down at a point of a drawn graph, and the
+    reason for a relative extreme; then the absolute extremes over all x, where f is concave up or down, points of
+    inflection, the second derivative test and the reason for concavity; then counting f's turns on a drawn graph of f′,
+    telling f, f′ and f″ apart and, in a new setting, when sales of a phone or a rumour spread fastest. Nineteen slips
+    are named, among them a zero of f′ without a change of sign taken for a turn, f′ = 0 alone given as the reason,
+    rising read as bending, and the turn of N taken for its fastest growth. The piece *f, f′ and f″: read the shape of
+    a graph* (Insert → Calculus, grades 10–13): f, f′ and f″ one above the other with f′ and f″ shaded green above
+    zero and orange below; drag the line to where f stops rising, to the bottom of a dip and to where the bending
+    changes, each place named by f′'s or f″'s sign until it is right, then find a minimum and an inflection with f
+    hidden, from f′ alone
   - Lines of symmetry: how many a shape has — rectangles, squares, triangles and a kite standing straight, then a
     rhombus, parallelogram, trapezium and regular pentagons and hexagons turned, then an octagon, a star and shapes of
     squares. Counting the diagonals of a rectangle, parallelogram, kite or trapezium as well is named; the worked

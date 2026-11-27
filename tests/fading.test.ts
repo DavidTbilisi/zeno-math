@@ -57,9 +57,10 @@ test("every calculus question comes apart into steps the checker accepts, the la
         }
         if (steps.length) assert.deepEqual([steps.at(-1)!.prompt, steps.at(-1)!.q, steps.at(-1)!.plain], [ex.prompt, ex.q, ex.plain]);
       }
-      // Integrating a single power (3/x², √x) has no parts; since #745 about half the differentiate and tangent questions
-      // are about the derivative itself (a table, a graph, a pick) and asked whole; everything else nearly always has parts.
-      assert.ok(withSteps >= ((skill === "integrate" && level === 2) || skill === "differentiate" || skill === "tangent" ? 20 : 50), `${skill} ${level}: ${withSteps} of 60 with steps`);
+      // Integrating a single power (3/x², √x) has no parts; since #745 and #746 about half the differentiate, tangent and
+      // stationary questions are about the derivative and the shape of the graph (a table, a graph, a pick) and asked
+      // whole; everything else nearly always has parts.
+      assert.ok(withSteps >= ((skill === "integrate" && level === 2) || ["differentiate", "tangent", "stationary"].includes(skill) ? 20 : 50), `${skill} ${level}: ${withSteps} of 60 with steps`);
     }
   // A question without steps has none; a fractions operation keeps its own.
   assert.deepEqual(stepsOf(exercise("linear", 2, 1, w), w), []);

@@ -27,7 +27,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   // Algebra
   algebraTiles: [6, 10], formula: [6, 12], algebra: [6, 12], powers: [6, 12], polynomials: [10, 13], sequences: [8, 12],
   functions: [8, 12], graph: [8, 13], matrix: LATE, complex: LATE, space: [10, 13],
-  analysis: UNI, deriv: LATE, integral: LATE, applied: LATE, multivar: UNI, surface: LATE, tracePath: LATE, closeIn: LATE, foldBox: LATE, fillUnder: LATE, dropPoint: LATE, ode: UNI, numerical: UNI,
+  analysis: UNI, deriv: LATE, integral: LATE, applied: LATE, multivar: UNI, surface: LATE, tracePath: LATE, closeIn: LATE, foldBox: LATE, fillUnder: LATE, dropPoint: LATE, shapeRead: [10, 13], ode: UNI, numerical: UNI,
   // Discrete maths and data
   nt: [4, 13], logic: [8, 13], comb: [7, 13], gt: [10, 13],
   tactics: [3, 13], strategies: [3, 13], rubik: [5, 13],
