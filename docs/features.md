@@ -2841,6 +2841,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     bit. Five puzzles: rebuild a mirror; a dead RAID 5 drive worked out by hand with four bit switches; rebuild RAID 5
     on four drives; and two design puzzles, where the file must live through losing any one drive with as few drives as
     can hold it (RAID 5 on three when a drive holds half the file, a two-drive mirror when it holds all of it).
+  - *Virtual memory* (#859; Discrete → Computer, and the Computer stage of the Software engineer goal): the page
+    table, three or four frames of real memory (sixteen bytes each, coloured by the page they hold) and the disk with
+    the program's eight pages. An address is shown as page bits and offset bits; translate it by tapping the very byte
+    it names (a wrong frame or offset is explained). Place each page asked for by tapping its frame: a hit, a free
+    frame, or the one FIFO or LRU throws out. Four puzzles: translate three addresses, FIFO and LRU by hand on one
+    string (7 against 6 faults), and Belady's anomaly, FIFO faulting 9 times with three frames and 10 with four
+    (Stallings 8.3; Tanenbaum 6.1). Free play asks for pages from the disk.
   - *The pipeline* (#858; Discrete → Computer, and the Computer stage of the Software engineer goal): instructions
     against ticks, each row its fetch, decode, execute, memory and write-back. An arrow runs from the cell that makes a
     register's value to the cell that wants it, red when it points back in time. Tap a row to add a bubble, tap a

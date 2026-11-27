@@ -148,6 +148,7 @@ import { CACHE_START, type LiveCache } from "./cacheLab";
 import { IO_START, type LiveIo } from "./ioLab";
 import { HAMMING_START, type LiveHamming } from "./hammingLab";
 import { PIPE_START, type LivePipe } from "./pipelineLab";
+import { PAGING_START, type LivePaging } from "./pagingLab";
 import { DESCENT_START, type LiveDescent } from "./descentLab";
 import { SURFACE_START, type LiveSurface } from "./surface";
 import { SOLVER_START, type LiveSolver } from "./solver/index";
@@ -763,6 +764,7 @@ export type LiveStates = {
   ioLab: LiveIo;
   hammingLab: LiveHamming;
   pipelineLab: LivePipe;
+  pagingLab: LivePaging;
   surface: LiveSurface;
   pcaLab: LivePca;
   softmaxLab: LiveSoftmax;
@@ -958,6 +960,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   ioLab: [700, 680],
   hammingLab: [700, 680],
   pipelineLab: [700, 620],
+  pagingLab: [700, 720],
   surface: [680, 790],
   pcaLab: [660, 720],
   softmaxLab: [660, 780],
@@ -1155,6 +1158,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     ioLab: IO_START,
     hammingLab: HAMMING_START,
     pipelineLab: PIPE_START,
+    pagingLab: PAGING_START,
     surface: SURFACE_START,
     pcaLab: PCA_START,
     softmaxLab: SOFTMAX_START,

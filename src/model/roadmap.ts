@@ -23,7 +23,7 @@ export { GAME_KEYS, type GameId };
 /** The labs a roadmap can ask to be tried: tried once the learner has used one on its page (#/library/live/<lab>). */
 export const LABS = [
   "tensorLab", "pcaLab", "embedLab", "softmaxLab", "rocLab", "descentLab", "batchLab", "fitLab", "knnLab", "treeLab", "kmeansLab",
-  "nnLab", "backpropLab", "convLab", "rnnLab", "attnLab", "rlLab", "geoLab", "circuitLab", "cpuLab", "systemLab", "raidLab", "cacheLab", "ioLab", "hammingLab", "pipelineLab",
+  "nnLab", "backpropLab", "convLab", "rnnLab", "attnLab", "rlLab", "geoLab", "circuitLab", "cpuLab", "systemLab", "raidLab", "cacheLab", "ioLab", "hammingLab", "pipelineLab", "pagingLab",
 ] as const satisfies readonly LiveKind[];
 export type LabId = (typeof LABS)[number];
 export const isLabKind = (k: string): k is LabId => (LABS as readonly string[]).includes(k);
