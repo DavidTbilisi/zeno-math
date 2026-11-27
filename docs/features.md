@@ -1350,7 +1350,11 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     acceleration component and, in a new setting, where a thrown ball lands. Twelve slips are named, among them
     dy/dx upside down, the speed's parts added and the ½ forgotten in ½∫r² dθ. The piece *Trace the path* (Insert →
     Calculus, grades 12–13): drag t along a thrown ball, a circle or a cardioid; the velocity arrow gives the slope
-    as its rise over its run and the speed as its length
+    as its rise over its run and the speed as its length. Since #750 the medium level also asks d²y/dx² of a curve
+    and a vector-valued function's velocity and acceleration, and the hard level a particle's position from its
+    velocity, dx/dθ and a tangent's slope on a polar curve, the area inside one polar curve and outside another, and
+    a polar arc length; thirteen more slips are named, among them d²y/dx² not divided by dx/dt, the start left out,
+    dr/dθ given for the slope and the radii subtracted before squaring
   - Continuity and limits from graphs (grade 12; #666): a limit from a table, a one-sided limit of two pieces and
     whether a limit exists; then a hole, a jump, an asymptote or no break, and the k that joins two pieces; then
     whether the intermediate value theorem promises a root, a limit squeezed to 0 and, in a new setting, a car park's
