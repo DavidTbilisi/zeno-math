@@ -2046,6 +2046,14 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     rule", lets the learner drag cuts on a bell curve of heights, bottles and marks until the shaded share reads
     about 68%, 95%, 99.7%, then one tail of 16% and of 2.5%; too small and too large a share and the wrong tail are
     named, and only the last round states the rule
+  - Study design (#741): in samples, which question is statistical, which survey is a census and the population
+    or the variable of an investigative question; which claim a random survey supports, the kind of bias in a
+    survey and the way of sampling that fits a goal; and two counters drawn with or without replacement, the design
+    of an experiment, what is wrong with one, and how far a random sample's result reaches. A question with one
+    answer taken as statistical, a sample taken as a census, the population and variable swapped or the summary
+    given for either, the sample's count claimed for the school, the kinds of bias mixed or missed, a simple random
+    sample chosen against the goal, the draws taken as replaced or not, the designs mixed, the wrong flaw or none
+    and a result kept to those asked are named
   - Probability rules, sample spaces and counting (#738): in probability, an experiment's result, two bags compared,
     a prediction from a chance, a model's missing chance, which claim about a few coin flips is valid, and a chance
     estimated from a simulation's digits (grade 7); a sample space counted, the numbers in A ∩ B, A ∪ B or A′, the
