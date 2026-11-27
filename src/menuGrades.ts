@@ -31,7 +31,7 @@ export const GRADE_BANDS: Readonly<Record<string, Band>> = {
   // Discrete maths and data
   nt: [4, 13], logic: [8, 13], comb: [7, 13], gt: [10, 13],
   tactics: [3, 13], strategies: [3, 13], rubik: [5, 13],
-  algo: [10, 13], circuitLab: [8, 13], cpuLab: [10, 13], patterns: [10, 13], problems: LATE, solver: LATE,
+  algo: [10, 13], circuitLab: [8, 13], cpuLab: [10, 13], systemLab: [6, 13], patterns: [10, 13], problems: LATE, solver: LATE,
   coin: [3, 8], dice: [3, 8], spinner: [3, 8], cards: [5, 10], chance: [6, 10], countTree: [7, 12], fairGame: [10, 12], normalCut: [10, 12], randvar: LATE,
   statistics: [5, 12], inference: LATE, regression: LATE, likelihood: UNI, information: UNI, naiveBayes: UNI,
   // AI: the step-by-step tools, then the labs (the first models, nearest neighbours and trees, are pictures a

@@ -2822,6 +2822,17 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     adders, subtracting by adding the opposite plus one, an ALU slice (AND, OR, +, −), a 4-bit ALU with a zero flag, a
     4-bit register with Load, a 3-bit counter. Numbers of several switches are read in decimal in the table, which
     shows a few chosen rows while every row (up to 1024) is checked; free play offers each chip once its puzzle is passed
+  - *Build a system* (#853; Discrete → Computer, and the first lab of the Computer stage of the Software engineer
+    goal): a motherboard on a desk in 3D, turned by dragging the desk. Its CPU socket, two memory slots, card slot,
+    drive ports and back-panel ports (four USB, display, sound out and in, network) take devices from a tray: CPU,
+    memory, SSD, hard disk, graphics card, keyboard, mouse, game pad, camera, microphone, sensor, display, speakers
+    and a network link. Each plug goes only into a port of its kind, and a cable runs from the device on the desk. Tap a
+    device to pull it out; drag it to another port to move it. The graphics card brings its own display port. Eight
+    missions are small systems: one that starts up, a calculator, a music player, a web server, a game console made
+    from an office computer, a security camera, a weather station, and two computers on a network. The power button
+    sends the signal from the bus to each link in turn: green where it gets through, red where it stops at the first
+    missing or misplaced device. Stars count the runs and the spare devices. Notices: plugs by kind, a moved device,
+    the display on the card.
   - *A tiny computer* (#844; Discrete → Computer, and the Computer stage of the Software engineer goal): the
     hypothetical machine of Stallings, Fig. 3.4 to 3.5, worked by hand. Memory holds the program from 300 and the data
     from 940, the system bus has address, data and control lines, and the CPU shows PC, MAR, MBR, IR, AC, the ALU and
