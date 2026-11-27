@@ -57,15 +57,16 @@ test("every calculus question comes apart into steps the checker accepts, the la
         }
         if (steps.length) assert.deepEqual([steps.at(-1)!.prompt, steps.at(-1)!.q, steps.at(-1)!.plain], [ex.prompt, ex.q, ex.plain]);
       }
-      // Integrating a single power (3/x², √x) has no parts; everything else nearly always has.
-      assert.ok(withSteps >= (skill === "integrate" && level === 2 ? 20 : 50), `${skill} ${level}: ${withSteps} of 60 with steps`);
+      // Integrating a single power (3/x², √x) has no parts; since #745 about half the differentiate and tangent questions
+      // are about the derivative itself (a table, a graph, a pick) and asked whole; everything else nearly always has parts.
+      assert.ok(withSteps >= ((skill === "integrate" && level === 2) || skill === "differentiate" || skill === "tangent" ? 20 : 50), `${skill} ${level}: ${withSteps} of 60 with steps`);
     }
   // A question without steps has none; a fractions operation keeps its own.
   assert.deepEqual(stepsOf(exercise("linear", 2, 1, w), w), []);
 });
 
 test("a worked example is another question of the same kind, with steps, the same everywhere", () => {
-  const ex = exercise("differentiate", 3, 11, w);
+  const ex = exercise("differentiate", 3, 9, w);
   const like = exampleLike(ex, w)!;
   assert.deepEqual([like.skill, like.level], ["differentiate", 3]);
   assert.notEqual(like.plain, ex.plain);
@@ -105,7 +106,7 @@ test("the fading: the last step after a miss, one more after each right, one bac
 });
 
 test("an attempt tells the fading the same in the browser and on the server; a faded one tells the model nothing", () => {
-  const ex = exercise("tangent", 3, 5, w);
+  const ex = exercise("tangent", 3, 7, w);
   const steps = stepsOf(ex, w);
   assert.equal(steps.length, 4);
   const base = { skill: ex.skill, level: ex.level, seed: ex.seed } as const;

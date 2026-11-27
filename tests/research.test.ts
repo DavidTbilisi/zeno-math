@@ -814,8 +814,8 @@ test("the delayed post-test: form C once the class reaches it, and the arms comp
 test("faded worked examples: checked, stored, replayed into the plan's fading, kept from the model, and switched off for an arm", async () => {
   const { code } = (await call("POST", "/api/classes", { name: "Fade", skills: ["tangent"] }, TEACHER)).body;
   const s = (await call("POST", "/api/students", { class: code })).body.code;
-  const q = { skill: "tangent", level: 3, seed: 5 };
-  const steps = stepsOf(exercise("tangent", 3, 5, en.pracWords), en.pracWords);
+  const q = { skill: "tangent", level: 3, seed: 7 };
+  const steps = stepsOf(exercise("tangent", 3, 7, en.pracWords), en.pracWords);
   assert.equal(steps.length, 4);
   const given = { answers: [], shown: true };
   const right = (i: number) => ({ answers: [{ input: steps[i].plain, verdict: "correct", ms: 9000 }], shown: false });

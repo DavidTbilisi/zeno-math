@@ -1643,6 +1643,36 @@ const WHERE: Record<Exclude<MistakeId, "sign">, [SkillId, (1 | 2 | 3)[]]> = {
   endpointWrong: ["continuity", [2]],
   asymptoteSideSwapped: ["continuity", [3]],
   tableSamplesMisled: ["continuity", [3]],
+  limitPointAsH: ["tangent", [1]],
+  derivativeAsValue: ["tangent", [1]],
+  slopeNotDivided: ["tangent", [1]],
+  secantNotDivided: ["tangent", [1]],
+  continuousSoDifferentiable: ["tangent", [2]],
+  disguisedPowerKept: ["tangent", [2]],
+  valuesMatchEnough: ["tangent", [3]],
+  slopesMatchEnough: ["tangent", [3]],
+  secantSignLost: ["tangent", [3]],
+  valuesNotDerivatives: ["differentiate", [1]],
+  errorNotSeen: ["differentiate", [1]],
+  compositeLayersSwapped: ["differentiate", [1]],
+  compositeReadAsProduct: ["differentiate", [1]],
+  derivativesMultiplied: ["differentiate", [2]],
+  quotientTopSwapped: ["differentiate", [2]],
+  quotientNotSquared: ["differentiate", [2]],
+  chainOuterAtPoint: ["differentiate", [2]],
+  chainInsideLost: ["differentiate", [2]],
+  powerRuleOnExponential: ["differentiate", [2]],
+  lnFactorLost: ["differentiate", [2]],
+  lnFactorInverted: ["differentiate", [2]],
+  derivativesDivided: ["differentiate", [2]],
+  trigDerivSign: ["differentiate", [3]],
+  trigCofunctionSwapped: ["differentiate", [3]],
+  firstForSecond: ["differentiate", [3]],
+  inverseDerivNotFlipped: ["implicit", [1]],
+  inverseDerivWrongPoint: ["implicit", [1]],
+  inverseTrigSign: ["implicit", [2]],
+  inverseTrigFormsMixed: ["implicit", [2]],
+  implicitSecondYConstant: ["implicit", [3]],
   wholesIgnored: ["compareFractions", [3]],
   digitNotValue: ["placeValue", [1, 2, 3]],
   zeroPlaceSkipped: ["placeValue", [1, 2, 3]],
@@ -2023,7 +2053,7 @@ test("right size, wrong sign: for numbers, roots and expressions", () => {
   })();
   if (quad.answer.k !== "set") throw new Error("unreachable");
   assert.equal(check(quad, quad.answer.vs.map((v) => -v).join("; "), w).mistake, "sign", "roots all negated: (x − 3)(x + 2) read as 3 and −2 swapped round");
-  const diff = exercise("differentiate", 1, 4, w);
+  const diff = exercise("differentiate", 1, 7, w);
   assert.equal(check(diff, `-(${diff.plain})`, w).mistake, "sign");
   // Zero has no wrong sign.
   const zero = { ...times, answer: { k: "num" as const, v: 0, tol: 1e-9 } };

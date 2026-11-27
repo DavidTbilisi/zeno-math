@@ -517,6 +517,9 @@ export type PracticeWords = {
   t2K: Record<"cRandom" | "cIndep" | "cNormal" | "cLarge" | "cAll" | "sRandomM" | "sIndepM" | "sNormalM" | "sAllM" | "whyRandomM" | "whyIndepM" | "whyNormalM" | "whyAllM" | "condQM" | "sRandomP" | "sIndepP" | "sLargeP" | "sAllP" | "whyRandomP" | "whyIndepP" | "whyLargeP" | "whyAllP" | "condQP" | "hypVaccine" | "hypTowns" | "marginQ" | "ctxMed" | "claimMed" | "nullMed" | "zQ" | "pQ", string>;
   liK: Record<"combQ" | "compQ" | "tableQ" | "sFactor" | "sConj" | "sIdent" | "sZero" | "sDne" | "stratQ" | "tankQ" | "drugQ", string>;
   lgK: Record<"graphQ" | "meanQ" | "mNear" | "mValue" | "mDefined" | "pointQ" | "cYes" | "cNoLim" | "cNoMatch" | "cNoValue" | "intervalQ" | "iYes" | "iNo" | "commonQ" | "oscQ", string>;
+  tgK: Record<"asLimitQ" | "estimateQ" | "secantQ" | "diffGraphQ" | "dYes" | "dCorner" | "dBreak" | "dVertical" | "diffAlgQ" | "aBoth" | "aCont" | "aNeither", string>;
+  dvK: Record<"ruleTableQ" | "errorQ" | "eLower" | "eConst" | "eCoef" | "eNone" | "eProd" | "eChain" | "eQuot" | "compQ" | "whichQ" | "secondQ", string>;
+  imK: Record<"inverseQ" | "secondQ", string>;
   pwlP: Record<"means" | "exponent" | "simplify" | "memory" | "culture", string>;
   sqrP: Record<"solveSquare" | "solveCube", string>;
   srdP: Record<"simplifyRoot" | "sameAs" | "solveExp", string>;
