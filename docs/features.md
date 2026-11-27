@@ -2788,6 +2788,12 @@ The front page for schools and universities is published at **[davidtbilisi.gith
   - *Connect the towns*: tap roads to build them until every town is joined as cheaply as can be; a town left out, a
     loop (its roads turn red) or a dearer network is told so. Right at the first check earns three stars. Four
     discoveries (a cheap road left out for making a loop, a town with one road, twelve towns, ten in a row)
+  - *Circuit lab* (#841; Discrete → Computer, and the Computer stage of the Software engineer goal): gates dragged from a
+    tray onto a board, wired by dragging from an output pin to an input pin, a wire tapped to cut it, a gate dropped in
+    the bin; switches tapped to flip, lit wires and lamps carry a 1. A truth table beside the board marks each row right
+    or wrong, and a row tapped sets the switches. Seven puzzles (NOT, AND and OR from NAND only, XOR, a half adder, a full
+    adder, a selector) are won the moment every row is right, three stars for the fewest gates; free play has every
+    gate. A loop that never settles shows ? on the lamps (a discovery)
   - *Be the sort*: the player is the algorithm, making each of its decisions in turn: bubble sort's next swap (tap ⇄
     between two neighbours; the compares that swap nothing play themselves from the ▲, and a pass with no swap ends
     the sort), the gap insertion sort's key drops into, the smallest of the rest for selection sort (the first of two
