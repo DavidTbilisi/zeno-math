@@ -1565,7 +1565,15 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     the next step after 0/0, L'Hôpital for ∞/∞ and, in a new setting, salt water in a tank and a medicine in the
     blood in the long run), implicit differentiation (dy/dx at a point of a circle or of a curve with an
     xy term, a related rate: a sliding ladder or a spreading ripple; since #745 also the derivative of an inverse
-    function from values of f, the derivatives of arcsin, arccos and arctan of kx, and the second derivative of a circle), techniques of integration (a substitution, by parts, partial fractions or a squared
+    function from values of f, the derivatives of arcsin, arccos and arctan of kx, and the second derivative of a circle;
+    since #747 related rates: a rectangle's area with two rates, an equation differentiated in t, the tangent line to
+    an implicit curve, two cars from a crossroads, which expression is dQ/dt and which equation links the quantities,
+    a filling cone, a child's shadow under a lamp and a balloon, with twenty slips named, among them one product-rule
+    term only, a rate dropped, the normal for the tangent, the distance growing at the sum of the speeds and the
+    cone's top radius for the water's. The piece *Sliding ladder: how fast does the top fall?* (Insert → Calculus,
+    grades 12–13): drag the foot of a ladder to where its top slides down at 3/4 or 4/3 of the foot's speed, with
+    faint ladders at equal steps showing the drops grow; then the speed is hidden and x and y must do, and the end
+    states dy/dt = −(x/y)·dx/dt), techniques of integration (a substitution, by parts, partial fractions or a squared
     sine, typed as an antiderivative and judged up to its constant), improper integrals (∫ 1/xᵖ converges or not
     at infinity and at 0, their values, ∫ 1/(1 + x²) to π), area, volume and arc length (between a parabola and a
     line, a solid of revolution as a multiple of π, curves whose length is an integral done by hand), Taylor series

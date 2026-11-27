@@ -1075,6 +1075,13 @@ function shapeReadPreview(): Piece[] {
   return [poly(f, { width: 3 }), poly(d, { width: 3 }), poly([[30, 160], [230, 160]], { width: 1 }), poly([[80, 20], [80, 200]], { width: 2, color: "#e8590c" })];
 }
 
+function ladderRatesPreview(): Piece[] {
+  // A wall, the floor and a ladder leaning on the wall, with faint earlier ladders and the foot's arrow.
+  const ghosts = [60, 100, 140].map((x) => poly([[40 + x, 190], [40, 190 - Math.sqrt(170 * 170 - x * x)]], { width: 1 }));
+  return [poly([[40, 10], [40, 190], [230, 190]], { width: 3 }), ...ghosts, poly([[40 + 120, 190], [40, 190 - Math.sqrt(170 * 170 - 120 * 120)]], { width: 4 }),
+    poly([[160, 205], [200, 205]], { width: 2, color: "#e8590c" })];
+}
+
 function fillUnderPreview(): Piece[] {
   // A rising curve with left-end rectangles under it.
   const c = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 180 - (i * i) / 16 - 30] as [number, number]);
@@ -2862,6 +2869,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFillUnder", build: fillUnderPreview, live: "fillUnder" },
   { id: "liveDropPoint", build: dropPointPreview, live: "dropPoint" },
   { id: "liveShapeRead", build: shapeReadPreview, live: "shapeRead" },
+  { id: "liveLadderRates", build: ladderRatesPreview, live: "ladderRates" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },
