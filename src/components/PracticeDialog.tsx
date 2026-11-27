@@ -59,12 +59,13 @@ import {
   cellKey, cellsOf, currentGrade, isSecure, placedGrade, placementStep, probe, recordCell, startPlacement, type Cell, type Placement,
 } from "../model/placement";
 import { GradeCard, gradeName } from "./GradeCard";
+import { claimDone, claimStep, creditClaim, nextProof, startClaim, type Claim } from "../model/claim";
 import { noteAchieved } from "../achieved";
 import { seen } from "../usage";
 
 type Mode = "practise" | "sheet";
-/** A skill, a mix of the area's skills, the learner's grade, or the placement that finds it. */
-type Pick = SkillId | "mixed" | "grade" | "place";
+/** A skill, a mix of the area's skills, the learner's grade, the placement that finds it, or proving a claim (#823). */
+type Pick = SkillId | "mixed" | "grade" | "place" | "claim";
 
 /** How much larger the page draws the question's maths and picture than their own size, to sit with its larger text. */
 const MATH_SCALE = 1.4;
@@ -146,6 +147,9 @@ export function PracticeDialog(props: Props) {
   /** The placement under way (pick "place"), and whether the grade being practised was just found by one. */
   const [placing, setPlacing] = useState<Placement | null>(null);
   const [justPlaced, setJustPlaced] = useState(false);
+  /** Skills the learner claims to know, being proved (pick "claim"), and how the last claim ended (claim.ts, #823). */
+  const [claiming, setClaiming] = useState<Claim | null>(null);
+  const [claimResult, setClaimResult] = useState<Claim | null>(null);
   const [score, setScore] = useState({ right: 0, total: 0, streak: 0 });
   // The page's free practice comes in sessions of five or ten questions (the student's choice), with a summary at the end,
   // and a word about a break after about 25 minutes of answering (PracticeSession.tsx).
@@ -206,7 +210,7 @@ export function PracticeDialog(props: Props) {
     const grade = currentGrade(prog.placed ?? null, prog.cells ?? {});
     const fits = (m: Cell) =>
       plan ? plan.skills.includes(m.skill)
-      : p === "place" ? false // a placement asks only fresh questions
+      : p === "place" || p === "claim" ? false // a placement and a proof ask only fresh questions
       : p === "grade" ? gradeOf(m.skill, m.level) === grade
       : p === "mixed" ? areaOf(m.skill) === a : m.skill === p;
     const homework = plan && nextHomework(plan.homework);
@@ -234,11 +238,13 @@ export function PracticeDialog(props: Props) {
       if (breaks !== undefined) return { ex, policy, breaks, review: false, predicted: null };
       return { ex, policy, review: false, predicted: predicted(ex.skill, ex.level) };
     }
-    if (p === "place" || p === "grade") {
+    const proof = p === "claim" && live.current.claiming && nextProof(live.current.claiming);
+    if (proof) return { ex: exercise(proof.skill, proof.level, newSeed(), w), ...freeOrigin, predicted: predicted(proof.skill, proof.level) };
+    if (p === "place" || p === "grade" || p === "claim") {
       // A placement asks a level of the grade in the middle of those left; a grade's practice, a level not yet secure.
       const all = cellsOf(p === "place" ? probe(live.current.placing ?? startPlacement()) : grade);
       const open = all.filter((c) => !isSecure(prog.cells?.[cellKey(c)]));
-      const c: Cell = randomOf(p === "grade" && open.length ? open : all);
+      const c: Cell = randomOf(p !== "place" && open.length ? open : all);
       return { ex: exercise(c.skill, c.level, newSeed(), w), ...freeOrigin, predicted: predicted(c.skill, c.level) };
     }
     const skills = SKILLS[a] as readonly SkillId[];
@@ -292,8 +298,8 @@ export function PracticeDialog(props: Props) {
   const [planStatus, setPlanStatus] = useState<"none" | "loading" | "ready" | "error" | "gone">("none");
   const log = useRef<QuestionLog>(startLog());
   // State as of the last render, for listeners, the plan arriving, and closing.
-  const live = useRef({ cur, student, inClass, progress, area, pick, level, placing });
-  live.current = { cur, student, inClass, progress, area, pick, level, placing };
+  const live = useRef({ cur, student, inClass, progress, area, pick, level, placing, claiming });
+  live.current = { cur, student, inClass, progress, area, pick, level, placing, claiming };
   const classPlan = () => (live.current.student && live.current.inClass ? planRef.current : null);
   const sendQueued = (keepalive = false) => {
     setPending(queued());
@@ -487,13 +493,26 @@ export function PracticeDialog(props: Props) {
       live.current.placing = p;
       placed = placedGrade(p) ?? placed;
     }
+    let cells = { ...progress.cells, [key]: cell };
+    let spaced = spacing;
+    if (pick === "claim" && claiming) {
+      const c = claimStep(claiming, ex.skill, firstTry);
+      setClaiming(c);
+      live.current.claiming = c;
+      // The claim proved: its skills' levels secure, each back for review a day later.
+      if (claimDone(c)) {
+        const credited = creditClaim(c, cells, spaced, now);
+        for (const k of Object.keys(credited.cells)) if (isSecure(credited.cells[k]) && !isSecure(cells[k])) noteAchieved(`cell:${k}`);
+        ({ cells, spacing: spaced } = credited);
+      }
+    }
     record({
       ...progress,
       stats: { ...progress.stats, [ex.skill]: { seen: s.seen + 1, right: s.right + (ok ? 1 : 0) } },
       mistakes,
       answered: progress.answered + 1,
-      cells: { ...progress.cells, [key]: cell },
-      spacing,
+      cells,
+      spacing: spaced,
       stages,
       plateaus,
       placed,
@@ -543,10 +562,10 @@ export function PracticeDialog(props: Props) {
   /** Puts a new question up with a clean slate. */
   function show(c: Current) {
     shownSkill.current = c.ex.skill;
-    // A question of a skill being faded comes with its first steps done; reviews and the placement are asked whole.
+    // A question of a skill being faded comes with its first steps done; reviews, the placement and a proof are asked whole.
     const fading = live.current.student ? planRef.current?.fading : freeFading.current;
     const n = stepsOf(c.ex, w).length;
-    const g = fading && has("faded") && !c.review && c.policy !== "spaced" && c.policy !== "breaks" && live.current.pick !== "place" ? givenSteps(fading, c.ex.skill, n) : 0;
+    const g = fading && has("faded") && !c.review && c.policy !== "spaced" && c.policy !== "breaks" && live.current.pick !== "place" && live.current.pick !== "claim" ? givenSteps(fading, c.ex.skill, n) : 0;
     setGiven(g);
     log.current.faded = g || undefined;
     log.current.steps = Array.from({ length: g }, () => ({ answers: [], shown: true }));
@@ -567,6 +586,12 @@ export function PracticeDialog(props: Props) {
     if (pick === "place" && placing && placedGrade(placing)) {
       choose(area, "grade", level);
       setJustPlaced(true);
+      return;
+    }
+    // Once every claimed skill is proved or missed, the grade's practice goes on with what is left, the result shown.
+    if (pick === "claim" && claiming && claimDone(claiming)) {
+      choose(area, "grade", level);
+      setClaimResult(claiming);
       return;
     }
     leaveQuestion();
@@ -595,6 +620,11 @@ export function PracticeDialog(props: Props) {
     setPick(p);
     setLevel(L);
     setJustPlaced(false);
+    setClaimResult(null);
+    if (p !== "claim") {
+      setClaiming(null);
+      live.current.claiming = null;
+    }
     if (p !== "place") {
       setPlacing(null);
       live.current.placing = null;
@@ -609,6 +639,13 @@ export function PracticeDialog(props: Props) {
     setPlacing(p);
     live.current.placing = p;
     choose(area, "place", level);
+  };
+
+  const startProof = (skills: SkillId[]) => {
+    const c = startClaim(currentGrade(progress.placed ?? null, progress.cells ?? {}), skills);
+    setClaiming(c);
+    live.current.claiming = c;
+    choose(area, "claim", level);
   };
 
   const card = useMemo(() => {
@@ -670,7 +707,7 @@ export function PracticeDialog(props: Props) {
 
   // ---------- worksheet ----------
 
-  const sheetSpec: PracticeSpec = { area, skill: pick === "grade" || pick === "place" ? "mixed" : pick, level, seed: sheetSeed, count, answers: withAnswers };
+  const sheetSpec: PracticeSpec = { area, skill: pick === "grade" || pick === "place" || pick === "claim" ? "mixed" : pick, level, seed: sheetSeed, count, answers: withAnswers };
   const sheet = useMemo(() => {
     if (mode !== "sheet") return null;
     try {
@@ -695,11 +732,11 @@ export function PracticeDialog(props: Props) {
   };
 
   const classOn = !!student && inClass;
-  const sessionOn = page && !classOn && mode === "practise" && pick !== "place";
+  const sessionOn = page && !classOn && mode === "practise" && pick !== "place" && pick !== "claim";
   const sessionOver = sessionOn && session.length >= length;
   // How hard the question felt is asked in class practice and in free practice of a topic or Mixed; a grade's practice
   // and the placement choose their own levels and are not asked.
-  const rateable = mode === "practise" && (classOn || (pick !== "grade" && pick !== "place"));
+  const rateable = mode === "practise" && (classOn || (pick !== "grade" && pick !== "place" && pick !== "claim"));
   /**
    * The rating goes with the attempt. In free practice too easy or too hard also moves the level of the questions after
    * this one, and the level switch moves with it; in class practice the study chooses, so it is only recorded.
@@ -796,10 +833,10 @@ export function PracticeDialog(props: Props) {
           <button className="btn small primary" onClick={() => switchPractice(true)}>{w.ui.homeworkGo}</button>
         </div>
       )}
-      {!classOn && (pick === "place" || pick === "grade") ? (
-        // The placement and a grade's practice choose the questions themselves: no topics or levels to pick.
+      {!classOn && (pick === "place" || pick === "grade" || pick === "claim") ? (
+        // The placement, a proof and a grade's practice choose the questions themselves: no topics or levels to pick.
         <div className="field-row wrap">
-          <strong>{pick === "place" ? w.grades.place : fill(w.grades.practise, { grade: gradeName(currentGrade(progress.placed ?? null, progress.cells ?? {}), w.grades) })}</strong>
+          <strong>{pick === "place" ? w.grades.place : pick === "claim" ? w.grades.claimResult : fill(w.grades.practise, { grade: gradeName(currentGrade(progress.placed ?? null, progress.cells ?? {}), w.grades) })}</strong>
           <button className="btn small" onClick={() => choose(area, "mixed", level)}>{w.grades.topics}</button>
         </div>
       ) : !classOn && (
@@ -1284,8 +1321,12 @@ export function PracticeDialog(props: Props) {
               placing={pick === "place" ? placing : null}
               practising={pick === "grade"}
               justPlaced={justPlaced}
+              claiming={pick === "claim" ? claiming : null}
+              claimResult={claimResult}
               onPractise={() => choose(area, "grade", level)}
               onPlace={startPlace}
+              onClaim={startProof}
+              skillName={(k) => w.skills[k]}
               w={w.grades}
             />
           )}

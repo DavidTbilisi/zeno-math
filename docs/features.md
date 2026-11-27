@@ -2394,6 +2394,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     most 8 questions place a learner. The page then shows the ladder with their grade marked and practises that grade's
     levels until 80 % of them are secure (3 right in a row at the first try), when the next grade begins; the front page
     says which grade they are working on
+  - *Claim, then prove* (#823): on the grade being worked on, *I know some of these* lists the grade's skills not yet
+    secure. The learner ticks the ones they claim, and each is asked at its hardest level in the grade, the claimed
+    skills taking turns: two right at the first try prove a skill, one miss ends its proof and leaves it to practise.
+    A proved skill's levels up to the one asked become secure, marked as proved by a claim, and come back for a spaced
+    review a day later, so a claim is checked again rather than trusted for good. The card then lists each claim as
+    proved or not yet, and the grade's practice goes on with what is left (free practice only; class practice belongs
+    to the study)
   - *Course map* (`#/course`): the way from counting to machine learning in eight stages (number; algebra and
     geometry; calculus; linear algebra; probability and statistics; optimisation; classical machine learning; deep
     learning), each with its skills, every level marked secure, behind the learner's grade or still to do, and a bar
