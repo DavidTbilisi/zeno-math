@@ -45,3 +45,18 @@ export const inOrder = (options: string[], right: number, traps: { id: Trap["id"
     show: opts[right].tex, plain: options[right], format: "pick", steps,
   };
 };
+
+const MATH: [RegExp, string][] = [[/%/g, "\\%"], [/H₀/g, "}H_0\\text{"], [/H₁/g, "}H_1\\text{"], [/≥/g, "}\\ge\\text{"], [/≠/g, "}\\ne\\text{"], [/μ₁/g, "}\\mu_1\\text{"], [/μ₂/g, "}\\mu_2\\text{"], [/μ/g, "}\\mu\\text{"], [/χ²/g, "}\\chi^2\\text{"], [/x̄₁/g, "}\\bar x_1\\text{"], [/x̄₂/g, "}\\bar x_2\\text{"], [/x̄/g, "}\\bar x\\text{"], [/p̂/g, "}\\hat p\\text{"]];
+/** Words as TeX text, with the symbols of a test (H₀, μ, x̄, ≥ …) set as maths. */
+export const textTex = (s: string) => `\\text{${MATH.reduce((t, [re, to]) => t.replace(re, to), s)}}`;
+/** A pick from options in a shuffled order; `right` and each slip's `at` index the options as given. */
+export function shuffled(r: { next(): number }, options: string[], right: number, traps: { id: Trap["id"]; at: number; vars?: Record<string, string | number> }[], prompt: string, steps: string[]): Part {
+  const order = options.map((_, i) => i).sort(() => r.next() - 0.5);
+  const opts = order.map((i) => ({ text: options[i], plain: options[i], tex: textTex(options[i]) }));
+  const at = (i: number) => order.indexOf(i);
+  return {
+    prompt, q: "",
+    answer: { k: "pick", options: opts, right: at(right), traps: traps.filter((t) => t.at !== right).map((t) => ({ id: t.id, a: { k: "pick", options: opts, right: at(t.at) }, vars: t.vars })) },
+    show: opts[at(right)].tex, plain: options[right], format: "pick", steps,
+  };
+}

@@ -6775,49 +6775,49 @@
     {
       "skill": "hypothesis",
       "level": 1,
-      "seed": 7,
+      "seed": 60,
       "input": "reject",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 1,
-      "seed": 7,
+      "seed": 60,
       "input": "Reject",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 1,
-      "seed": 7,
+      "seed": 60,
       "input": "do not reject",
       "label": "wrong"
     },
     {
       "skill": "hypothesis",
       "level": 1,
-      "seed": 7,
+      "seed": 60,
       "input": "maybe",
       "label": "form"
     },
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 7,
+      "seed": 51832,
       "input": "1.2",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 7,
+      "seed": 51832,
       "input": "1.20",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 2,
-      "seed": 7,
+      "seed": 51832,
       "input": "0.3",
       "label": "wrong",
       "note": "divided by σ, not σ/√n"
@@ -6825,14 +6825,14 @@
     {
       "skill": "hypothesis",
       "level": 3,
-      "seed": 7,
+      "seed": 105320,
       "input": "0.115",
       "label": "correct"
     },
     {
       "skill": "hypothesis",
       "level": 3,
-      "seed": 7,
+      "seed": 105320,
       "input": "0.230",
       "label": "wrong",
       "note": "two-tailed"
@@ -6840,7 +6840,7 @@
     {
       "skill": "hypothesis",
       "level": 3,
-      "seed": 7,
+      "seed": 105320,
       "input": "0.885",
       "label": "wrong"
     },
@@ -14201,36 +14201,36 @@
     {
       "skill": "chiSquared",
       "level": 1,
-      "seed": 7,
-      "input": "39.375",
+      "seed": 12,
+      "input": "41.304",
       "label": "correct"
     },
     {
       "skill": "chiSquared",
       "level": 1,
-      "seed": 7,
-      "input": "28",
+      "seed": 12,
+      "input": "45/2",
       "label": "wrong",
       "mistake": "expectedUniform"
     },
     {
       "skill": "chiSquared",
       "level": 1,
-      "seed": 7,
+      "seed": 12,
       "input": "99",
       "label": "wrong"
     },
     {
       "skill": "chiSquared",
       "level": 2,
-      "seed": 7,
+      "seed": 2210,
       "input": "9.7",
       "label": "correct"
     },
     {
       "skill": "chiSquared",
       "level": 2,
-      "seed": 7,
+      "seed": 2210,
       "input": "16.121463077984817",
       "label": "wrong",
       "mistake": "chiSquaredByObserved"
@@ -14238,7 +14238,7 @@
     {
       "skill": "chiSquared",
       "level": 2,
-      "seed": 7,
+      "seed": 2210,
       "input": "194",
       "label": "wrong",
       "mistake": "chiSquaredNotDivided"
@@ -14246,45 +14246,45 @@
     {
       "skill": "chiSquared",
       "level": 2,
-      "seed": 7,
+      "seed": 2210,
       "input": "99",
       "label": "wrong"
     },
     {
       "skill": "chiSquared",
       "level": 3,
-      "seed": 7,
-      "input": "18.592",
+      "seed": 8,
+      "input": "5.521",
       "label": "correct"
     },
     {
       "skill": "chiSquared",
       "level": 3,
-      "seed": 7,
-      "input": "26.412503969979298",
+      "seed": 8,
+      "input": "6.03060351307854",
       "label": "wrong",
       "mistake": "chiSquaredByObserved"
     },
     {
       "skill": "chiSquared",
       "level": 3,
-      "seed": 7,
-      "input": "431.8084",
+      "seed": 8,
+      "input": "111.35469178613944",
       "label": "wrong",
       "mistake": "chiSquaredNotDivided"
     },
     {
       "skill": "chiSquared",
       "level": 3,
-      "seed": 7,
-      "input": "578/25",
+      "seed": 8,
+      "input": "2081/139",
       "label": "wrong",
       "mistake": "expectedUniform"
     },
     {
       "skill": "chiSquared",
       "level": 3,
-      "seed": 7,
+      "seed": 8,
       "input": "99",
       "label": "wrong"
     },
@@ -75706,6 +75706,1305 @@
       "input": "Only the 500 adults asked",
       "label": "wrong",
       "mistake": "onlyThoseAsked"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 1,
+      "input": "There is no convincing evidence that the coin is unfair",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 1,
+      "input": "The coin is probably not fair",
+      "label": "wrong",
+      "mistake": "largePRejected"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 1,
+      "input": "The coin is certainly not fair",
+      "label": "wrong",
+      "mistake": "rejectAsProof"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 2,
+      "input": "The coin is probably not fair",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 2,
+      "input": "There is no convincing evidence that the coin is unfair",
+      "label": "wrong",
+      "mistake": "smallPKept"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 2,
+      "input": "The coin is certainly not fair",
+      "label": "wrong",
+      "mistake": "rejectAsProof"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 3,
+      "input": "The coin is probably not fair",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 3,
+      "input": "There is no convincing evidence that the coin is unfair",
+      "label": "wrong",
+      "mistake": "smallPKept"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 3,
+      "input": "The coin is certainly not fair",
+      "label": "wrong",
+      "mistake": "rejectAsProof"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 5,
+      "input": "0.035",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 5,
+      "input": "7",
+      "label": "wrong",
+      "mistake": "simCountAsP"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 5,
+      "input": "193/200",
+      "label": "wrong",
+      "mistake": "simComplement"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 5,
+      "input": "7.035",
+      "label": "wrong"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 6,
+      "input": "There is no convincing evidence that the coin is unfair",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 6,
+      "input": "The coin is probably not fair",
+      "label": "wrong",
+      "mistake": "largePRejected"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 6,
+      "input": "The coin is certainly not fair",
+      "label": "wrong",
+      "mistake": "rejectAsProof"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 10,
+      "input": "0.085",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 10,
+      "input": "17",
+      "label": "wrong",
+      "mistake": "simCountAsP"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 10,
+      "input": "183/200",
+      "label": "wrong",
+      "mistake": "simComplement"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 10,
+      "input": "7.085",
+      "label": "wrong"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 11,
+      "input": "H₀: p = 0.3, H₁: p > 0.3",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 11,
+      "input": "H₀: p > 0.3, H₁: p = 0.3",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 11,
+      "input": "H₀: p = 0.3, H₁: p ≠ 0.3",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 11,
+      "input": "H₀: p̂ = 0.3, H₁: p̂ > 0.3",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 13,
+      "input": "H₀: μ = 20, H₁: μ < 20",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 13,
+      "input": "H₀: μ < 20, H₁: μ = 20",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 13,
+      "input": "H₀: μ = 20, H₁: μ ≠ 20",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 13,
+      "input": "H₀: x̄ = 20, H₁: x̄ < 20",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 20,
+      "input": "H₀: p = 0.25, H₁: p > 0.25",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 20,
+      "input": "H₀: p > 0.25, H₁: p = 0.25",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 20,
+      "input": "H₀: p = 0.25, H₁: p ≠ 0.25",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 20,
+      "input": "H₀: p̂ = 0.25, H₁: p̂ > 0.25",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 48,
+      "input": "H₀: μ = 20, H₁: μ < 20",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 48,
+      "input": "H₀: μ < 20, H₁: μ = 20",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 48,
+      "input": "H₀: μ = 20, H₁: μ ≠ 20",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 1,
+      "seed": 48,
+      "input": "H₀: x̄ = 20, H₁: x̄ < 20",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 1,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ ≠ 0",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 1,
+      "input": "H₀: μ₁ − μ₂ ≠ 0, H₁: μ₁ − μ₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 1,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ > 0",
+      "label": "wrong",
+      "mistake": "oneSidedForTwo"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 1,
+      "input": "H₀: x̄₁ − x̄₂ = 0, H₁: x̄₁ − x̄₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 2,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 2,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 2,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 2,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 3,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ > 0",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 3,
+      "input": "H₀: μ₁ − μ₂ > 0, H₁: μ₁ − μ₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 3,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 3,
+      "input": "H₀: x̄₁ − x̄₂ = 0, H₁: x̄₁ − x̄₂ > 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 4,
+      "input": "Random fails: the data are not a random sample",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 4,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 4,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 4,
+      "input": "All the conditions are met",
+      "label": "wrong",
+      "mistake": "conditionsMissed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 5,
+      "input": "0.073",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 5,
+      "input": "0.14665564606819836",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 6,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ ≠ 0",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 6,
+      "input": "H₀: μ₁ − μ₂ ≠ 0, H₁: μ₁ − μ₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 6,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ > 0",
+      "label": "wrong",
+      "mistake": "oneSidedForTwo"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 6,
+      "input": "H₀: x̄₁ − x̄₂ = 0, H₁: x̄₁ − x̄₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 10,
+      "input": "Reject H₀: there is convincing evidence that the batteries last less than 40 hours on average",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 10,
+      "input": "Fail to reject H₀: there is not convincing evidence that the batteries last less than 40 hours on average",
+      "label": "wrong",
+      "mistake": "decisionFlipped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 10,
+      "input": "Fail to reject H₀: there is convincing evidence that the batteries last 40 hours on average",
+      "label": "wrong",
+      "mistake": "nullAccepted"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 11,
+      "input": "0.037",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 11,
+      "input": "0.023295467750211837",
+      "label": "wrong",
+      "mistake": "seFromPHat"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 11,
+      "input": "0.073453911397453",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 25,
+      "input": "Reject H₀: there is convincing evidence that the batteries last less than 40 hours on average",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 25,
+      "input": "Fail to reject H₀: there is not convincing evidence that the batteries last less than 40 hours on average",
+      "label": "wrong",
+      "mistake": "decisionFlipped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 25,
+      "input": "Fail to reject H₀: there is convincing evidence that the batteries last 40 hours on average",
+      "label": "wrong",
+      "mistake": "nullAccepted"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 26,
+      "input": "0.028",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 26,
+      "input": "0.05560883501565972",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 41,
+      "input": "0.125",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 41,
+      "input": "0.13785657203203538",
+      "label": "wrong",
+      "mistake": "seFromPHat"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 41,
+      "input": "0.25014387127430027",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 44,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ > 0",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 44,
+      "input": "H₀: μ₁ − μ₂ > 0, H₁: μ₁ − μ₂ = 0",
+      "label": "wrong",
+      "mistake": "hypothesesSwapped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 44,
+      "input": "H₀: μ₁ − μ₂ = 0, H₁: μ₁ − μ₂ ≠ 0",
+      "label": "wrong",
+      "mistake": "twoSidedForOne"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 44,
+      "input": "H₀: x̄₁ − x̄₂ = 0, H₁: x̄₁ − x̄₂ > 0",
+      "label": "wrong",
+      "mistake": "statisticInHypothesis"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 69,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 69,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 69,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 69,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 97,
+      "input": "All the conditions are met",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 97,
+      "input": "Random fails: the data are not a random sample",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 97,
+      "input": "Independence fails: the sample is more than 10% of the population",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 97,
+      "input": "Normal fails: the sample is small and the data strongly skewed",
+      "label": "wrong",
+      "mistake": "conditionMixed"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 246,
+      "input": "0.049",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 246,
+      "input": "0.03074190892946597",
+      "label": "wrong",
+      "mistake": "zForT"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 246,
+      "input": "0.09840699668595668",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 248,
+      "input": "0.064",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 248,
+      "input": "0.04456546275854273",
+      "label": "wrong",
+      "mistake": "zForT"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 248,
+      "input": "0.1275528697032343",
+      "label": "wrong",
+      "mistake": "tailDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 335,
+      "input": "0.023",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 2,
+      "seed": 335,
+      "input": "0.03753798034851683",
+      "label": "wrong",
+      "mistake": "seFromPHat"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 1,
+      "input": "Fail to reject H₀: there is not convincing evidence that the two foods give different mean heights",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 1,
+      "input": "Reject H₀: there is convincing evidence that the two foods give different mean heights",
+      "label": "wrong",
+      "mistake": "decisionFlipped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 1,
+      "input": "Fail to reject H₀: there is convincing evidence that the two foods give the same mean height",
+      "label": "wrong",
+      "mistake": "nullAccepted"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 2,
+      "input": "Fail to reject H₀: there is not convincing evidence that the two foods give different mean heights",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 2,
+      "input": "Reject H₀: there is convincing evidence that the two foods give different mean heights",
+      "label": "wrong",
+      "mistake": "decisionFlipped"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 2,
+      "input": "Fail to reject H₀: there is convincing evidence that the two foods give the same mean height",
+      "label": "wrong",
+      "mistake": "nullAccepted"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 5,
+      "input": "0.057",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 5,
+      "input": "0.028587242011112415",
+      "label": "wrong",
+      "mistake": "tailNotDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 10,
+      "input": "0.059",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 10,
+      "input": "0.029288425050569243",
+      "label": "wrong",
+      "mistake": "tailNotDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 11,
+      "input": "0.382",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 11,
+      "input": "0.19078501133451536",
+      "label": "wrong",
+      "mistake": "tailNotDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 11,
+      "input": "0.3575727592287431",
+      "label": "wrong",
+      "mistake": "zForT"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 25,
+      "input": "0.093",
+      "label": "correct"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 25,
+      "input": "0.046386593913493236",
+      "label": "wrong",
+      "mistake": "tailNotDoubled"
+    },
+    {
+      "skill": "hypothesis",
+      "level": 3,
+      "seed": 25,
+      "input": "0.07672714072574251",
+      "label": "wrong",
+      "mistake": "zForT"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 1,
+      "input": "50",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 1,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "expectedAsShare"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 1,
+      "input": "200/3",
+      "label": "wrong",
+      "mistake": "expectedEqualSplit"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 1,
+      "input": "57",
+      "label": "wrong"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 2,
+      "input": "28",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 2,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "expectedAsShare"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 2,
+      "input": "140/3",
+      "label": "wrong",
+      "mistake": "expectedEqualSplit"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 2,
+      "input": "35",
+      "label": "wrong"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 5,
+      "input": "No: an expected count is below 5",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 5,
+      "input": "Yes: every expected count is at least 5",
+      "label": "wrong",
+      "mistake": "chiConditionsMissed"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 5,
+      "input": "No: an observed count is below 5",
+      "label": "wrong",
+      "mistake": "observedCountChecked"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 10,
+      "input": "Yes: every expected count is at least 5",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 10,
+      "input": "No: an expected count is below 5",
+      "label": "wrong",
+      "mistake": "observedCountChecked"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 10,
+      "input": "No: an observed count is below 5",
+      "label": "wrong",
+      "mistake": "observedCountChecked"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 11,
+      "input": "Yes: every expected count is at least 5",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 11,
+      "input": "No: an expected count is below 5",
+      "label": "wrong",
+      "mistake": "observedCountChecked"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 11,
+      "input": "No: an observed count is below 5",
+      "label": "wrong",
+      "mistake": "observedCountChecked"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 30,
+      "input": "No: an expected count is below 5",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 30,
+      "input": "Yes: every expected count is at least 5",
+      "label": "wrong",
+      "mistake": "chiConditionsMissed"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 30,
+      "input": "No: an observed count is below 5",
+      "label": "wrong",
+      "mistake": "observedCountChecked"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 67,
+      "input": "48",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 67,
+      "input": "40",
+      "label": "wrong",
+      "mistake": "expectedAsShare"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 67,
+      "input": "55",
+      "label": "wrong"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 232,
+      "input": "12",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 232,
+      "input": "20",
+      "label": "wrong",
+      "mistake": "expectedAsShare"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 1,
+      "seed": 232,
+      "input": "19",
+      "label": "wrong"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 1,
+      "input": "Fail to reject H₀: there is not convincing evidence that the die is not fair",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 1,
+      "input": "Reject H₀: there is convincing evidence that the die is not fair",
+      "label": "wrong",
+      "mistake": "chiDecisionFlipped"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 1,
+      "input": "Fail to reject H₀: there is convincing evidence that the die is fair",
+      "label": "wrong",
+      "mistake": "chiNullAccepted"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 2,
+      "input": "Fail to reject H₀: there is not convincing evidence that the die is not fair",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 2,
+      "input": "Reject H₀: there is convincing evidence that the die is not fair",
+      "label": "wrong",
+      "mistake": "chiDecisionFlipped"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 2,
+      "input": "Fail to reject H₀: there is convincing evidence that the die is fair",
+      "label": "wrong",
+      "mistake": "chiNullAccepted"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 5,
+      "input": "0.005",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 5,
+      "input": "0.9948563894269696",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 10,
+      "input": "0.011",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 10,
+      "input": "0.9893422468113986",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 11,
+      "input": "0.039",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 11,
+      "input": "0.07355291431034455",
+      "label": "wrong",
+      "mistake": "dfCategories"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 11,
+      "input": "0.9605709722595891",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 25,
+      "input": "0.015",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 25,
+      "input": "0.03102308328361638",
+      "label": "wrong",
+      "mistake": "dfCategories"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 25,
+      "input": "0.9846798632522804",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 154,
+      "input": "0.501",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 2,
+      "seed": 154,
+      "input": "0.6698676501504661",
+      "label": "wrong",
+      "mistake": "dfCategories"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 1,
+      "input": "Fail to reject H₀: there is not convincing evidence that age group and favourite brand are associated",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 1,
+      "input": "Reject H₀: there is convincing evidence that age group and favourite brand are associated",
+      "label": "wrong",
+      "mistake": "chiDecisionFlipped"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 1,
+      "input": "Fail to reject H₀: there is convincing evidence that age group and favourite brand are independent",
+      "label": "wrong",
+      "mistake": "chiNullAccepted"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 2,
+      "input": "Fail to reject H₀: there is not convincing evidence that age group and favourite brand are associated",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 2,
+      "input": "Reject H₀: there is convincing evidence that age group and favourite brand are associated",
+      "label": "wrong",
+      "mistake": "chiDecisionFlipped"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 2,
+      "input": "Fail to reject H₀: there is convincing evidence that age group and favourite brand are independent",
+      "label": "wrong",
+      "mistake": "chiNullAccepted"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 5,
+      "input": "0.003",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 5,
+      "input": "0.03792985646901872",
+      "label": "wrong",
+      "mistake": "dfCellsMinusOne"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 5,
+      "input": "0.9972330233030852",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 10,
+      "input": "0.002",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 10,
+      "input": "0.03948046061222772",
+      "label": "wrong",
+      "mistake": "dfCellsMinusOne"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 10,
+      "input": "0.9979471277557186",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 37,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 37,
+      "input": "0.9997855455135928",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 38,
+      "input": "0",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 38,
+      "input": "0.9998726091196308",
+      "label": "wrong",
+      "mistake": "chiLowerTail"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 254,
+      "input": "0.265",
+      "label": "correct"
+    },
+    {
+      "skill": "chiSquared",
+      "level": 3,
+      "seed": 254,
+      "input": "0.7338242652910164",
+      "label": "wrong",
+      "mistake": "dfCellsMinusOne"
     }
   ]
 }
