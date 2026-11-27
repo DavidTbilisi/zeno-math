@@ -1582,6 +1582,21 @@ function tessellatePreview(): Piece[] {
   return [...hexes, dot([cx, cy], 3), ...pieces];
 }
 
+function cpuLabPreview(): Piece[] {
+  // Memory cells, the bus, and the CPU's registers with the step just done lit orange.
+  const cell = { fill: "#ffffff", color: "#dee2e6", width: 1 };
+  const hot = { fill: "#fff4e6", color: "#f08c00", width: 2 };
+  return [
+    ...[0, 1, 2, 3].map((k) => rect(4, 8 + k * 22, 56, 18, k === 1 ? hot : cell)),
+    ...[0, 1, 2].map((k) => seg([72 + k * 8, 4], [72 + k * 8, 100], { color: k === 1 ? "#f08c00" : "#ced4da", width: 3 })),
+    rect(104, 8, 92, 90, { fill: "#f8f9fa", color: "#adb5bd", width: 1.5 }),
+    rect(112, 16, 34, 20, cell),
+    rect(154, 16, 34, 20, hot),
+    rect(112, 44, 76, 20, cell),
+    rect(154, 72, 34, 20, cell),
+  ];
+}
+
 function circuitLabPreview(): Piece[] {
   // Two switches, one on, wired into an AND gate whose lamp stays dark; a lit wire is green.
   const on = { color: "#2f9e44", width: 3 };
@@ -2946,6 +2961,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveCruxEq", build: cruxEqPreview, live: "cruxEq" },
   { id: "liveDescentLab", build: descentLabPreview, live: "descentLab" },
   { id: "liveCircuitLab", build: circuitLabPreview, live: "circuitLab" },
+  { id: "liveCpuLab", build: cpuLabPreview, live: "cpuLab" },
   { id: "liveSurface", build: surfacePreview, live: "surface" },
   { id: "livePcaLab", build: pcaLabPreview, live: "pcaLab" },
   { id: "liveSoftmaxLab", build: softmaxLabPreview, live: "softmaxLab" },
