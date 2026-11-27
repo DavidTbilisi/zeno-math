@@ -193,7 +193,7 @@ export const MENUS: MenuGroup[] = [
           { live: "solver", icon: "🧮" },
         ],
       },
-      { title: "secComputer", items: [{ live: "circuitLab", icon: "💡" }, { live: "cpuLab", icon: "🖥️" }, { live: "systemLab", icon: "🔌" }, { live: "raidLab", icon: "🗄️" }, { live: "cacheLab", icon: "⚡" }, { live: "ioLab", icon: "🔔" }, { live: "hammingLab", icon: "🧮" }, { live: "pipelineLab", icon: "🏭" }, { live: "pagingLab", icon: "📑" }] },
+      { title: "secComputer", items: [{ live: "circuitLab", icon: "💡" }, { live: "cpuLab", icon: "🖥️" }, { live: "systemLab", icon: "🔌" }, { live: "raidLab", icon: "🗄️" }, { live: "baseDots", icon: "🔢" }, { live: "cacheLab", icon: "⚡" }, { live: "ioLab", icon: "🔔" }, { live: "hammingLab", icon: "🧮" }, { live: "pipelineLab", icon: "🏭" }, { live: "pagingLab", icon: "📑" }] },
       {
         title: "secChance", items: [
           { live: "coin", icon: "🪙" },

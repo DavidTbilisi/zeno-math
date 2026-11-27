@@ -145,6 +145,7 @@ import { CPU_START_STATE, type LiveCpu } from "./cpuLab";
 import { SYSTEM_START, type LiveSystem } from "./systemLab";
 import { RAID_START, type LiveRaid } from "./raidLab";
 import { CACHE_START, type LiveCache } from "./cacheLab";
+import { BASE_START, type LiveBaseDots } from "./baseDots";
 import { IO_START, type LiveIo } from "./ioLab";
 import { HAMMING_START, type LiveHamming } from "./hammingLab";
 import { PIPE_START, type LivePipe } from "./pipelineLab";
@@ -761,6 +762,7 @@ export type LiveStates = {
   systemLab: LiveSystem;
   raidLab: LiveRaid;
   cacheLab: LiveCache;
+  baseDots: LiveBaseDots;
   ioLab: LiveIo;
   hammingLab: LiveHamming;
   pipelineLab: LivePipe;
@@ -957,6 +959,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   systemLab: [720, 790],
   raidLab: [720, 700],
   cacheLab: [700, 700],
+  baseDots: [700, 380],
   ioLab: [700, 680],
   hammingLab: [700, 680],
   pipelineLab: [700, 620],
@@ -1155,6 +1158,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     systemLab: SYSTEM_START,
     raidLab: RAID_START,
     cacheLab: CACHE_START,
+    baseDots: BASE_START,
     ioLab: IO_START,
     hammingLab: HAMMING_START,
     pipelineLab: PIPE_START,
