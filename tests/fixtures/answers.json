@@ -4715,14 +4715,14 @@
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 7,
+      "seed": 5860,
       "input": "(7x+17)/((x+3)(x-1))",
       "label": "correct"
     },
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 7,
+      "seed": 5860,
       "input": "(7x + 17)/(x^2 + 2x - 3)",
       "label": "correct",
       "note": "the bottom multiplied out"
@@ -4730,7 +4730,7 @@
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 7,
+      "seed": 5860,
       "input": "7/(2x+2)",
       "label": "wrong",
       "note": "tops and bottoms added",
@@ -4739,7 +4739,7 @@
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 7,
+      "seed": 5860,
       "input": "1/(x+3) + 6/(x-1)",
       "label": "form",
       "note": "the question copied: still two fractions"
@@ -4747,7 +4747,7 @@
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 7,
+      "seed": 5860,
       "input": "(7x+3)/((x+3)(x-1))",
       "label": "wrong",
       "note": "6 × 3 + 1 × (−1) slipped"
@@ -4755,14 +4755,14 @@
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 12,
+      "seed": 12524,
       "input": "-(3x+29)/((x+6)(x-5))",
       "label": "correct"
     },
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 12,
+      "seed": 12524,
       "input": "(3x+29)/((x+6)(x-5))",
       "label": "wrong",
       "note": "the sign of the top lost",
@@ -4771,7 +4771,7 @@
     {
       "skill": "algFractions",
       "level": 2,
-      "seed": 12,
+      "seed": 12524,
       "input": "-3/11",
       "label": "wrong",
       "note": "tops and bottoms subtracted",
@@ -4780,21 +4780,21 @@
     {
       "skill": "algFractions",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "(4x+5)/((x-1)(x+1))",
       "label": "correct"
     },
     {
       "skill": "algFractions",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "(4x+5)/(x^2-1)",
       "label": "correct"
     },
     {
       "skill": "algFractions",
       "level": 3,
-      "seed": 7,
+      "seed": 487,
       "input": "13/(x^2+x)",
       "label": "wrong",
       "note": "tops and bottoms added",
@@ -4803,14 +4803,14 @@
     {
       "skill": "algFractions",
       "level": 3,
-      "seed": 1,
+      "seed": 23769,
       "input": "(x+6)/(x-1)",
       "label": "correct"
     },
     {
       "skill": "algFractions",
       "level": 3,
-      "seed": 1,
+      "seed": 23769,
       "input": "(5x-6)/(-2x+1)",
       "label": "wrong",
       "note": "the x² terms cancelled",
@@ -4898,14 +4898,14 @@
     {
       "skill": "formulae",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "5(F-32)/9",
       "label": "correct"
     },
     {
       "skill": "formulae",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "5/9(F - 32)",
       "label": "correct",
       "note": "the fraction in front"
@@ -4913,7 +4913,7 @@
     {
       "skill": "formulae",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "5F/9 - 32",
       "label": "wrong",
       "note": "× 5/9 before − 32",
@@ -4922,7 +4922,7 @@
     {
       "skill": "formulae",
       "level": 2,
-      "seed": 1,
+      "seed": 8,
       "input": "9(F-32)/5",
       "label": "wrong",
       "note": "9/5 not turned over"
@@ -4962,14 +4962,14 @@
     {
       "skill": "formulae",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "sqrt(c^2-b^2)",
       "label": "correct"
     },
     {
       "skill": "formulae",
       "level": 3,
-      "seed": 1,
+      "seed": 8,
       "input": "c - b",
       "label": "wrong",
       "note": "the root taken term by term"
@@ -4977,14 +4977,14 @@
     {
       "skill": "formulae",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "c/(h-k)",
       "label": "correct"
     },
     {
       "skill": "formulae",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "-c/(k-h)",
       "label": "correct",
       "note": "top and bottom both negated"
@@ -4992,7 +4992,7 @@
     {
       "skill": "formulae",
       "level": 3,
-      "seed": 2,
+      "seed": 9,
       "input": "c/h - k",
       "label": "wrong",
       "note": "brackets left off the bottom"
@@ -65909,6 +65909,410 @@
       "seed": 30,
       "input": "7.54",
       "label": "wrong"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 1,
+      "input": "The price for each km",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 1,
+      "input": "The fixed fee for getting in",
+      "label": "wrong",
+      "mistake": "termMeaningSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 2,
+      "input": "The joining fee, paid once",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 2,
+      "input": "The price of each month",
+      "label": "wrong",
+      "mistake": "termMeaningSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 3,
+      "input": "The price of each month",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 3,
+      "input": "The joining fee, paid once",
+      "label": "wrong",
+      "mistake": "termMeaningSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 5,
+      "input": "Across: t (minutes); up: V (litres)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 5,
+      "input": "Across: V (litres); up: t (minutes)",
+      "label": "wrong",
+      "mistake": "axisLabelsSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 16,
+      "input": "The price for each km",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 16,
+      "input": "The fixed fee for getting in",
+      "label": "wrong",
+      "mistake": "termMeaningSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 30,
+      "input": "Across: t (seconds); up: h (metres)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 30,
+      "input": "Across: h (metres); up: t (seconds)",
+      "label": "wrong",
+      "mistake": "axisLabelsSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 31,
+      "input": "Across: n (tickets); up: C (lari)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 31,
+      "input": "Across: C (lari); up: n (tickets)",
+      "label": "wrong",
+      "mistake": "axisLabelsSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 34,
+      "input": "Across: t (minutes); up: V (litres)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 34,
+      "input": "Across: V (litres); up: t (minutes)",
+      "label": "wrong",
+      "mistake": "axisLabelsSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 73,
+      "input": "Across: n (tickets); up: C (lari)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 73,
+      "input": "Across: C (lari); up: n (tickets)",
+      "label": "wrong",
+      "mistake": "axisLabelsSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 82,
+      "input": "Across: t (seconds); up: h (metres)",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 2,
+      "seed": 82,
+      "input": "Across: h (metres); up: t (seconds)",
+      "label": "wrong",
+      "mistake": "axisLabelsSwapped"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 1,
+      "input": "12*m + 12*k*s",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 1,
+      "input": "((12 * m) + (k * s))",
+      "label": "wrong",
+      "mistake": "rateNotScaled"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 2,
+      "input": "12*m + 12*k*s",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 2,
+      "input": "((12 * m) + (k * s))",
+      "label": "wrong",
+      "mistake": "rateNotScaled"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 5,
+      "input": "4*x - 60",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 5,
+      "input": "((4 * x) + 60)",
+      "label": "wrong",
+      "mistake": "bracketSignKept"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 30,
+      "input": "7*x - 60",
+      "label": "correct"
+    },
+    {
+      "skill": "formulae",
+      "level": 3,
+      "seed": 30,
+      "input": "((7 * x) + 60)",
+      "label": "wrong",
+      "mistake": "bracketSignKept"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 1,
+      "input": "No: x is a term there, not a factor, so nothing cancels",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 1,
+      "input": "Yes, he is right",
+      "label": "wrong",
+      "mistake": "cancelTerms"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 2,
+      "input": "No: x is a term there, not a factor, so nothing cancels",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 2,
+      "input": "Yes, he is right",
+      "label": "wrong",
+      "mistake": "cancelTerms"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 5,
+      "input": "No: it is 4",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 5,
+      "input": "Yes, he is right",
+      "label": "wrong",
+      "mistake": "divisionNotFlipped"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 30,
+      "input": "No: it is 3",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 2,
+      "seed": 30,
+      "input": "Yes, he is right",
+      "label": "wrong",
+      "mistake": "divisionNotFlipped"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 1,
+      "input": "6",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 1,
+      "input": "25",
+      "label": "wrong",
+      "mistake": "workTimesAdded"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 1,
+      "input": "25/2",
+      "label": "wrong",
+      "mistake": "workTimesAveraged"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 1,
+      "input": "13",
+      "label": "wrong"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 2,
+      "input": "3",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 2,
+      "input": "16",
+      "label": "wrong",
+      "mistake": "workTimesAdded"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 2,
+      "input": "8",
+      "label": "wrong",
+      "mistake": "workTimesAveraged"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 2,
+      "input": "10",
+      "label": "wrong"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 5,
+      "input": "4",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 5,
+      "input": "6",
+      "label": "wrong",
+      "mistake": "mixtureEqualParts"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 5,
+      "input": "11",
+      "label": "wrong"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 30,
+      "input": "20",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 30,
+      "input": "10",
+      "label": "wrong",
+      "mistake": "mixtureEqualParts"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 30,
+      "input": "27",
+      "label": "wrong"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 41,
+      "input": "(2x + 4)/(x(x + 4))",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 41,
+      "input": "(1 * (((2 * x) + 4))^((-1)))",
+      "label": "wrong",
+      "mistake": "workTimesAdded"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 48,
+      "input": "(2x + 2)/(x(x + 2))",
+      "label": "correct"
+    },
+    {
+      "skill": "algFractions",
+      "level": 3,
+      "seed": 48,
+      "input": "(1 * (((2 * x) + 2))^((-1)))",
+      "label": "wrong",
+      "mistake": "workTimesAdded"
     }
   ]
 }
