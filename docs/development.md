@@ -259,6 +259,7 @@ src/math/meanBalance.ts   the mean balance piece: rounds of dots, the pull each 
 src/math/countTree.ts     the counting tree piece: outfit trees grown by taps, then counts predicted; the sum and a dropped stage named
 src/math/fairGame.ts      the fair game piece: a spinner's prizes as weights on a beam, balanced at the fair price (the expected value)
 src/math/normalCut.ts     the normal-curve piece: cuts dragged on a bell curve until the shaded share is 68%, 95%, 99.7% or a tail
+src/math/shapeRead.ts     the f, f′, f″ piece: a line dragged across the three graphs to a maximum, a minimum or a change of bending
 src/math/partKit.ts       practice parts with named slips: fractions, rounded numbers (slips in the rounding band dropped), picks in order
 src/math/displays.ts      pictures of data to build from: a line plot of fractions, raw data, a table of counts, a mosaic plot, a table of regression output, a Venn diagram, a probability bar chart, a flat or falling density curve with a part shaded
 src/math/powers.ts        powers, roots & logs: index laws, scientific notation, surds, logarithms, exponential equations

@@ -1068,6 +1068,13 @@ function dropPointPreview(): Piece[] {
   return [poly(c, { width: 3 }), ...dashes];
 }
 
+function shapeReadPreview(): Piece[] {
+  // f with a hump and a dip above, f′ below it, and the line through the top of the hump and f′'s zero.
+  const f = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 70 - 40 * Math.sin(((i - 20) / 20) * Math.PI)] as [number, number]);
+  const d = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 160 - 30 * Math.cos(((i - 20) / 20) * Math.PI)] as [number, number]);
+  return [poly(f, { width: 3 }), poly(d, { width: 3 }), poly([[30, 160], [230, 160]], { width: 1 }), poly([[80, 20], [80, 200]], { width: 2, color: "#e8590c" })];
+}
+
 function fillUnderPreview(): Piece[] {
   // A rising curve with left-end rectangles under it.
   const c = Array.from({ length: 41 }, (_, i) => [30 + i * 5, 180 - (i * i) / 16 - 30] as [number, number]);
@@ -2854,6 +2861,7 @@ export const SHAPES: readonly ShapeDef[] = [
   { id: "liveFoldBox", build: foldBoxPreview, live: "foldBox" },
   { id: "liveFillUnder", build: fillUnderPreview, live: "fillUnder" },
   { id: "liveDropPoint", build: dropPointPreview, live: "dropPoint" },
+  { id: "liveShapeRead", build: shapeReadPreview, live: "shapeRead" },
   { id: "liveViews3d", build: () => [poly([[80,0],[160,40],[80,80],[0,40]], { fill: FILL.blue, width: 2 }), poly([[0,40],[80,80],[80,170],[0,130]], { fill: FILL.green, width: 2 }), poly([[80,80],[160,40],[160,130],[80,170]], { fill: FILL.blue, width: 2 })], live: "views3d" },
   { id: "liveCubeNet", build: cubeNetPreview, live: "cubeNet" },
   { id: "livePlotPoint", build: plotPointPreview, live: "plotPoint" },

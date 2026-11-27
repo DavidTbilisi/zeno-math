@@ -54,6 +54,7 @@ import { MEAN_BALANCE_START, type LiveMeanBalance } from "./meanBalance";
 import { COUNT_TREE_START, type LiveCountTree } from "./countTree";
 import { FAIR_GAME_START, type LiveFairGame } from "./fairGame";
 import { NORMAL_CUT_START, type LiveNormalCut } from "./normalCut";
+import { SHAPE_READ_START, type LiveShapeRead } from "./shapeRead";
 import { SIM_HAND_START, type LiveSimHand } from "./simHand";
 import { AREA_START, type LiveAreaBlocks } from "./areaBlocks";
 import { COUNTERS_START, type LiveCounters } from "./counters";
@@ -653,6 +654,7 @@ export type LiveStates = {
   countTree: LiveCountTree;
   fairGame: LiveFairGame;
   normalCut: LiveNormalCut;
+  shapeRead: LiveShapeRead;
   areaBlocks: LiveAreaBlocks;
   counters: LiveCounters;
   signArrow: LiveSignArrow;
@@ -837,6 +839,7 @@ export const LIVE_SIZES: Record<LiveKind, [number, number]> = {
   countTree: [740, 660],
   fairGame: [740, 660],
   normalCut: [740, 660],
+  shapeRead: [740, 740],
   areaBlocks: [780, 730],
   counters: [680, 600],
   signArrow: [680, 720],
@@ -1023,6 +1026,7 @@ export function initialLive<K extends LiveKind>(kind: K): LiveStates[K] {
     countTree: COUNT_TREE_START,
     fairGame: FAIR_GAME_START,
     normalCut: NORMAL_CUT_START,
+    shapeRead: SHAPE_READ_START,
     areaBlocks: AREA_START,
     counters: COUNTERS_START,
     signArrow: SIGN_ARROW_START,
