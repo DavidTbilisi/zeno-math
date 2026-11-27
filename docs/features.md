@@ -2841,6 +2841,13 @@ The front page for schools and universities is published at **[davidtbilisi.gith
     bit. Five puzzles: rebuild a mirror; a dead RAID 5 drive worked out by hand with four bit switches; rebuild RAID 5
     on four drives; and two design puzzles, where the file must live through losing any one drive with as few drives as
     can hold it (RAID 5 on three when a drive holds half the file, a two-drive mirror when it holds all of it).
+  - *The pipeline* (#858; Discrete → Computer, and the Computer stage of the Software engineer goal): instructions
+    against ticks, each row its fetch, decode, execute, memory and write-back. An arrow runs from the cell that makes a
+    register's value to the cell that wants it, red when it points back in time. Tap a row to add a bubble, tap a
+    bubble to take it out, drag from one row to a later one to lay a forwarding wire, drag a name to reorder (a move
+    past an instruction sharing a register is refused). Four puzzles: stall by hand (9 ticks), forwarding wires (11 →
+    7), the load-use bubble removed by moving an independent instruction into the gap, and the two instructions behind
+    a jump flushed (Stallings 14.4, 15.5; Tanenbaum 4.5).
   - *Hamming code* (#857; Discrete → Computer, and the Computer stage of the Software engineer goal): seven bits in
     three overlapping circles, or twelve in a row with one line of dots per check. Tap a bit to flip it; every check
     with an odd count of 1s turns red, and the red checks added up (in binary) name the bad bit's place. Five puzzles:

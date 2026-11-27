@@ -14,7 +14,7 @@ export const SOFTWARE: Roadmap = {
     { id: "algorithms", items: [...reads("algorithms"), ...skills("growth", "inversions"), ...games("beSort", "beSearch", "beBinary", "bePointers", "beWindow", "beStack", "beHeap", "beTree", "beUnion", "beTopo", "beDp", "beBacktrack")] },
     { id: "chance", items: [...reads("probability"), ...skills("probability", "conditional", "expectation", "distributions")] },
     { id: "graphics", items: [...reads("vectors"), ...skills("coordinates", "vectors", "dotangle", "crossPlanes", "matrices", "determinant", "linearMaps"), ...labs("geoLab")] },
-    { id: "computer", items: labs("systemLab", "circuitLab", "cpuLab", "cacheLab", "ioLab", "raidLab", "hammingLab") },
+    { id: "computer", items: labs("systemLab", "circuitLab", "cpuLab", "pipelineLab", "cacheLab", "ioLab", "raidLab", "hammingLab") },
     { id: "crypto", items: skills("congruences", "crt", "fermatEuler", "rsa", "discreteLog") },
   ],
 };
