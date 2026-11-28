@@ -55,9 +55,10 @@ export function roleOf(email: string, verified: boolean, stored: Role): Role {
 }
 
 /** role: the one the account has now (roleOf), not only the one stored. */
-export type Account = { id: number; email: string; name: string; verified: boolean; role: Role };
+/** wantsTeach: a student asked to be a teacher (#873), for an admin to see on the people card. */
+export type Account = { id: number; email: string; name: string; verified: boolean; role: Role; wantsTeach: boolean };
 /** An account as its owner's browser sees it. */
-const shown = (a: Account) => ({ email: a.email, name: a.name, verified: a.verified, role: a.role });
+const shown = (a: Account) => ({ email: a.email, name: a.name, verified: a.verified, role: a.role, wantsTeach: a.wantsTeach });
 
 export function initAccounts(db: DatabaseSync) {
   db.exec(`
@@ -104,6 +105,9 @@ export function initAccounts(db: DatabaseSync) {
   // The role stored for the account (#687; roleOf says what it is now). Databases made before it get the column here.
   if (!(stmt(db, "PRAGMA table_info(accounts)").all() as { name: string }[]).some((c) => c.name === "role"))
     db.exec("ALTER TABLE accounts ADD COLUMN role TEXT NOT NULL DEFAULT 'student'");
+  // When a student asked to be a teacher (#873), NULL for never or once an admin has set the role.
+  if (!(stmt(db, "PRAGMA table_info(accounts)").all() as { name: string }[]).some((c) => c.name === "wants_teach"))
+    db.exec("ALTER TABLE accounts ADD COLUMN wants_teach INTEGER");
   const now = Date.now();
   stmt(db, "DELETE FROM sessions WHERE expires_at <= ?").run(now);
   stmt(db, "DELETE FROM account_tokens WHERE expires_at <= ?").run(now);
@@ -177,13 +181,14 @@ function startSession(db: DatabaseSync, req: IncomingMessage, res: ServerRespons
   setCookie(req, res, token, SESSION_MS / 1000);
 }
 
-type AccountRow = { id: number; email: string; name: string; verifiedAt: number | null; role: Role };
+type AccountRow = { id: number; email: string; name: string; verifiedAt: number | null; role: Role; wantsTeach: number | null };
 const toAccount = (r: AccountRow): Account => {
   const verified = r.verifiedAt !== null;
-  return { id: r.id, email: r.email, name: r.name, verified, role: roleOf(r.email, verified, r.role) };
+  const role = roleOf(r.email, verified, r.role);
+  return { id: r.id, email: r.email, name: r.name, verified, role, wantsTeach: role === "student" && r.wantsTeach !== null };
 };
 const accountById = (db: DatabaseSync, id: number) =>
-  toAccount(stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role FROM accounts WHERE id = ?").get(id) as AccountRow);
+  toAccount(stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role, wants_teach AS wantsTeach FROM accounts WHERE id = ?").get(id) as AccountRow);
 
 /** The request's session, when its cookie names one that hasn't run out: whose it is, and the session's stored key. */
 function sessionOf(req: IncomingMessage, db: DatabaseSync, now = Date.now()): { account: Account; key: string } | null {
@@ -191,7 +196,7 @@ function sessionOf(req: IncomingMessage, db: DatabaseSync, now = Date.now()): { 
   if (!token) return null;
   const key = sha(token);
   const row = stmt(db, `
-    SELECT a.id, a.email, a.name, a.verified_at AS verifiedAt, a.role, s.seen_at AS seenAt
+    SELECT a.id, a.email, a.name, a.verified_at AS verifiedAt, a.role, a.wants_teach AS wantsTeach, s.seen_at AS seenAt
     FROM sessions s JOIN accounts a ON a.id = s.account_id WHERE s.token = ? AND s.expires_at > ?
   `).get(key, now) as (AccountRow & { seenAt: number }) | undefined;
   if (!row) return null;
@@ -321,7 +326,7 @@ async function ownPassword(db: DatabaseSync, account: Account, given: unknown) {
 // ---------- routes ----------
 
 /**
- * /api/account and /api/account/{session,reset,verify,student,state}; see docs/api.md, Accounts. recordsGone is called when
+ * /api/account and /api/account/{session,teach,reset,verify,student,state}; see docs/api.md, Accounts. recordsGone is called when
  * class records were deleted with their account, for the class study to forget what it had learnt from them.
  */
 export async function handleAccount(
@@ -338,21 +343,24 @@ export async function handleAccount(
       const account = accountOf(req, db);
       return send(res, 200, { account: account && shown(account), student: account && studentOf(db, account.id), mail: !!MAIL });
     }
-    // A new account: { email, name, password, lang? }. Signed in at once; the mail to confirm the address follows.
+    // A new account: { email, name, password, lang?, teach? }. Signed in at once; the mail to confirm the address
+    // follows. teach: true asks to be a teacher (#873); an admin still gives the role.
     if (req.method === "POST") {
       limit(signUps, client);
       const body = await readJson(req, MAX_BODY);
       const email = parseEmail(body.email);
       const name = parseName(body.name);
       const hash = await hashPassword(parsePassword(body.password));
+      const teach = body.teach === true ? now : null;
       const made = transaction(db, () => {
         if (stmt(db, "SELECT 1 FROM accounts WHERE email = ?").get(email)) return null;
-        return Number(stmt(db, "INSERT INTO accounts (email, name, password, created_at) VALUES (?, ?, ?, ?)").run(email, name, hash, now).lastInsertRowid);
+        return Number(stmt(db, "INSERT INTO accounts (email, name, password, created_at, wants_teach) VALUES (?, ?, ?, ?, ?)").run(email, name, hash, now, teach).lastInsertRowid);
       });
       if (made === null) return send(res, 409, { error: "an account with this email already exists" });
       signUps.fail(client);
       wrongByClient.succeed(client);
-      const account: Account = { id: made, email, name, verified: false, role: roleOf(email, false, "student") };
+      const role = roleOf(email, false, "student");
+      const account: Account = { id: made, email, name, verified: false, role, wantsTeach: role === "student" && teach !== null };
       startSession(db, req, res, made, now);
       mailLink(db, account, "verify", mailLang(body.lang));
       return send(res, 201, shown(account));
@@ -392,6 +400,14 @@ export async function handleAccount(
     return send(res, 405, { error: "method not allowed" });
   }
 
+  // A student asks to be a teacher (#873): an admin sees it on the people card and gives the role there.
+  if (id === "teach") {
+    if (req.method !== "POST") return send(res, 405, { error: "method not allowed" });
+    const { account } = signedIn(req, db);
+    if (account.role === "student") stmt(db, "UPDATE accounts SET wants_teach = COALESCE(wants_teach, ?) WHERE id = ?").run(now, account.id);
+    return send(res, 200, shown(accountById(db, account.id)));
+  }
+
   if (id === "session") {
     // Signing in: { email, password }.
     if (req.method === "POST") {
@@ -399,7 +415,7 @@ export async function handleAccount(
       const email = String(body.email ?? "").trim().toLowerCase().slice(0, 254);
       limit(wrongByClient, client);
       limit(wrongByEmail, email);
-      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role, password FROM accounts WHERE email = ?").get(email) as
+      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role, wants_teach AS wantsTeach, password FROM accounts WHERE email = ?").get(email) as
         (AccountRow & { password: string }) | undefined;
       const right = await passwordMatches(String(body.password ?? ""), row?.password ?? (await nobodysHash()));
       if (!row || !right) {
@@ -430,7 +446,7 @@ export async function handleAccount(
       const email = parseEmail(body.email);
       limit(mailsByClient, client);
       mailsByClient.fail(client);
-      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role FROM accounts WHERE email = ?").get(email) as AccountRow | undefined;
+      const row = stmt(db, "SELECT id, email, name, verified_at AS verifiedAt, role, wants_teach AS wantsTeach FROM accounts WHERE email = ?").get(email) as AccountRow | undefined;
       if (row && !mailsByEmail.retryAfter(email)) {
         mailsByEmail.fail(email);
         mailLink(db, toAccount(row), "reset", mailLang(body.lang));

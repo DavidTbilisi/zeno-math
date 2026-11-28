@@ -196,7 +196,7 @@ export const studentName = (id: string, who: Who | null | undefined, code?: stri
 export type PaperResult = { form: Form; stored: number; kept: number; verdicts: (string | null)[]; reordered: boolean };
 
 /** An account as an admin sees it (#687): fixed, an admin named in the server's ADMIN_EMAILS; classes, how many it has. */
-export type Person = { id: number; email: string; name: string; verified: boolean; role: Role; fixed: boolean; classes: number };
+export type Person = { id: number; email: string; name: string; verified: boolean; role: Role; wantsTeach: boolean; fixed: boolean; classes: number };
 /** The accounts, the classes with their teachers (owner: an account id, null for nobody), and the admin's own id. */
 /** A class's payments as its teacher sees them (#757): price null until set; amounts in minor units. */
 export type ClassPayments = { price: number | null; currency: string; lessons: RegisterLesson[]; payments: Payment[] };

@@ -96,16 +96,20 @@ const MAX_PEOPLE = 1000;
 
 /**
  * /api/people, an admin's: GET lists the accounts (with their roles and whether ADMIN_EMAILS fixes them as admins)
- * and the classes with their teachers; POST /api/people/<id> { role } sets an account's role.
+ * and the classes with their teachers, students who asked to teach first (#873); POST /api/people/<id> { role } sets an
+ * account's role, which answers that ask.
  */
 export async function handlePeople(req: IncomingMessage, res: ServerResponse, id: string | undefined, db: DatabaseSync) {
   const me = admin(req, db);
   if (id === undefined && req.method === "GET") {
     const accounts = (stmt(db, `
-      SELECT a.id, a.email, a.name, a.verified_at AS verifiedAt, a.role, (SELECT COUNT(*) FROM classes c WHERE c.owner_id = a.id) AS classes
-      FROM accounts a ORDER BY a.role = 'student', a.name COLLATE NOCASE, a.email LIMIT ?
-    `).all(MAX_PEOPLE) as { id: number; email: string; name: string; verifiedAt: number | null; role: Role; classes: number }[])
-      .map((a) => ({ id: a.id, email: a.email, name: a.name, verified: a.verifiedAt !== null, role: roleOf(a.email, a.verifiedAt !== null, a.role), fixed: ADMIN_EMAILS.has(a.email), classes: a.classes }));
+      SELECT a.id, a.email, a.name, a.verified_at AS verifiedAt, a.role, a.wants_teach AS wantsTeach, (SELECT COUNT(*) FROM classes c WHERE c.owner_id = a.id) AS classes
+      FROM accounts a ORDER BY a.wants_teach IS NULL, a.role = 'student', a.name COLLATE NOCASE, a.email LIMIT ?
+    `).all(MAX_PEOPLE) as { id: number; email: string; name: string; verifiedAt: number | null; role: Role; wantsTeach: number | null; classes: number }[])
+      .map((a) => {
+        const role = roleOf(a.email, a.verifiedAt !== null, a.role);
+        return { id: a.id, email: a.email, name: a.name, verified: a.verifiedAt !== null, role, wantsTeach: role === "student" && a.wantsTeach !== null, fixed: ADMIN_EMAILS.has(a.email), classes: a.classes };
+      });
     const classes = stmt(db, "SELECT code, name, owner_id AS owner FROM classes ORDER BY created_at").all();
     return send(res, 200, { accounts, classes, me: me.accountId });
   }
@@ -115,7 +119,7 @@ export async function handlePeople(req: IncomingMessage, res: ServerResponse, id
     const target = Number(id);
     // An admin can't take their own role away: there would be no one to give it back.
     if (target === me.accountId && body.role !== "admin") throw new HttpError(409, "an admin can't take away their own role");
-    const done = stmt(db, "UPDATE accounts SET role = ? WHERE id = ?").run(body.role as Role, Number.isSafeInteger(target) ? target : -1);
+    const done = stmt(db, "UPDATE accounts SET role = ?, wants_teach = NULL WHERE id = ?").run(body.role as Role, Number.isSafeInteger(target) ? target : -1);
     return done.changes ? send(res, 200, { role: body.role }) : send(res, 404, { error: "no such account" });
   }
   return send(res, 405, { error: "method not allowed" });

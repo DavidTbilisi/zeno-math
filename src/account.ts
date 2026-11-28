@@ -10,7 +10,8 @@ import { clearProgress, flushProgress, freshPages, hasWorkHere, progressOwner, s
 
 /** role: what the account may do (#687): a student practises, a teacher has classes, an admin has every class and sets roles. */
 export type Role = "student" | "teacher" | "admin";
-export type Account = { email: string; name: string; verified: boolean; role: Role };
+/** wantsTeach: a student asked to be a teacher (#873) and no admin has answered yet; missing in an older cached copy. */
+export type Account = { email: string; name: string; verified: boolean; role: Role; wantsTeach?: boolean };
 /**
  * student: the class record the account practises under (#606), null for none or when signed out. mail: whether the
  * server can mail a link for a forgotten password. known: the server has answered on this page.
@@ -124,8 +125,9 @@ export const account = {
     return me;
   },
   /** mine: whether what this browser holds (whoIsHere) is the new owner's. */
-  signUp: async (email: string, name: string, password: string, lang: string, mine = false) => {
-    await req<Account>("POST", "/api/account", { email, name, password, lang });
+  /** teach: asks to be a teacher (#873); an admin gives the role. */
+  signUp: async (email: string, name: string, password: string, lang: string, mine = false, teach = false) => {
+    await req<Account>("POST", "/api/account", { email, name, password, lang, teach });
     seen("step", "account made");
     return settle(mine);
   },
@@ -140,6 +142,7 @@ export const account = {
     await req<void>("DELETE", "/api/account/session");
     left();
   },
+  askTeach: async () => signedIn(await req<Account>("POST", "/api/account/teach")),
   rename: async (name: string) => signedIn(await req<Account>("PUT", "/api/account", { name })),
   changePassword: async (current: string, password: string) => signedIn(await req<Account>("PUT", "/api/account", { current, password })),
   remove: async (password: string) => {

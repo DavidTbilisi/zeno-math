@@ -5,6 +5,7 @@ import { useId, useState, type FormEvent, type ReactNode } from "react";
 import { account, looksLikeEmail, MIN_PASSWORD, useAccount, whoIsHere, type Account } from "../account";
 import { ApiError } from "../api";
 import { useI18n } from "../i18n";
+import { Tip } from "./Help";
 import type { Site } from "../locales/site/en";
 import { fill } from "../math/text";
 
@@ -66,6 +67,7 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [teach, setTeach] = useState(false);
   const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -98,7 +100,7 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
         setSent(true);
       } else {
         // Signed in first, then told: an optional call skips its arguments when there is nobody to call.
-        const me = face === "new" ? await account.signUp(email.trim(), name.trim(), password, lang, !!mine) : await account.signIn(email.trim(), password, !!mine);
+        const me = face === "new" ? await account.signUp(email.trim(), name.trim(), password, lang, !!mine, teach) : await account.signIn(email.trim(), password, !!mine);
         onDone?.(me);
       }
     } catch (err) {
@@ -138,6 +140,12 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
       {face !== "forgot" && (
         <PasswordField label={w.password} value={password} onChange={setPassword} fresh={face === "new"}
           hint={face === "new" ? fill(w.passwordHint, { n: MIN_PASSWORD }) : undefined} error={tried ? bad.password : ""} />
+      )}
+      {face === "new" && (
+        <label className="check inline">
+          <input type="checkbox" checked={teach} onChange={(e) => setTeach(e.target.checked)} />
+          {w.iTeach} <Tip text={w.iTeachHint} />
+        </label>
       )}
       {face !== "forgot" && here && (
         <fieldset className={`acct-here${tried && unsaid ? " bad" : ""}`}>

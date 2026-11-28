@@ -34,7 +34,10 @@ import { classTopics, topicOf, type TopicId } from "../model/topics";
 import { classRoad } from "../model/classRoad";
 import { GOALS, isGoal, type GoalId } from "../model/roadmap";
 import { openOnStageBoard } from "../stageBoards";
-import { useAccount } from "../account";
+import { account as accounts, useAccount } from "../account";
+import { BarIcon } from "../components/BarIcon";
+import { HelpButton, Welcome } from "../components/Help";
+import { SOURCE_URL } from "../components/SiteBar";
 import { UndoToast, useUndoDelete } from "../components/UndoDelete";
 
 // Printing the tests renders every question with MathJax, and the calibration chart has its own code: both load when
@@ -75,6 +78,25 @@ function PickChip({ pick, picks, setPicks, title, children }: { pick: string; pi
       onClick={() => setPicks((s) => (on ? s.filter((x) => x !== pick) : [...s, pick]))}>
       {children}
     </button>
+  );
+}
+
+/** A student's account on the teacher's page (#873): why an admin decides, and the one button that asks. */
+function AskToTeach({ w }: { w: Dict["teacher"] }) {
+  const { account } = useAccount();
+  const [failed, setFailed] = useState(false);
+  const asked = !!account?.wantsTeach;
+  return (
+    <div className="teacher-login">
+      <p><strong>{w.notTeacher}</strong></p>
+      <p>{w.notTeacherWhy}</p>
+      {asked ? (
+        <p className="acct-ok" role="status">{w.askedTeach}</p>
+      ) : (
+        <button className="btn primary" onClick={() => accounts.askTeach().then(() => setFailed(false), () => setFailed(true))}>{w.askTeach}</button>
+      )}
+      {failed && <p className="error" role="alert">{w.loadFailed}</p>}
+    </div>
   );
 }
 
@@ -279,7 +301,7 @@ export function TeacherPage() {
           ) : access === "offline" ? (
             <p className="error" role="alert">{w.loadFailed}</p>
           ) : access === "notTeacher" ? (
-            <p className="teacher-login" role="status">{w.notTeacher}</p>
+            <AskToTeach w={w} />
           ) : (
             <div className="teacher-login">
               <p>{w.signIn}</p>
@@ -378,7 +400,7 @@ export function TeacherPage() {
     <div className="z z-wide">
       {bar}
       <div className="z-page teacher">
-        {header}
+        <div className="help-title">{header}<HelpButton id="teacher" /></div>
         {failed && <p className="error" role="alert">{w.loadFailed}</p>}
         <div className="teacher-grid">
           <aside className="teacher-side">
@@ -413,6 +435,8 @@ export function TeacherPage() {
                 <span>{w.className}</span>
                 <input value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
               </label>
+              <details className="new-class-more">
+              <summary>{w.moreSettings}</summary>
               <label className="field">
                 <span>{w.testLength}</span>
                 <input type="number" min={MIN_TEST_LENGTH} max={MAX_TEST_LENGTH} value={testLength}
@@ -441,11 +465,19 @@ export function TeacherPage() {
                   </PickChip>
                 ))}
               </div>
+              </details>
               <button className="btn primary" type="submit">{w.create}</button>
             </form>
           </aside>
 
           <main className={`teacher-main${loading ? " refreshing" : ""}`}>
+            <Welcome id="teacher" title={w.welcome.title} steps={[
+              { pic: <BarIcon name="insert" />, text: w.welcome.make },
+              { pic: <BarIcon name="share" />, text: w.welcome.share },
+              { pic: <BarIcon name="search" />, text: w.welcome.watch },
+            ]}>
+              <a href={`${SOURCE_URL}/blob/main/docs/teacher-guide.md`} target="_blank" rel="noopener noreferrer">{w.welcome.guide} →</a>
+            </Welcome>
             {current && (
               <section className="class-head">
                 <div className="class-head-name">

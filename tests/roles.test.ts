@@ -58,6 +58,30 @@ async function signUp(email: string, name: string, base?: string) {
   return d;
 }
 
+test("a student asks to teach, sees the ask, and an admin's answer clears it (#873)", async () => {
+  const head = await signUp("other-head@school.example", "Other head");
+  const dee = device();
+  const made = await dee.call("POST", "/api/account", { email: "dee@school.example", name: "Dee", password: "long enough", teach: true });
+  assert.equal(made.body.wantsTeach, true, "asked at sign-up");
+  const eve = await signUp("eve@school.example", "Eve");
+  assert.equal((await eve.call("GET", "/api/account")).body.account.wantsTeach, false);
+  assert.equal((await device().call("POST", "/api/account/teach")).status, 401, "signed out, nobody asks");
+  assert.equal((await eve.call("POST", "/api/account/teach")).body.wantsTeach, true, "asked later");
+
+  type Person = { id: number; email: string; wantsTeach: boolean };
+  const people = (await head.call("GET", "/api/people")).body.accounts as Person[];
+  const asking = people.filter((a) => a.wantsTeach).map((a) => a.email);
+  assert.deepEqual(asking.sort(), ["dee@school.example", "eve@school.example"]);
+  assert.ok(people.findIndex((a) => a.wantsTeach) === 0, "the ones asking come first");
+
+  const dId = people.find((a) => a.email === "dee@school.example")!.id;
+  assert.equal((await head.call("POST", `/api/people/${dId}`, { role: "teacher" })).status, 200);
+  const dee2 = (await dee.call("GET", "/api/account")).body.account;
+  assert.equal(dee2.role, "teacher");
+  assert.equal(dee2.wantsTeach, false, "answered");
+  assert.equal((await dee.call("POST", "/api/account/teach")).body.wantsTeach, false, "a teacher doesn't ask again");
+});
+
 test("an admin makes teachers, and each teacher has only their own classes", async () => {
   const head = await signUp("head@school.example", "Head");
   assert.equal((await head.call("GET", "/api/account")).body.account.role, "admin", "named in ADMIN_EMAILS, whatever the case");
