@@ -825,6 +825,12 @@ input.invalid { border-color: var(--danger); }
 .board-help dl div { display: grid; grid-template-columns: 120px 1fr; gap: 8px; }
 .board-help dd { margin: 0; }
 .board-help kbd { font: 12px ui-monospace, monospace; padding: 1px 5px; border: 1px solid var(--border); border-radius: 4px; background: var(--chip); }
+.help-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; margin: 16px 0 32px; }
+.help-steps { display: grid; gap: 20px; padding-inline-start: 20px; }
+.help-steps h3 { margin: 0 0 4px; font-size: 16px; }
+.help-steps h3 a { text-decoration: underline; }
+.help-steps p { margin: 0 0 8px; }
+.help-steps video { width: 100%; border-radius: 8px; border: 1px solid var(--border); }
 .help-button { width: 28px; height: 28px; font-size: 15px; }
 .tip-button { width: 18px; height: 18px; font-size: 11px; font-style: italic; margin-inline-start: 4px; vertical-align: middle; }
 .help-button:hover, .tip-button:hover, .help-button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
