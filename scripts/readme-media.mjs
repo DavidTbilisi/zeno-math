@@ -4,6 +4,7 @@
 //   npm run readme-media -- [scene…]   (BASE=http://localhost:8797 by default; scenes: site insert geolab practice solids sort primes)
 import { chromium } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
+import { ALL_SEEN, KEY as SEEN } from "../src/seen.ts";
 import { check, exercise, stepsOf, trapInputs } from "../src/math/practice.ts";
 import { sortNow, sortRun } from "../src/math/beSort.ts";
 import { execFileSync } from "node:child_process";
@@ -232,6 +233,7 @@ for (const [name, scene] of Object.entries(SCENES)) {
   const dir = mkdtempSync(join(tmpdir(), "zeno-media-"));
   const view = VIEWS[name] ?? VIEW;
   const context = await browser.newContext({ viewport: view, recordVideo: { dir, size: view }, colorScheme: "light" });
+  await context.addInitScript(([k, v]) => localStorage.setItem(k, v), [SEEN, ALL_SEEN]); // no welcome cards in the film
   const page = await context.newPage();
   const t0 = Date.now();
   startAt = t0;

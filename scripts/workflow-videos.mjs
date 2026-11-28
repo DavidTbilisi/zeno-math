@@ -10,6 +10,7 @@
 // would show in the class list.
 import { chromium } from "@playwright/test";
 import { en } from "../src/locales/en.ts";
+import { ALL_SEEN, KEY as SEEN } from "../src/seen.ts";
 import { check, exercise, trapInputs } from "../src/math/practice.ts";
 import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -132,6 +133,7 @@ class Film {
   async window(role, view, init) {
     const context = await this.browser.newContext({ viewport: view, recordVideo: { dir: this.dir, size: view }, colorScheme: "light", locale: "en-GB" });
     await context.addInitScript(stageScript);
+    await context.addInitScript(([k, v]) => localStorage.setItem(k, v), [SEEN, ALL_SEEN]); // no welcome cards in the film
     if (init === signedIn) {
       // The teacher's account: made the first time, then signed in to; the cookie stays with the window.
       const made = await context.request.post(BASE + "/api/account", { data: ACCOUNT });
