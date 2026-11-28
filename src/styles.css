@@ -798,6 +798,20 @@ input.invalid { border-color: var(--danger); }
   padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text);
   box-shadow: var(--shadow); font-size: 12px; }
 .chart-tip strong { font-size: 15px; }
+/* First-time help (#872): the welcome card, its ? and the (i) tip button. */
+.welcome { display: grid; gap: 10px; justify-items: start; margin: 0 0 16px; padding: 14px 16px; border: 1px solid var(--accent);
+  border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); max-width: 720px; }
+.welcome h2 { font-size: 17px; }
+.welcome ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.welcome li { display: flex; align-items: center; gap: 10px; counter-increment: step; }
+.welcome li::before { content: counter(step); flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-text); font-size: 13px; font-weight: 600; }
+.welcome-pic { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px; background: var(--chip); }
+.help-button, .tip-button { flex: none; display: inline-grid; place-items: center; border: 1px solid var(--border); border-radius: 50%;
+  background: var(--surface); color: var(--muted); font: inherit; font-weight: 600; cursor: pointer; padding: 0; }
+.help-button { width: 28px; height: 28px; font-size: 15px; }
+.tip-button { width: 18px; height: 18px; font-size: 11px; font-style: italic; margin-inline-start: 4px; vertical-align: middle; }
+.help-button:hover, .tip-button:hover, .help-button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 .phase-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* Maths shapes: a tab of Excalidraw's side panel, so it takes the board's theme from Excalidraw's own variables. */

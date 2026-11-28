@@ -90,6 +90,11 @@ export const en = {
   shareStop: "Stop sharing",
   readOnly: "Read-only",
   sharedGone: "This link no longer works: the board's owner stopped sharing it.",
+  help: {
+    gotIt: "Got it",
+    show: "How this page works",
+    what: "What is this?",
+  },
   lesson: {
     title: "Lesson: two boards side by side",
     hint: "Whoever opens this link sees your board beside a board of their own, and you see theirs as they work. Each of you draws only on your own board.",
