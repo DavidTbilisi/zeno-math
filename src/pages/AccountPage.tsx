@@ -63,7 +63,7 @@ function Confirm({ token }: { token: string }) {
 
 /** The new-password link: one box; setting it signs in, and the page becomes the account. */
 function NewPassword({ token }: { token: string }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const w = t.site.account;
   const [password, setPassword] = useState("");
   const [tried, setTried] = useState(false);
@@ -77,7 +77,7 @@ function NewPassword({ token }: { token: string }) {
     if (short) return;
     setBusy(true);
     try {
-      await account.setPassword(token, password);
+      await account.setPassword(token, password, lang);
       location.hash = "#/account";
     } catch (err) {
       setError(accountError(err, w));

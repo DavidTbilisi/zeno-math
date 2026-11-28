@@ -559,4 +559,16 @@ test("an ask to teach mails the admins, once, and only from a confirmed address 
   await lev.call("POST", "/api/account/teach", { lang: "ka" });
   assert.match((await mailTo("boss@school.example", start2)).text, /^Lev \(lev@school\.example\) Zeno-ზე მასწავლებლის როლს ითხოვს\./);
   assert.equal(toBoss(), 2, "Ana's second ask sent nothing");
+
+  // Asked at sign-up, then confirmed by a new-password link (which confirms the address too): told then.
+  const mia = device(base);
+  const signed = inbox.length;
+  await mia.call("POST", "/api/account", { email: "mia@school.example", name: "Mia", password: "long enough", teach: true });
+  await mailTo("mia@school.example", signed); // the confirming mail, left unused
+  const start3 = inbox.length;
+  await device(base).call("POST", "/api/account/reset", { email: "mia@school.example" });
+  const reset = linkToken((await mailTo("mia@school.example", start3)).text, "reset");
+  const start4 = inbox.length;
+  assert.equal((await device(base).call("PUT", "/api/account/reset", { token: reset, password: "another long one", lang: "ru" })).status, 200);
+  assert.match((await mailTo("boss@school.example", start4)).text, /^Mia \(mia@school\.example\) просит роль учителя в Zeno\./);
 });

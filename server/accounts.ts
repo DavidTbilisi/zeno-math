@@ -481,10 +481,14 @@ export async function handleAccount(
       const accountId = takeToken(db, body.token, "reset", now);
       if (accountId === null) return send(res, 410, { error: "this link was used already or is too old" });
       const hash = await hashPassword(password);
-      transaction(db, () => {
-        stmt(db, "UPDATE accounts SET password = ?, verified_at = COALESCE(verified_at, ?) WHERE id = ?").run(hash, now, accountId);
+      const first = transaction(db, () => {
+        const confirms = stmt(db, "UPDATE accounts SET verified_at = ? WHERE id = ? AND verified_at IS NULL").run(now, accountId).changes > 0;
+        stmt(db, "UPDATE accounts SET password = ? WHERE id = ?").run(hash, accountId);
         stmt(db, "DELETE FROM sessions WHERE account_id = ?").run(accountId);
+        return confirms;
       });
+      // Confirming here, like the confirming link, tells the admins of an ask made at sign-up.
+      if (first) mailAdmins(db, accountId, mailLang(body.lang));
       startSession(db, req, res, accountId, now);
       return send(res, 200, shown(accountById(db, accountId)));
     }

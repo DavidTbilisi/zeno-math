@@ -163,8 +163,8 @@ export const account = {
   /** Mails a link for a new password, if the address has an account (the answer is the same either way). */
   askReset: (email: string, lang: string) => req<unknown>("POST", "/api/account/reset", { email, lang }),
   /** The link's page: sets the password and signs in. */
-  setPassword: async (token: string, password: string) => {
-    const me = await req<Account>("PUT", "/api/account/reset", { token, password });
+  setPassword: async (token: string, password: string, lang: string) => {
+    const me = await req<Account>("PUT", "/api/account/reset", { token, password, lang });
     // Nobody can be asked whose practice this browser holds: it is kept only if it was this account's all along.
     return settle(progressOwner() === me.email);
   },
