@@ -25,6 +25,9 @@ export default defineConfig({
     // and request is an admin's unless a test says otherwise (e2e/boardOwners.spec.ts makes contexts without it; a
     // teacher signing in with an account drops it too, e2e/helpers.ts signIn).
     extraHTTPHeaders: { "X-Teacher-Password": "e2e-teacher" },
+    // The first-time help (#872) is put away, so the cards and the board's tour don't sit over what a test clicks;
+    // e2e/onboarding.spec.ts opens a fresh browser to see them.
+    storageState: { cookies: [], origins: [{ origin: `http://127.0.0.1:${PORT}`, localStorage: [{ name: "zeno.seen.v1", value: JSON.stringify(["teacher", "practice", "boardTour"]) }] }] },
     ...(executablePath ? { launchOptions: { executablePath } } : {}),
   },
   webServer: {
