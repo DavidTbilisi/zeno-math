@@ -65,8 +65,8 @@ test("a student asks to teach, sees the ask, and an admin's answer clears it (#8
   assert.equal(made.body.wantsTeach, true, "asked at sign-up");
   const eve = await signUp("eve@school.example", "Eve");
   assert.equal((await eve.call("GET", "/api/account")).body.account.wantsTeach, false);
-  assert.equal((await device().call("POST", "/api/account/teach")).status, 401, "signed out, nobody asks");
-  assert.equal((await eve.call("POST", "/api/account/teach")).body.wantsTeach, true, "asked later");
+  assert.equal((await device().call("POST", "/api/account/teach", {})).status, 401, "signed out, nobody asks");
+  assert.equal((await eve.call("POST", "/api/account/teach", {})).body.wantsTeach, true, "asked later");
 
   type Person = { id: number; email: string; wantsTeach: boolean };
   const people = (await head.call("GET", "/api/people")).body.accounts as Person[];
@@ -79,7 +79,7 @@ test("a student asks to teach, sees the ask, and an admin's answer clears it (#8
   const dee2 = (await dee.call("GET", "/api/account")).body.account;
   assert.equal(dee2.role, "teacher");
   assert.equal(dee2.wantsTeach, false, "answered");
-  assert.equal((await dee.call("POST", "/api/account/teach")).body.wantsTeach, false, "a teacher doesn't ask again");
+  assert.equal((await dee.call("POST", "/api/account/teach", {})).body.wantsTeach, false, "a teacher doesn't ask again");
 });
 
 test("an admin makes teachers, and each teacher has only their own classes", async () => {

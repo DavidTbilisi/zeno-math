@@ -299,6 +299,23 @@ function mailLink(db: DatabaseSync, account: Account, kind: TokenKind, lang: Mai
   sendMail(MAIL, { to: account.email, subject, text }).catch((e: Error) => console.error(`mail (${kind}) was not sent: ${e.message}`));
 }
 
+/**
+ * Tells the admins that someone asks to be a teacher (#873): those named in ADMIN_EMAILS and those given the role, by
+ * confirmed address. Only for a confirmed asker, so made-up sign-ups can't fill the admins' mail; one who asked at
+ * sign-up is told of on confirming. Not waited for, like the links.
+ */
+function mailAdmins(db: DatabaseSync, accountId: number, lang: MailLang) {
+  if (!MAIL) return;
+  const asker = stmt(db, "SELECT email, name FROM accounts WHERE id = ? AND role = 'student' AND wants_teach IS NOT NULL AND verified_at IS NOT NULL").get(accountId) as
+    | { email: string; name: string }
+    | undefined;
+  if (!asker || ADMIN_EMAILS.has(asker.email)) return;
+  const given = stmt(db, "SELECT email FROM accounts WHERE role = 'admin' AND verified_at IS NOT NULL").all() as { email: string }[];
+  const { subject, text } = mailWords(lang, "teach", asker.name, `${MAIL.site}/#/teacher/people`, asker.email);
+  for (const to of new Set([...ADMIN_EMAILS, ...given.map((r) => r.email)]))
+    sendMail(MAIL, { to, subject, text }).catch((e: Error) => console.error(`mail (teach) was not sent: ${e.message}`));
+}
+
 // ---------- limits ----------
 
 // A school reaches the server from one address, so the per-client limits are wide (and ten times wider once someone
@@ -404,7 +421,10 @@ export async function handleAccount(
   if (id === "teach") {
     if (req.method !== "POST") return send(res, 405, { error: "method not allowed" });
     const { account } = signedIn(req, db);
-    if (account.role === "student") stmt(db, "UPDATE accounts SET wants_teach = COALESCE(wants_teach, ?) WHERE id = ?").run(now, account.id);
+    const body = await readJson(req, MAX_BODY);
+    // Asked before: the admins were told then.
+    const asked = account.role === "student" && stmt(db, "UPDATE accounts SET wants_teach = ? WHERE id = ? AND wants_teach IS NULL").run(now, account.id).changes > 0;
+    if (asked) mailAdmins(db, account.id, mailLang(body.lang));
     return send(res, 200, shown(accountById(db, account.id)));
   }
 
@@ -478,7 +498,8 @@ export async function handleAccount(
     if (body.token !== undefined) {
       const accountId = takeToken(db, body.token, "verify", now);
       if (accountId === null) return send(res, 410, { error: "this link was used already or is too old" });
-      stmt(db, "UPDATE accounts SET verified_at = COALESCE(verified_at, ?) WHERE id = ?").run(now, accountId);
+      const first = stmt(db, "UPDATE accounts SET verified_at = ? WHERE id = ? AND verified_at IS NULL").run(now, accountId).changes > 0;
+      if (first) mailAdmins(db, accountId, mailLang(body.lang));
       return send(res, 200, { verified: true });
     }
     // Signed in, without a token: mail the confirming link again ({ lang? }).

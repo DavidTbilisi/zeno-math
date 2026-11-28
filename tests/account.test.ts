@@ -1,5 +1,6 @@
 // Accounts (server/accounts.ts, issue #605): sign up, sign in on another device, sign out, a new password by mail
-// (against a stand-in SMTP server), confirming the address, and deleting the account; and what is refused.
+// (against a stand-in SMTP server), confirming the address, the admins told of an ask to teach, and deleting the
+// account; and what is refused.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
@@ -20,6 +21,7 @@ const servers: ChildProcess[] = [];
 type Got = { auth: string | null; from: string; to: string; data: string };
 const inbox: Got[] = [];
 let smtp: Server;
+let smtpPort = 0;
 /** A mail server that speaks just enough SMTP: no TLS (it is on this machine), AUTH PLAIN, one message a connection. */
 function startSmtp(): Promise<number> {
   smtp = createServer((socket) => {
@@ -73,7 +75,7 @@ async function start(port: number, name: string, env: Record<string, string> = {
 before(async () => {
   mkdirSync(join(dir, "dist"), { recursive: true });
   writeFileSync(join(dir, "dist", "index.html"), "<!doctype html><title>Zeno</title>");
-  const smtpPort = await startSmtp();
+  smtpPort = await startSmtp();
   await start(PORT, "data", {
     SMTP_HOST: "127.0.0.1", SMTP_PORT: String(smtpPort), SMTP_USER: "zeno", SMTP_PASSWORD: "s3cret", MAIL_FROM: "Zeno <zeno@school.example>", PUBLIC_URL: "https://zeno.school.example/",
   });
@@ -524,4 +526,37 @@ test("without mail settings accounts still work, and a link comes from the comma
   assert.ok(token, out);
   assert.equal((await device(`http://127.0.0.1:${port}`).call("PUT", "/api/account/reset", { token, password: "a new long one" })).status, 200);
   assert.equal(await d.me(), null);
+});
+
+test("an ask to teach mails the admins, once, and only from a confirmed address (#873)", async () => {
+  const port = PORT + 2;
+  await start(port, "admins", {
+    SMTP_HOST: "127.0.0.1", SMTP_PORT: String(smtpPort), MAIL_FROM: "Zeno <zeno@school.example>", PUBLIC_URL: "https://zeno.school.example/", ADMIN_EMAILS: "boss@school.example",
+  });
+  const base = `http://127.0.0.1:${port}`;
+  const toBoss = () => inbox.filter((m) => m.to === "<boss@school.example>").length;
+
+  // Asked at sign-up: the admin hears of it once the address is confirmed, in the language it was confirmed in.
+  const ana = device(base);
+  const start0 = inbox.length;
+  await ana.call("POST", "/api/account", { email: "ana@school.example", name: "Ana", password: "long enough", teach: true });
+  const token = linkToken((await mailTo("ana@school.example", start0)).text, "verify");
+  assert.equal(toBoss(), 0, "an unconfirmed address tells nobody");
+  const before = inbox.length;
+  await device(base).call("POST", "/api/account/verify", { token, lang: "en" });
+  const mail = await mailTo("boss@school.example", before);
+  assert.match(mail.text, /^Ana \(ana@school\.example\) asks to be a teacher on Zeno\./);
+  assert.match(mail.text, /https:\/\/zeno\.school\.example\/#\/teacher\/people/);
+  // Asking again tells nobody again.
+  assert.equal((await ana.call("POST", "/api/account/teach", {})).body.wantsTeach, true);
+
+  // Asked later, from a confirmed address: at once.
+  const lev = device(base);
+  const start1 = inbox.length;
+  await lev.call("POST", "/api/account", { email: "lev@school.example", name: "Lev", password: "long enough" });
+  await device(base).call("POST", "/api/account/verify", { token: linkToken((await mailTo("lev@school.example", start1)).text, "verify") });
+  const start2 = inbox.length;
+  await lev.call("POST", "/api/account/teach", { lang: "ka" });
+  assert.match((await mailTo("boss@school.example", start2)).text, /^Lev \(lev@school\.example\) Zeno-ზე მასწავლებლის როლს ითხოვს\./);
+  assert.equal(toBoss(), 2, "Ana's second ask sent nothing");
 });

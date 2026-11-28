@@ -46,7 +46,7 @@ function SignedOut() {
 
 /** The confirming link: used as the page opens, once (React's strict mode mounts twice in development). */
 function Confirm({ token }: { token: string }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const w = t.site.account;
   const { account: me } = useAccount();
   const [state, setState] = useState<"going" | "done" | string>("going");
@@ -54,8 +54,8 @@ function Confirm({ token }: { token: string }) {
   useEffect(() => {
     if (asked.current) return;
     asked.current = true;
-    account.confirm(token).then(() => setState("done"), (e) => setState(accountError(e, w)));
-  }, [token, w]);
+    account.confirm(token, lang).then(() => setState("done"), (e) => setState(accountError(e, w)));
+  }, [token, w, lang]);
   // A link opened a second time is spent, but the address it confirmed still is.
   if (state === "done" || (state !== "going" && me?.verified)) return <p className="acct-ok acct-banner" role="status">✓ {w.verified}</p>;
   return state === "going" ? <p className="acct-note" role="status">{w.verifying}</p> : <p className="error acct-banner" role="alert">{state}</p>;
