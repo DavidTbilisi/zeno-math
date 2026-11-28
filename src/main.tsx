@@ -26,6 +26,7 @@ const TodayPage = lazy(() => import("./pages/TodayPage").then((m) => ({ default:
 const ProgressPage = lazy(() => import("./pages/ProgressPage").then((m) => ({ default: m.ProgressPage })));
 const AccountPage = lazy(() => import("./pages/AccountPage").then((m) => ({ default: m.AccountPage })));
 const CoursePage = lazy(() => import("./pages/CoursePage").then((m) => ({ default: m.CoursePage })));
+const HelpPage = lazy(() => import("./pages/HelpPage").then((m) => ({ default: m.HelpPage })));
 
 function useHashRoute(): string {
   const [hash, setHash] = useState(location.hash);
@@ -111,6 +112,12 @@ function Pages({ hash }: { hash: string }) {
     return (
       <Suspense fallback={<div className="center-msg">…</div>}>
         <CoursePage />
+      </Suspense>
+    );
+  if (hash === "#/help")
+    return (
+      <Suspense fallback={<div className="center-msg">…</div>}>
+        <HelpPage />
       </Suspense>
     );
   // /about is the same front page at an address the server lets anyone open (#/about needs the password).

@@ -9,7 +9,7 @@ import { ZenoMark } from "./ZenoMark";
 /** Where this copy's source is (AGPL-3.0 §13): a modified Zeno run for others points this at its own copy. */
 export const SOURCE_URL = "https://github.com/DavidTbilisi/zeno-math";
 
-export type Section = "learn" | "roadmaps" | "practice" | "library" | "boards" | "progress" | "teacher" | "account";
+export type Section = "learn" | "roadmaps" | "practice" | "library" | "boards" | "progress" | "teacher" | "account" | "help";
 const LINKS: { id: Section; href: string; word: (t: Dict) => string }[] = [
   { id: "learn", href: "#/learn", word: (t) => t.site.learn },
   { id: "roadmaps", href: "#/roadmaps", word: (t) => t.roadmap.link },
@@ -17,6 +17,7 @@ const LINKS: { id: Section; href: string; word: (t: Dict) => string }[] = [
   { id: "library", href: "#/library", word: (t) => t.site.library },
   { id: "boards", href: "#/boards", word: (t) => t.site.boards },
   { id: "progress", href: "#/progress", word: (t) => t.site.progress },
+  { id: "help", href: "#/help", word: (t) => t.help.link },
 ];
 /** A teacher's sections: their classes first, then what they teach with. */
 const TEACHER_LINKS: typeof LINKS = [
@@ -25,6 +26,7 @@ const TEACHER_LINKS: typeof LINKS = [
   { id: "library", href: "#/library", word: (t) => t.site.toolsGames },
   { id: "learn", href: "#/learn", word: (t) => t.site.learn },
   { id: "roadmaps", href: "#/roadmaps", word: (t) => t.roadmap.link },
+  { id: "help", href: "#/help", word: (t) => t.help.link },
 ];
 
 /**
