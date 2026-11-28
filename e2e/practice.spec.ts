@@ -88,7 +88,7 @@ test("practice has a page of its own, reached from the home page", async ({ page
   await page.goto("/");
   await page.getByRole("link", { name: /Start practising/ }).click();
   await expect(page).toHaveURL(/#\/practice$/);
-  await expect(page.getByRole("heading", { name: "Practice" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Practice", exact: true })).toBeVisible();
   // No board to insert into: no worksheet and no Insert button.
   await expect(page.getByRole("radio", { name: w.ui.sheet })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Insert" })).toHaveCount(0);
