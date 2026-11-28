@@ -22,11 +22,12 @@ export const FACTS_KEY = "zeno.facts.v1";
 
 /**
  * Keys shaped like progress that stay with the browser: who is signed in and what waits to be sent (the account
- * brings those itself), this device's settings (sound, calm mode, the session's length), and the scratch paper.
+ * brings those itself), this device's settings (sound, calm mode, the session's length, the welcome cards put away),
+ * and the scratch paper.
  */
 const STAYS = new Set([
   "zeno.account.v1", "zeno.student.v1", "zeno.outbox.v1", "zeno.testbox.v1", "zeno.synced.v1", "zeno.classIdeas.v1",
-  "zeno.sound.v1", "zeno.feel.v1", "zeno.session.v1", "zeno.scratch.v1",
+  "zeno.sound.v1", "zeno.feel.v1", "zeno.session.v1", "zeno.scratch.v1", "zeno.seen.v1",
 ]);
 /**
  * Whether a browser key follows the account: every "zeno.<name>.v1" (so a new game's ladder follows without being
