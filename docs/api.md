@@ -52,11 +52,12 @@ method and path on these resources must answer 404 or 405, so a route added with
 | GET | `/api/lessons/:token/guest?board=ID` | host | one guest's board, the same way; 404 for a board that is not a guest's in this lesson |
 | POST | `/api/lessons/:token/handout` | host | mark the host's board as handed out: `{ handoutAt }`, later each time; each guest's page copies the host's board into its own when it sees a later mark |
 | GET | `/api/account` | anyone | who is signed in: `{ account: { email, name, verified } \| null, student, mail }`; `student` is the class record the account practises under (`null` for none), `mail` whether the server can mail a new-password link |
-| POST | `/api/account` | anyone | a new account from `{ email, name, password, lang? }`: 201 `{ email, name, verified }` and the session cookie; 409 when the email has one |
+| POST | `/api/account` | anyone | a new account from `{ email, name, password, lang?, teach? }` (`teach: true` asks to be a teacher): 201 `{ email, name, verified }` and the session cookie; 409 when the email has one |
 | PUT | `/api/account` | account | `{ name? }` renames; `{ password, current }` changes the password and signs the other devices out |
 | DELETE | `/api/account` | account | `{ password }`: delete the account and everything kept under it: 204 |
 | POST | `/api/account/session` | anyone | sign in with `{ email, password }`: 200 `{ email, name, verified }` and the session cookie; 401 when either is wrong |
 | DELETE | `/api/account/session` | anyone | sign this device out: 204 |
+| POST | `/api/account/teach` | account | a student asks to be a teacher: 200 the account with `wantsTeach: true` (an admin sees the ask on `/api/people` and answers it by setting the role) |
 | POST | `/api/account/reset` | anyone | `{ email, lang? }` mails a link for a new password if the address has an account: 202 either way; 503 when the server sends no mail |
 | PUT | `/api/account/reset` | anyone | the link's page: `{ token, password }` sets the password, signs every device out and this one in; 410 for a link used or too old |
 | POST | `/api/account/verify` | anyone | `{ token }` confirms the address from its mailed link (410 for a link used or too old); signed in and without a token, mails the link again |
@@ -66,7 +67,7 @@ method and path on these resources must answer 404 or 405, so a route added with
 | GET | `/api/classes` | teacher | the teacher's classes (an admin's: every class): code, name, skills, feature, study, phase, sessionEnds, testLength, students, students per arm (`on`, `off`), attempts |
 | POST | `/api/classes` | teacher | a new class from `{ name?, skills?, testLength?, feature? }`: 201 with its code; see *Arms*. It is the teacher's own (a script's class is nobody's: admins only) |
 | POST | `/api/classes/:code/owner` | admin | give the class to a teacher or an admin: `{ owner }`, an account id or `null` for nobody; a student's account is 409 |
-| GET | `/api/people` | admin | `{ accounts, classes, me }`: every account with `id, email, name, verified, role, fixed` (an admin by `ADMIN_EMAILS`) and `classes` (how many it has), every class's `code, name, owner`, and the admin's own account id |
+| GET | `/api/people` | admin | `{ accounts, classes, me }`: every account with `id, email, name, verified, role, wantsTeach, fixed` (students who asked to teach first) (an admin by `ADMIN_EMAILS`) and `classes` (how many it has), every class's `code, name, owner`, and the admin's own account id |
 | POST | `/api/people/:id` | admin | set an account's role: `{ role }`, `student`, `teacher` or `admin`; an admin taking away their own role is 409 |
 | POST | `/api/classes/:code/phase` | teacher | move the class on: `{ phase, minutes? }`; see *The protocol* |
 | POST | `/api/classes/:code/paper` | teacher | a test written on paper, typed in: `{ student, phase, form?, answers }`; see *Paper tests* |

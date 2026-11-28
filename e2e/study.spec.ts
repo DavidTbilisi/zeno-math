@@ -62,6 +62,7 @@ test("a teacher makes a class, a student joins and practises, and the pre-test r
   await signIn(teacher);
   await teacher.reload();
   await teacher.locator(".new-class").getByLabel("Name").fill("E2E class");
+  await teacher.locator(".new-class summary").click();
   await teacher.locator(".new-class").getByLabel("Questions per test").fill("4");
   await teacher.locator(".new-class").getByRole("button", { name: "Algebra" }).click();
   await teacher.getByRole("button", { name: "Create class" }).click();
@@ -367,6 +368,7 @@ test("a teacher tests spaced review in a class: two arms, the delayed post-test 
   await teacher.goto("/#/teacher");
   const form = teacher.locator(".new-class");
   await form.getByLabel("Name").fill(name);
+  await form.locator("summary").click();
   await form.getByLabel("Questions per test").fill("4");
   await form.getByLabel("What to test").selectOption("spaced");
   await expect(form).toContainText(en.teacher.features.spaced.hint);

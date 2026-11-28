@@ -326,6 +326,8 @@ export const site = {
     newPassword: "New password",
     currentPassword: "Current password",
     passwordHint: "At least {n} characters.",
+    iTeach: "I am a teacher",
+    iTeachHint: "An admin of this Zeno checks it and makes the account a teacher's. Until then it works as a student's.",
     show: "Show the password",
     forgot: "Forgot your password?",
     forgotLede: "Type your email and we'll send you a link to choose a new password.",

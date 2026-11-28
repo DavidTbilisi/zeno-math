@@ -1,5 +1,6 @@
 // Teachers and roles (#687), an admin's page at #/teacher/people: every account with its role, which an admin changes
-// with a select (not their own, and not one the server's ADMIN_EMAILS makes an admin), and every class with its teacher,
+// with a select (not their own, and not one the server's ADMIN_EMAILS makes an admin; a student who asked to teach,
+// #873, comes first with a one-click answer), and every class with its teacher,
 // which an admin gives to a teacher or an admin (a class with nobody is seen by the admins only).
 import { useEffect, useState } from "react";
 import { ApiError, type People, type teacherApi } from "../api";
@@ -63,6 +64,12 @@ export function PeopleCard({ api, w, onChange }: { api: ReturnType<typeof teache
                     onChange={(e) => void change(() => api.setRole(a.id, e.target.value as Role))}>
                     {ROLES.map((r) => <option key={r} value={r}>{w.roles[r]}</option>)}
                   </select>
+                )}
+                {a.wantsTeach && (
+                  <span className="people-asks">
+                    {" "}<strong>{w.wantsTeach}</strong>{" "}
+                    <button className="btn small primary" onClick={() => void change(() => api.setRole(a.id, "teacher"))}>{w.makeTeacher}</button>
+                  </span>
                 )}
               </td>
             </tr>

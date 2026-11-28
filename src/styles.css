@@ -809,6 +809,9 @@ input.invalid { border-color: var(--danger); }
 .welcome-pic { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px; background: var(--chip); }
 .help-button, .tip-button { flex: none; display: inline-grid; place-items: center; border: 1px solid var(--border); border-radius: 50%;
   background: var(--surface); color: var(--muted); font: inherit; font-weight: 600; cursor: pointer; padding: 0; }
+.help-title { display: flex; align-items: center; gap: 10px; }
+.new-class-more { display: grid; gap: 8px; }
+.new-class-more summary { cursor: pointer; color: var(--muted); font-size: 13px; }
 .help-button { width: 28px; height: 28px; font-size: 15px; }
 .tip-button { width: 18px; height: 18px; font-size: 11px; font-style: italic; margin-inline-start: 4px; vertical-align: middle; }
 .help-button:hover, .tip-button:hover, .help-button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
