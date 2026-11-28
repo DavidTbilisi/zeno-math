@@ -94,6 +94,12 @@ export const en = {
     gotIt: "Got it",
     show: "How this page works",
     what: "What is this?",
+    practice: {
+      title: "New here? Practice in three steps",
+      pick: "Pick a topic and a level, or leave it on Mixed and Zeno chooses.",
+      answer: "Answer and press Check. Wrong? Try again, or press “Show solution” to see how.",
+      back: "Come back tomorrow: what you have mastered returns now and then for review, so it stays.",
+    },
   },
   lesson: {
     title: "Lesson: two boards side by side",
@@ -18874,6 +18880,7 @@ export const en = {
       solving: "Working it out…",
       reset: "Reset progress",
       joinClass: "Join a class (for a class study)",
+      joinWhat: "Your teacher gives you a link or a class code. Joining lets them see your practice and give you homework.",
       consentTitle: "Before you join",
       consentSaved: "Every question you try in this class is saved: what you typed, whether it was right, how long it took, and what you ticked as hard. Your teacher sees the name on your account, so they know whose work it is; your email is used only to sign you in. Neither is in the study's data: there a number stands for you.",
       consentGroups: "The class is split at random into two groups that differ in one part of practice, such as how the next question is chosen, whether skills come back for review days later, or what help follows a mistake. Everything else is the same for both. The study compares how much each group learns.",
@@ -18909,6 +18916,7 @@ export const en = {
       preTest: "Pre-test",
       postTest: "Post-test",
       delayedTest: "Delayed post-test",
+      preTestWhy: "A short check before practice, so the questions fit what you already know.",
       testIntro: "No marks during the test: answer as well as you can, or pass a question you can't do.",
       testProgress: "Question {i} of {n}",
       submit: "Submit",

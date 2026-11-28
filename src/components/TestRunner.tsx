@@ -99,7 +99,7 @@ export function TestRunner({ plan, phase, student, w, outbox, onAnswered }: {
         <strong>{phase === "pre" ? w.ui.preTest : phase === "post" ? w.ui.postTest : w.ui.delayedTest}</strong>
         <span className="hint">{fill(w.ui.testProgress, { i: index + 1, n: items.length })}</span>
       </div>
-      <small className="hint">{w.ui.testIntro}</small>
+      <small className="hint">{phase === "pre" && `${w.ui.preTestWhy} `}{w.ui.testIntro}</small>
       <div className="preview">
         {card && <img src={card} alt="" style={{ maxWidth: "100%" }} />}
         <SpokenMath text={ex.prompt} tex={ex.q} />

@@ -117,6 +117,7 @@ export function StudentPanel({ student, pending, ui, skills, invite, onChange }:
     <details className="practice-join" ref={box}>
       <summary className="hint">{ui.joinClass}</summary>
       <div className="practice-class">
+        <p className="hint">{ui.joinWhat}</p>
         <div className="practice-consent" role="group" aria-labelledby="practice-consent-title">
           <strong id="practice-consent-title">{ui.consentTitle}</strong>
           <ul>
