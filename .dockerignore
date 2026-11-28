@@ -6,6 +6,8 @@ public/fonts
 *.log
 .git
 docs
+# The help page (#876) plays the teacher guide's videos.
+!docs/media/workflows
 tests
 e2e
 playwright-report
