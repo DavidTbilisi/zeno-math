@@ -2,7 +2,9 @@
 // the roadmaps count. A plain module so the tests can run it; the cards are in components/Help.tsx.
 import { useSyncExternalStore } from "react";
 
-const KEY = "zeno.seen.v1";
+export const KEY = "zeno.seen.v1";
+/** Every card and tour id, all seen: recordings and the e2e tests start with this (#891). A new card id goes here. */
+export const ALL_SEEN = JSON.stringify(["teacher", "practice", "boardTour"]);
 const listeners = new Set<() => void>();
 let cache: string | null | undefined;
 let ids = new Set<string>();

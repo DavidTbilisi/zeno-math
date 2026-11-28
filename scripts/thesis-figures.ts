@@ -14,6 +14,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { en } from "../src/locales/en.ts";
+import { ALL_SEEN, KEY as SEEN } from "../src/seen.ts";
 import { exercise, trapInputs, type Exercise, type SkillId } from "../src/math/practice.ts";
 import { parseCsv } from "../src/model/evaluate.ts";
 import { dryRun } from "./dry-run-study.ts";
@@ -294,6 +295,7 @@ if (import.meta.main) {
     await components(figures, dir);
     await grains(figures, dir);
     const app = await browser.newPage({ deviceScaleFactor: 2, viewport: { width: 1280, height: 860 }, colorScheme: "light" });
+    await app.addInitScript(([k, v]) => localStorage.setItem(k, v), [SEEN, ALL_SEEN]); // no welcome cards in the figures
     await practiceHint(app, server.base);
     await dashboard(app, server.base);
     console.log(`figures written to ${OUT}/`);

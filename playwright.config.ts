@@ -4,6 +4,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { ALL_SEEN, KEY as SEEN } from "./src/seen.ts";
 
 const PORT = 8798;
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;
@@ -27,7 +28,7 @@ export default defineConfig({
     extraHTTPHeaders: { "X-Teacher-Password": "e2e-teacher" },
     // The first-time help (#872) is put away, so the cards and the board's tour don't sit over what a test clicks;
     // e2e/onboarding.spec.ts opens a fresh browser to see them.
-    storageState: { cookies: [], origins: [{ origin: `http://127.0.0.1:${PORT}`, localStorage: [{ name: "zeno.seen.v1", value: JSON.stringify(["teacher", "practice", "boardTour"]) }] }] },
+    storageState: { cookies: [], origins: [{ origin: `http://127.0.0.1:${PORT}`, localStorage: [{ name: SEEN, value: ALL_SEEN }] }] },
     ...(executablePath ? { launchOptions: { executablePath } } : {}),
   },
   webServer: {
