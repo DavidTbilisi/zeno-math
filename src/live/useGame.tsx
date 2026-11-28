@@ -37,6 +37,8 @@ import { useFeel } from "./feel";
 import { play } from "./juice";
 import { CalmToggle, Cheer, Found, GameNav, newSeed, nextStage, Onward, SoundToggle, starText, useLadder, type GameWords } from "./ladderUi";
 import { fill, Toggle } from "./ui";
+import { Tip } from "../components/Help";
+import { useI18n } from "../i18n";
 
 /** What a line of feedback is: a hint in grey, the prompt in bold, a miss in red, a near miss in orange, a right answer in green, a notice in purple. */
 export type Tone = "hint" | "prompt" | "wrong" | "near" | "ok" | "notice";
@@ -348,12 +350,19 @@ export function Stage({ game, stars, done, g, notices, children }: { game: AnyGa
   );
 }
 
-/** The line of feedback, announced as it changes; a miss nudges it, and the discoveries so far can follow it. */
+/**
+ * The line of feedback, announced as it changes; a miss nudges it, and the discoveries so far can follow it. The
+ * game's first hint is how to play it (#879): once feedback has taken its place, an (i) beside the line shows it again.
+ */
 export function Said({ line, pulse, found }: { line: Line; pulse?: number; found?: { game: AnyGame; notices: Record<string, string>; g: GameWords } }) {
+  const { t } = useI18n();
+  const [howTo, setHowTo] = useState(line.tone === "hint" ? line.text : null);
+  if (howTo === null && line.tone === "hint") setHowTo(line.text);
   const cls = line.tone === "hint" ? "live-hint" : line.tone === "prompt" ? "live-said geo-prompt" : `live-said ${line.tone}`;
   return (
     <p className={cls} role={line.tone === "prompt" ? undefined : "status"}>
       <span key={pulse} className={line.tone === "wrong" && pulse ? "live-said-in" : undefined}>{line.text}</span>
+      {howTo && line.tone !== "hint" && <Tip text={howTo} label={t.help.howTo} />}
       {found && (
         <>
           {" "}

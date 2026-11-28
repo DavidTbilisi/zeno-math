@@ -95,6 +95,7 @@ export const ru: Dict = {
     gotIt: "Понятно",
     show: "Как устроена эта страница",
     what: "Что это?",
+    howTo: "Как играть:",
     link: "Помощь",
     page: {
       title: "Как устроен Zeno",

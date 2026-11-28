@@ -142,10 +142,13 @@ export function AccountForm({ start = "in", onDone }: { start?: Face; onDone?: (
           hint={face === "new" ? fill(w.passwordHint, { n: MIN_PASSWORD }) : undefined} error={tried ? bad.password : ""} />
       )}
       {face === "new" && (
-        <label className="check inline">
-          <input type="checkbox" checked={teach} onChange={(e) => setTeach(e.target.checked)} />
-          {w.iTeach} <Tip text={w.iTeachHint} />
-        </label>
+        <div>
+          <label className="check inline">
+            <input type="checkbox" checked={teach} onChange={(e) => setTeach(e.target.checked)} />
+            {w.iTeach}
+          </label>
+          <Tip text={w.iTeachHint} />
+        </div>
       )}
       {face !== "forgot" && here && (
         <fieldset className={`acct-here${tried && unsaid ? " bad" : ""}`}>

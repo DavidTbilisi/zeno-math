@@ -94,6 +94,7 @@ export const en = {
     gotIt: "Got it",
     show: "How this page works",
     what: "What is this?",
+    howTo: "How to play:",
     link: "Help",
     page: {
       title: "How Zeno works",

@@ -95,6 +95,7 @@ export const ka: Dict = {
     gotIt: "გასაგებია",
     show: "როგორ მუშაობს ეს გვერდი",
     what: "ეს რა არის?",
+    howTo: "როგორ ვითამაშოთ:",
     link: "დახმარება",
     page: {
       title: "როგორ მუშაობს Zeno",

@@ -12,7 +12,7 @@ test("progress follows the account; who is signed in, what waits to be sent and 
     assert.equal(follows(key), true, key);
   for (const key of [
     "zeno.account.v1", "zeno.student.v1", "zeno.outbox.v1", "zeno.testbox.v1", "zeno.synced.v1", "zeno.classIdeas.v1", "zeno.sound.v1", "zeno.feel.v1", "zeno.session.v1",
-    "zeno.scratch.v1", "zeno.scratch.dots.v1", "zeno.teacher", "zeno.classGames", "zeno.classGoal", "zeno.boardSort", "zeno.library", "zeno.site.boards", "lang", "zeno..v1",
+    "zeno.scratch.v1", "zeno.seen.v1", "zeno.scratch.dots.v1", "zeno.teacher", "zeno.classGames", "zeno.classGoal", "zeno.boardSort", "zeno.library", "zeno.site.boards", "lang", "zeno..v1",
     "other.practice.v1", "zeno.practice.v1 ", "",
   ])
     assert.equal(follows(key), false, key);

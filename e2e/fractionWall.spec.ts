@@ -1,9 +1,10 @@
 // Make a whole by hand: tiles dragged from the tray into the gap (or tapped), one dragged back out, one into the bin,
-// and the gap filled with the fewest tiles for three stars.
+// and the gap filled with the fewest tiles for three stars; then the (i) shows how to play again.
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { rng } from "../src/math/random.ts";
 import { WALL_LADDER, wallTask } from "../src/math/fractionWall.ts";
 import { boardWith } from "./helpers";
+import { en } from "../src/locales/en.ts";
 
 const SHOTS = process.env.SHOTS_DIR;
 
@@ -47,4 +48,8 @@ test("make a whole by hand: tiles dragged in, out and into the bin, then the few
   for (const den of t.fewest) await drag(page, tile(den), bar);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/fractionWall.png` });
   await expect(game.getByText(/Exactly, with the fewest tiles! ★★★/)).toBeVisible();
+  // The feedback has taken the how-to's place, and the (i) beside it shows it again (#879).
+  const howTo = game.getByRole("button", { name: en.help.howTo });
+  await howTo.click();
+  await expect(page.locator(".chart-tip")).toHaveText(en.live.fractionWall.hint);
 });
