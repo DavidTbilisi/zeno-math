@@ -83,6 +83,7 @@ function PickChip({ pick, picks, setPicks, title, children }: { pick: string; pi
 
 /** A student's account on the teacher's page (#873): why an admin decides, and the one button that asks. */
 function AskToTeach({ w }: { w: Dict["teacher"] }) {
+  const { lang } = useI18n();
   const { account } = useAccount();
   const [failed, setFailed] = useState(false);
   const asked = !!account?.wantsTeach;
@@ -93,7 +94,7 @@ function AskToTeach({ w }: { w: Dict["teacher"] }) {
       {asked ? (
         <p className="acct-ok" role="status">{w.askedTeach}</p>
       ) : (
-        <button className="btn primary" onClick={() => accounts.askTeach().then(() => setFailed(false), () => setFailed(true))}>{w.askTeach}</button>
+        <button className="btn primary" onClick={() => accounts.askTeach(lang).then(() => setFailed(false), () => setFailed(true))}>{w.askTeach}</button>
       )}
       {failed && <p className="error" role="alert">{w.loadFailed}</p>}
     </div>

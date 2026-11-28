@@ -57,10 +57,10 @@ method and path on these resources must answer 404 or 405, so a route added with
 | DELETE | `/api/account` | account | `{ password }`: delete the account and everything kept under it: 204 |
 | POST | `/api/account/session` | anyone | sign in with `{ email, password }`: 200 `{ email, name, verified }` and the session cookie; 401 when either is wrong |
 | DELETE | `/api/account/session` | anyone | sign this device out: 204 |
-| POST | `/api/account/teach` | account | a student asks to be a teacher: 200 the account with `wantsTeach: true` (an admin sees the ask on `/api/people` and answers it by setting the role) |
+| POST | `/api/account/teach` | account | `{ lang? }`: a student asks to be a teacher: 200 the account with `wantsTeach: true` (an admin sees the ask on `/api/people` and answers it by setting the role). The first ask from a confirmed address mails every admin; an unconfirmed one mails them once the address is confirmed (by its link or a new-password link) |
 | POST | `/api/account/reset` | anyone | `{ email, lang? }` mails a link for a new password if the address has an account: 202 either way; 503 when the server sends no mail |
-| PUT | `/api/account/reset` | anyone | the link's page: `{ token, password }` sets the password, signs every device out and this one in; 410 for a link used or too old |
-| POST | `/api/account/verify` | anyone | `{ token }` confirms the address from its mailed link (410 for a link used or too old); signed in and without a token, mails the link again |
+| PUT | `/api/account/reset` | anyone | the link's page: `{ token, password, lang? }` sets the password, signs every device out and this one in; 410 for a link used or too old |
+| POST | `/api/account/verify` | anyone | `{ token, lang? }` confirms the address from its mailed link (410 for a link used or too old); signed in and without a token, mails the link again |
 | POST | `/api/account/student` | account | add a record from before the account to it: `{ code }` gives the student; 409 when the code is another account's, or the account is already in that class |
 | GET | `/api/account/state[?since=REV]` | account | the progress that follows the account: `{ rev, items }`, the keys changed since revision `REV` (all of them without it); see *Accounts* |
 | PUT | `/api/account/state` | account | `{ since, items, replace? }`: the keys this browser changed, merged with what is kept; answers `{ rev, items }` with what the browser lacks |
