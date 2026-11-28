@@ -9,6 +9,7 @@ import {
   Sidebar,
   useHandleLibrary,
   viewportCoordsToSceneCoords,
+  WelcomeScreen,
 } from "@excalidraw/excalidraw";
 import type { AppState, BinaryFileData, BinaryFiles, DataURL, ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type {
@@ -35,6 +36,9 @@ import type { RenderedSvg } from "../math/latex";
 import { dataUrlToSvg, svgToDataUrl, themedSvg } from "../math/svg";
 import { BarIcon } from "../components/BarIcon";
 import { ZenoMark } from "../components/ZenoMark";
+import { BoardHelp } from "../components/BoardHelp";
+import { Tour } from "../components/Help";
+import { isSeen, setSeen } from "../seen";
 import { isLiveEntry, toolLabel, type LiveEntry, type MenuEntry } from "../menus";
 import { isToolKind, TOOLS, type Tool, type ToolDialogProps, type ToolKind } from "../tools";
 import { hasOrigin, installPaper, isPaper, PAPERS, type Paper } from "../paper";
@@ -123,6 +127,8 @@ export function BoardPage({ id }: { id: string }) {
   const [missing, setMissing] = useState(false);
   // 403: this browser is neither a teacher's nor a student's (boards need one or the other).
   const [refused, setRefused] = useState(false);
+  // The board's tour (#875): once, on the first board this browser opens; the ? starts it again.
+  const [touring, setTouring] = useState(() => !isSeen("boardTour"));
   const [title, setTitle] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("saved");
   // Insert: the library over the board (#448), in place of the old row of tool menus.
@@ -788,8 +794,8 @@ export function BoardPage({ id }: { id: string }) {
           {saveState === "saving" ? t.saving : saveState === "saved" ? t.saved : saveState === "conflict" ? t.saveConflict : t.saveError}
         </span>
         <div className="spacer" />
-        <button className="btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}><BarIcon name="search" /></button>
-        <button className="btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
+        <button className="btn search-btn" onClick={openPalette} title={t.searchButton} aria-label={t.searchButton}><BarIcon name="search" /></button>
+        <button className="btn shapes-btn" onClick={() => excalidraw.current?.toggleSidebar({ name: "default", tab: SHAPES_TAB })} title={t.shapes.title}>
           <BarIcon name="shapes" /> <span className="btn-label minor">{t.shapes.button}</span>
         </button>
         <button ref={insertBtn} className="btn primary insert-btn" onClick={() => setInserting(!inserting)} title={t.site.insert.title} aria-expanded={inserting}>
@@ -797,8 +803,24 @@ export function BoardPage({ id }: { id: string }) {
         </button>
         <ShareBox id={id} token={board.shareToken ?? null} onChange={(shareToken) => setBoard({ ...board, shareToken })}
           lesson={board.lessonToken ?? null} onLesson={(lessonToken) => setBoard({ ...board, lessonToken })} />
+        <BoardHelp onTour={() => setTouring(true)} />
         <LangSelect />
       </header>
+      {touring && (
+        <Tour
+          steps={[
+            { sel: ".board-bar .insert-btn", text: t.help.board.steps.insert },
+            { sel: ".board-bar .shapes-btn", text: t.help.board.steps.shapes },
+            { sel: ".board-bar .search-btn", text: t.help.board.steps.search },
+            { sel: ".board-bar .share", text: t.help.board.steps.share },
+            { sel: ".App-toolbar", text: t.help.board.steps.draw },
+          ]}
+          onDone={() => {
+            setSeen("boardTour", true);
+            setTouring(false);
+          }}
+        />
+      )}
       {saveState === "conflict" && (
         <div className="conflict-bar" role="alert">
           <span>{t.conflictText}</span>
@@ -940,6 +962,17 @@ export function BoardPage({ id }: { id: string }) {
               <ShapesPanel api={() => excalidraw.current} theme={boardTheme} />
             </Sidebar.Tab>
           </DefaultSidebar>
+          <WelcomeScreen>
+            <WelcomeScreen.Hints.ToolbarHint />
+            <WelcomeScreen.Center>
+              <WelcomeScreen.Center.Heading>{t.help.board.empty}</WelcomeScreen.Center.Heading>
+              <WelcomeScreen.Center.Menu>
+                <WelcomeScreen.Center.MenuItem onSelect={() => setInserting(true)} icon={<BarIcon name="insert" />}>{t.site.insert.title}</WelcomeScreen.Center.MenuItem>
+                <WelcomeScreen.Center.MenuItem onSelect={openPalette} icon={<BarIcon name="search" />} shortcut="Ctrl+K">{t.searchTools}</WelcomeScreen.Center.MenuItem>
+                <WelcomeScreen.Center.MenuItem onSelect={() => setTouring(true)} icon={<BarIcon name="games" />}>{t.help.board.tour}</WelcomeScreen.Center.MenuItem>
+              </WelcomeScreen.Center.Menu>
+            </WelcomeScreen.Center>
+          </WelcomeScreen>
         </Excalidraw>
         </PanelSlot.Provider>
       </div>

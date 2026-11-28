@@ -94,6 +94,26 @@ export const en = {
     gotIt: "Got it",
     show: "How this page works",
     what: "What is this?",
+    tour: {
+      title: "A short tour",
+      step: "{i} of {n}",
+      skip: "Skip",
+      next: "Next",
+      done: "Done",
+    },
+    board: {
+      title: "Using the board",
+      tour: "Show me around",
+      empty: "An empty board. Start here:",
+      keys: [["Ctrl+K or /", "Find a tool or topic by name"], ["Right-click", "Change a maths picture, beside it"], ["Enter", "Change the selected maths picture"], ["Ctrl+Z", "Undo"]] as [string, string][],
+      steps: {
+        insert: "Insert: maths tools, hands-on pieces and games. Each lands in the middle of the board.",
+        shapes: "Shapes: ready-made maths pictures to drag onto the board.",
+        search: "Find any tool or topic by its name. Ctrl+K does the same.",
+        share: "Share: a link that shows this board as you work, or a lesson link to work beside a student.",
+        draw: "Draw and write with these: pen, shapes, text, eraser.",
+      },
+    },
     practice: {
       title: "New here? Practice in three steps",
       pick: "Pick a topic and a level, or leave it on Mixed and Zeno chooses.",
