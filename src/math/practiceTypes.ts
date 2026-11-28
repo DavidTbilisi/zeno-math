@@ -964,6 +964,8 @@ export type PracticeWords = {
     solving: string;
     reset: string;
     joinClass: string;
+    /** What joining a class does, said before the consent (#874). */
+    joinWhat: string;
     /** What joining a class study means, shown before a student joins; consentAgree is the box they tick. */
     consentTitle: string;
     consentSaved: string;
@@ -1003,6 +1005,8 @@ export type PracticeWords = {
     preTest: string;
     postTest: string;
     delayedTest: string;
+    /** Why the pretest comes first (#874), said before testIntro on the pretest only. */
+    preTestWhy: string;
     testIntro: string;
     testProgress: string;
     submit: string;
